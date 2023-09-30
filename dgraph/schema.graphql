@@ -1,0 +1,29 @@
+type Card {
+	id: ID!
+	side1: String!
+	side2: String!
+	interval: Int
+}
+
+enum cardSide {
+	SIDE1
+	SIDE2
+}
+
+type Lesson {
+	id: ID!
+	subject: Subject! @hasInverse(field: "lessons")
+	title: String!
+	shortDescription: String!
+	recordingUrl: String
+	content: String
+	showSideFirst: cardSide
+	cardDeck: [Card]
+}
+
+type Subject {
+	id: ID!
+	name: String!
+	currentLevel: String!
+	lessons: [Lesson]
+}

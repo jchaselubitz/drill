@@ -1,0 +1,20 @@
+query GetSubject($subjectId: ID!) {
+	getSubject(id: $subjectId) {
+		name
+		currentLevel
+		id
+		lessons {
+			id
+			title
+			shortDescription
+			content
+			showSideFirst
+			cardDeck {
+				id
+				side1
+				side2
+				interval
+			}
+		}
+	}
+}

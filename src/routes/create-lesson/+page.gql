@@ -1,0 +1,7 @@
+query LessonGetSubjects {
+	querySubject {
+		name
+		currentLevel
+		id
+	}
+}
