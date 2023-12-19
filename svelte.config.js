@@ -9,6 +9,11 @@ const config = {
 
 	kit: {
 		adapter: adapter(),
+		vite: {
+			server: {
+				middlewareMode: 'ssr'
+			}
+		},
 		alias: {
 			$houdini: './$houdini'
 		}

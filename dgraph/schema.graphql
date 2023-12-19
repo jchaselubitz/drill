@@ -3,12 +3,20 @@ type Card {
 	side1: String!
 	side2: String!
 	interval: Int
+	status: cardStatus
 	lesson: Lesson! @hasInverse(field: "cardDeck")
 }
 
 enum cardSide {
 	SIDE1
 	SIDE2
+}
+
+enum cardStatus {
+	BAD
+	HARD
+	GOOD
+	EASY
 }
 
 type Lesson {
