@@ -12,10 +12,12 @@ const config = {
 		vite: {
 			server: {
 				middlewareMode: 'ssr'
+			},
+			resolve: {
+				alias: {
+					$houdini: './$houdini'
+				}
 			}
-		},
-		alias: {
-			$houdini: './$houdini'
 		}
 	}
 };

@@ -9,7 +9,6 @@
 	// 	// Fetch the necessary data using subjectId and lessonId
 	// 	// Return the data to the component
 	// }
-	$: console.log('data', data);
 	$: ({ GetLesson } = data);
 	$: lesson = $GetLesson.data.getLesson;
 
