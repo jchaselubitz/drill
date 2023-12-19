@@ -17,7 +17,36 @@ export const ADD_LESSON = graphql`
 			lesson {
 				title
 				shortDescription
+				cardDeck {
+					id
+				}
 				subject {
+					id
+				}
+			}
+		}
+	}
+`;
+
+// export const UPDATE_LESSON = graphql`
+// 	mutation UpdateLesson($lessonId: ID!, $cardDeck: [AddCardInput!]!) {
+// 		updateLesson(input: { id: $lessonId, set: { cardDeck: $cardDeck } }) {
+// 			lesson {
+// 				id
+// 				cardDeck {
+// 					id
+// 				}
+// 			}
+// 		}
+// 	}
+// `;
+
+export const ADD_DECK = graphql`
+	mutation AddDeck($cards: [AddCardInput!]!) {
+		addCard(input: $cards) {
+			card {
+				id
+				lesson {
 					id
 				}
 			}

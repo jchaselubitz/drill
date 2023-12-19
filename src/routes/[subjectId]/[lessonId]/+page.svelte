@@ -1,10 +1,9 @@
 <script lang="ts">
-	import LessonCard from '$lib/components/lesson/LessonCard.svelte';
+	import FlashCard from '$lib/decks/FlashCard.svelte';
 	import type { PageData } from './$houdini';
-
 	export let data: PageData;
-	$: ({ GetSubject } = data);
-	$: subject = $GetSubject.data.getSubject;
+	$: ({ GetLesson } = data);
+	$: lesson = $GetLesson.data.getLesson;
 </script>
 
 <svelte:head>
@@ -12,12 +11,12 @@
 </svelte:head>
 
 <div class="m-4 bg-gray-100 rounded-lg">
-	<h1 class="text-2xl font-bold">{subject.name}</h1>
-	<h2 class="text-xl font-bold">level: {subject.currentLevel}</h2>
+	<h1 class="text-2xl font-bold">{lesson.title}</h1>
+	<h2 class="text-xl font-bold">level: {lesson.subject.currentLevel}</h2>
 
-	{#each subject.lessons as lesson}
+	{#each lesson.cardDeck as card}
 		<div class="flex flex-col">
-			<LessonCard {lesson} />
+			<FlashCard {card} />
 		</div>
 	{/each}
 </div>

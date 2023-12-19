@@ -5,8 +5,8 @@
 		cardGenerationSystemInstructions,
 		requestCardSuggestions
 	} from '../../utils/promptGenerators';
-	import { ADD_LESSON } from '../../utils/dgraphQueries/lesson';
-	const OpenAiUrl = import.meta.env.VITE_OPENAI_CHAT_URL;
+	import { ADD_DECK, ADD_LESSON } from '../../utils/dgraphQueries/lesson';
+	const OpenAiUrl = 'https://api.openai.com/v1/chat/completions';
 	const OpenAiKey = import.meta.env.VITE_OPENAI_API_KEY;
 
 	const USERLANGUAGE = 'English';
@@ -15,12 +15,18 @@
 	export let subjectId: string;
 
 	type Option = { title: string; description: string };
+	type Card = { side1: string; side2: string; lesson: string };
 	export let options: Option[];
 	let selectedLessons: Option[] = [];
 
-	$: aiResponse = '';
-	let optionListObject = [] as { key: string; value: string }[];
+	let cardObjects = [] as Card[];
 	$: lessonId = '';
+
+	function setResponse(response: string) {
+		cardObjects = response && JSON.parse(`[${response}]`).flat();
+		console.log(cardObjects);
+		return cardObjects;
+	}
 
 	const saveLesson = async (title: string, description: string, subjectId: string) => {
 		try {
@@ -31,28 +37,31 @@
 		}
 	};
 
-	function setResponse(response: string) {
-		aiResponse = response;
-		optionListObject = aiResponse && JSON.parse(`[${aiResponse}]`).flat();
-		console.log(optionListObject);
-	}
+	const saveDeck = async (cards: Card[]) => {
+		cards.map((object) => {
+			object.lesson = { id: lessonId };
+		});
+		console.log(cards);
+		const test = await ADD_DECK.mutate({ cards });
+		console.log(test);
+	};
 
-	const handleGenerate = async () => {
+	const handleGenerate = async (option) => {
 		const payload = {
 			model: 'gpt-3.5-turbo',
 			messages: [
 				{
 					role: 'system',
 					content: cardGenerationSystemInstructions({
-						concept: selectedLessons[0].title,
-						keyName: USERLANGUAGE,
-						valueName: subjectLanguage
+						concept: option.title,
+						keyName: 'side1',
+						valueName: 'side2'
 					})
 				},
 				{
 					role: 'user',
 					content: requestCardSuggestions({
-						concept: selectedLessons[0].title,
+						concept: option.title,
 						subject: subjectLanguage
 					})
 				}
@@ -71,17 +80,20 @@
 		});
 
 		const assistantMessage = response.data.choices[0].message.content;
-		setResponse(assistantMessage);
+		const objects = setResponse(assistantMessage);
+		saveDeck(objects);
 	};
 
 	const handleSelected = (option: Option) => {
+		console.log(option);
+		if (selectedLessons.includes(option)) {
+			selectedLessons = selectedLessons.filter((lesson) => lesson !== option);
+		} else {
+			selectedLessons = [...selectedLessons, option];
+		}
+
 		saveLesson(option.title, option.description, subjectId);
-		// handleGenerate();
-		// if (selectedLessons.includes(option)) {
-		// 	selectedLessons = selectedLessons.filter((lesson) => lesson !== option);
-		// } else {
-		// 	selectedLessons = [...selectedLessons, option];
-		// }
+		handleGenerate(option);
 	};
 
 	const handleKeyDown = (event: KeyboardEvent, option: Option) => {
@@ -114,12 +126,6 @@
 			<div class="text-gray-700 text-sm mb-2">{lesson.title}</div>
 		{/each}
 	</div> -->
-
-	<div class="flex flex-row justify-end">
-		<button on:click={() => handleGenerate()} class="bg-blue-600 rounded-lg text-white p-2"
-			>Create Decks</button
-		>
-	</div>
 </div>
 
 <!-- 

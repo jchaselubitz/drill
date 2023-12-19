@@ -11,7 +11,7 @@
 	import { graphql } from '$houdini';
 
 	const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
-	const OPENAI_KEY = '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';
+	const OPENAI_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 	export let level: string;
 	export let language: string;
 
@@ -51,6 +51,7 @@
 	let optionListObject = JSON.parse(`[${AITESTSTRING}]`).flat();
 	// let optionListObject = [] as { title: string; description: string }[];
 	$: subjectId = '';
+	$: console.log('subjectId', subjectId);
 
 	function setResponse(response: string) {
 		aiResponse = response;
@@ -73,7 +74,7 @@
 	// 		messages: [{ role: 'user', content: prompt }],
 	// 		temperature: 0.5,
 	// 		maxTokens: 1000,
-	// 		apiKey: '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'
+	// 		apiKey: OPENAI_KEY
 	// 	};
 
 	// 	const response = await fetch('/chatbot', {

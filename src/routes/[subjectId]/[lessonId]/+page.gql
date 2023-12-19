@@ -1,0 +1,20 @@
+query GetLesson($lessonId: ID!) {
+	getLesson(id: $lessonId) {
+		id
+		title
+		shortDescription
+		content
+		showSideFirst
+		cardDeck {
+			id
+			side1
+			side2
+			interval
+		}
+		subject {
+			id
+			name
+			currentLevel
+		}
+	}
+}

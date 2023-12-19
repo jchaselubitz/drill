@@ -3,6 +3,7 @@ type Card {
 	side1: String!
 	side2: String!
 	interval: Int
+	lesson: Lesson! @hasInverse(field: "cardDeck")
 }
 
 enum cardSide {
@@ -18,7 +19,7 @@ type Lesson {
 	recordingUrl: String
 	content: String
 	showSideFirst: cardSide
-	cardDeck: [Card]
+	cardDeck: [Card] @hasInverse(field: "lesson")
 }
 
 type Subject {
