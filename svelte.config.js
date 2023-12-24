@@ -1,5 +1,5 @@
-import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/kit/vite';
+import adapter from '@sveltejs/adapter-netlify';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -9,16 +9,20 @@ const config = {
 
 	kit: {
 		adapter: adapter(),
-		vite: {
-			server: {
-				middlewareMode: 'ssr'
-			},
-			resolve: {
-				alias: {
-					$houdini: './$houdini'
-				}
-			}
+
+		// vite: {
+		// server: {
+		// 	middlewareMode: 'ssr'
+		// },
+		// resolve: {
+		alias: {
+			$houdini: './$houdini',
+			$lib: './src/lib',
+			'$lib/*': './src/lib/*',
+			'$src/*': './src/*'
 		}
+		// }
+		// }
 	}
 };
 

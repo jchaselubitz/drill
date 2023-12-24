@@ -14,12 +14,7 @@
 									"./.svelte-kit/types",
 									"./$houdini/types"
 					],
-					"baseUrl": ".",
-					"paths": {
-									"$houdini/*": ["./houdini/*"],
-									"$lib/*": ["./src/lib/*"],
-									"$lib": ["./src/lib"],
-									"src/*": ["./src/*"],
-					}
+				
 	}
 }
+

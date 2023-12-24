@@ -1,6 +1,7 @@
 projects:
   default:
     schema:
+      - ./dgraph/schema.graphql
       - ./schema.graphql
       - ./$houdini/graphql/schema.graphql
     documents:

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import axios from 'axios';
-	import { ADD_SUBJECT } from '../../utils/dgraphQueries/subject';
+	import { ADD_SUBJECT } from '../graphql/subject';
 
 	import {
 		lessonGenerationSystemInstructions,

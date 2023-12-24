@@ -9,11 +9,15 @@ query GetSubject($subjectId: ID!) {
 			shortDescription
 			content
 			showSideFirst
-			cardDeck {
+			reviewDate
+			cards {
 				id
 				side1
 				side2
 				interval
+				status
+				nextRepetition
+				numRepetitions
 			}
 			subject {
 				id

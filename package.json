@@ -11,7 +11,7 @@
 		"stop": "docker-compose stop",
 		"schema": "curl -X POST localhost:8080/admin/schema --data-binary '@dgraph/schema.graphql'",
 		"pullschema": "houdini pull-schema",
-		"generate": ". ./.env && houdini generate",
+		"generate": ". ./.env && yarn pullschema && houdini generate",
 		"dev": "vite dev  --host 0.0.0.0",
 		"build": "vite build",
 		"build-staging": ". ./staging.env && houdini generate && vite build",
@@ -24,19 +24,19 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"dependencies": {
+		"@sveltejs/vite-plugin-svelte": "^3.0.1",
 		"axios": "^1.5.0",
 		"classnames": "^2.3.2",
-		"codegen": "^0.1.0",
 		"graphql": "^16.8.1",
 		"path": "^0.12.7",
 		"postcss-load-config": "^4.0.1",
 		"svelte-markdown": "^0.4.0"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^2.1.0",
-		"@sveltejs/adapter-netlify": "^2.0.8",
-		"@sveltejs/adapter-node": "^1.3.1",
-		"@sveltejs/kit": "^1.20.4",
+		"@sveltejs/adapter-auto": "^3.0.1",
+		"@sveltejs/adapter-netlify": "^3.0.1",
+		"@sveltejs/adapter-node": "^2.0.2",
+		"@sveltejs/kit": "^2.0.5",
 		"@tailwindcss/forms": "^0.5.6",
 		"@tailwindcss/typography": "^0.5.10",
 		"@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -50,12 +50,12 @@
 		"postcss": "^8.4.30",
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.10.1",
-		"svelte": "^4.0.5",
-		"svelte-check": "^3.4.3",
-		"svelte-preprocess": "^5.0.4",
+		"svelte": "^4.2.8",
+		"svelte-check": "^3.6.2",
+		"svelte-preprocess": "^5.1.3",
 		"tailwindcss": "^3.3.3",
 		"tslib": "^2.4.1",
 		"typescript": "^5.0.0",
-		"vite": "^4.4.9"
+		"vite": "^5.0.10"
 	}
 }

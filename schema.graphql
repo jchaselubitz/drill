@@ -1,431 +1,415 @@
-"""
-"""
-directive @auth(
-	add: AuthRule
-	delete: AuthRule
-	password: AuthRule
-	query: AuthRule
-	update: AuthRule
-) on INTERFACE | OBJECT
+""""""
+directive @auth(add: AuthRule, delete: AuthRule, password: AuthRule, query: AuthRule, update: AuthRule) on INTERFACE | OBJECT
 
-"""
-"""
+""""""
 directive @cacheControl(maxAge: Int!) on QUERY
 
-"""
-"""
+""""""
 directive @cascade(fields: [String]) on FIELD
 
-"""
-"""
+""""""
 directive @custom(dql: String, http: CustomHTTP) on FIELD_DEFINITION
 
-"""
-"""
+""""""
 directive @dgraph(pred: String, type: String) on FIELD_DEFINITION | INTERFACE | OBJECT
 
-"""
-"""
-directive @generate(
-	mutation: GenerateMutationParams
-	query: GenerateQueryParams
-	subscription: Boolean
-) on INTERFACE | OBJECT
+""""""
+directive @generate(mutation: GenerateMutationParams, query: GenerateQueryParams, subscription: Boolean) on INTERFACE | OBJECT
 
-"""
-"""
+""""""
 directive @hasInverse(field: String!) on FIELD_DEFINITION
 
-"""
-"""
+""""""
 directive @id(interface: Boolean) on FIELD_DEFINITION
 
-"""
-"""
+""""""
 directive @lambda on FIELD_DEFINITION
 
-"""
-"""
+""""""
 directive @lambdaOnMutate(add: Boolean, delete: Boolean, update: Boolean) on INTERFACE | OBJECT
 
-"""
-"""
+""""""
 directive @remote on ENUM | INPUT_OBJECT | INTERFACE | OBJECT | UNION
 
-"""
-"""
+""""""
 directive @remoteResponse(name: String) on FIELD_DEFINITION
 
-"""
-"""
+""""""
 directive @search(by: [DgraphIndex!]) on FIELD_DEFINITION
 
-"""
-"""
+""""""
 directive @secret(field: String!, pred: String) on INTERFACE | OBJECT
 
-"""
-"""
+""""""
 directive @withSubscription on FIELD_DEFINITION | INTERFACE | OBJECT
 
-"""
-"""
+""""""
 input AddCardInput {
-	"""
-	"""
-	interval: Int
+  """"""
+  interval: Int
 
-	"""
-	"""
-	lesson: LessonRef!
+  """"""
+  lesson: LessonRef!
 
-	"""
-	"""
-	side1: String!
+  """"""
+  nextRepetition: DateTime
 
-	"""
-	"""
-	side2: String!
+  """"""
+  numRepetitions: Int
+
+  """"""
+  side1: String!
+
+  """"""
+  side2: String!
+
+  """"""
+  status: CardStatus
 }
 
-"""
-"""
+""""""
 type AddCardPayload {
-	"""
-	"""
-	card(filter: CardFilter, first: Int, offset: Int, order: CardOrder): [Card]
+  """"""
+  card(filter: CardFilter, first: Int, offset: Int, order: CardOrder): [Card]
 
-	"""
-	"""
-	numUids: Int
+  """"""
+  numUids: Int
 }
 
-"""
-"""
+""""""
 input AddLessonInput {
-	"""
-	"""
-	cardDeck: [CardRef]
+  """"""
+  cards: [CardRef]
 
-	"""
-	"""
-	content: String
+  """"""
+  content: String
 
-	"""
-	"""
-	recordingUrl: String
+  """"""
+  recordingUrl: String
 
-	"""
-	"""
-	shortDescription: String!
+  """"""
+  reviewDate: DateTime
 
-	"""
-	"""
-	showSideFirst: cardSide
+  """"""
+  reviewDeck: [CardRef]
 
-	"""
-	"""
-	subject: SubjectRef!
+  """"""
+  shortDescription: String!
 
-	"""
-	"""
-	title: String!
+  """"""
+  showSideFirst: CardSide
+
+  """"""
+  subject: SubjectRef!
+
+  """"""
+  title: String!
 }
 
-"""
-"""
+""""""
 type AddLessonPayload {
-	"""
-	"""
-	lesson(filter: LessonFilter, first: Int, offset: Int, order: LessonOrder): [Lesson]
+  """"""
+  lesson(filter: LessonFilter, first: Int, offset: Int, order: LessonOrder): [Lesson]
 
-	"""
-	"""
-	numUids: Int
+  """"""
+  numUids: Int
 }
 
-"""
-"""
+""""""
 input AddSubjectInput {
-	"""
-	"""
-	currentLevel: String!
+  """"""
+  currentLevel: String!
 
-	"""
-	"""
-	lessons: [LessonRef]
+  """"""
+  lessons: [LessonRef]
 
-	"""
-	"""
-	name: String!
+  """"""
+  name: String!
 }
 
-"""
-"""
+""""""
 type AddSubjectPayload {
-	"""
-	"""
-	numUids: Int
+  """"""
+  numUids: Int
 
-	"""
-	"""
-	subject(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
+  """"""
+  subject(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
 }
 
-"""
-"""
+""""""
 input AuthRule {
-	"""
-	"""
-	and: [AuthRule]
+  """"""
+  and: [AuthRule]
 
-	"""
-	"""
-	not: AuthRule
+  """"""
+  not: AuthRule
 
-	"""
-	"""
-	or: [AuthRule]
+  """"""
+  or: [AuthRule]
 
-	"""
-	"""
-	rule: String
+  """"""
+  rule: String
 }
 
-"""
-"""
+""""""
 type Card {
-	"""
-	"""
-	id: ID!
+  """"""
+  id: ID!
 
-	"""
-	"""
-	interval: Int
+  """"""
+  interval: Int
 
-	"""
-	"""
-	lesson(filter: LessonFilter): Lesson!
+  """"""
+  lesson(filter: LessonFilter): Lesson!
 
-	"""
-	"""
-	side1: String!
+  """"""
+  nextRepetition: DateTime
 
-	"""
-	"""
-	side2: String!
+  """"""
+  numRepetitions: Int
+
+  """"""
+  side1: String!
+
+  """"""
+  side2: String!
+
+  """"""
+  status: CardStatus
 }
 
-"""
-"""
+""""""
 type CardAggregateResult {
-	"""
-	"""
-	count: Int
+  """"""
+  count: Int
 
-	"""
-	"""
-	intervalAvg: Float
+  """"""
+  intervalAvg: Float
 
-	"""
-	"""
-	intervalMax: Int
+  """"""
+  intervalMax: Int
 
-	"""
-	"""
-	intervalMin: Int
+  """"""
+  intervalMin: Int
 
-	"""
-	"""
-	intervalSum: Int
+  """"""
+  intervalSum: Int
 
-	"""
-	"""
-	side1Max: String
+  """"""
+  nextRepetitionMax: DateTime
 
-	"""
-	"""
-	side1Min: String
+  """"""
+  nextRepetitionMin: DateTime
 
-	"""
-	"""
-	side2Max: String
+  """"""
+  numRepetitionsAvg: Float
 
-	"""
-	"""
-	side2Min: String
+  """"""
+  numRepetitionsMax: Int
+
+  """"""
+  numRepetitionsMin: Int
+
+  """"""
+  numRepetitionsSum: Int
+
+  """"""
+  side1Max: String
+
+  """"""
+  side1Min: String
+
+  """"""
+  side2Max: String
+
+  """"""
+  side2Min: String
 }
 
-"""
-"""
+""""""
 input CardFilter {
-	"""
-	"""
-	and: [CardFilter]
+  """"""
+  and: [CardFilter]
 
-	"""
-	"""
-	has: [CardHasFilter]
+  """"""
+  has: [CardHasFilter]
 
-	"""
-	"""
-	id: [ID!]
+  """"""
+  id: [ID!]
 
-	"""
-	"""
-	not: CardFilter
+  """"""
+  not: CardFilter
 
-	"""
-	"""
-	or: [CardFilter]
+  """"""
+  or: [CardFilter]
 }
 
-"""
-"""
+""""""
 enum CardHasFilter {
-	"""
-	"""
-	interval
+  """"""
+  interval
 
-	"""
-	"""
-	lesson
+  """"""
+  lesson
 
-	"""
-	"""
-	side1
+  """"""
+  nextRepetition
 
-	"""
-	"""
-	side2
+  """"""
+  numRepetitions
+
+  """"""
+  side1
+
+  """"""
+  side2
+
+  """"""
+  status
 }
 
-"""
-"""
+""""""
 input CardOrder {
-	"""
-	"""
-	asc: CardOrderable
+  """"""
+  asc: CardOrderable
 
-	"""
-	"""
-	desc: CardOrderable
+  """"""
+  desc: CardOrderable
 
-	"""
-	"""
-	then: CardOrder
+  """"""
+  then: CardOrder
 }
 
-"""
-"""
+""""""
 enum CardOrderable {
-	"""
-	"""
-	interval
+  """"""
+  interval
 
-	"""
-	"""
-	side1
+  """"""
+  nextRepetition
 
-	"""
-	"""
-	side2
+  """"""
+  numRepetitions
+
+  """"""
+  side1
+
+  """"""
+  side2
 }
 
-"""
-"""
+""""""
 input CardPatch {
-	"""
-	"""
-	interval: Int
+  """"""
+  interval: Int
 
-	"""
-	"""
-	lesson: LessonRef
+  """"""
+  lesson: LessonRef
 
-	"""
-	"""
-	side1: String
+  """"""
+  nextRepetition: DateTime
 
-	"""
-	"""
-	side2: String
+  """"""
+  numRepetitions: Int
+
+  """"""
+  side1: String
+
+  """"""
+  side2: String
+
+  """"""
+  status: CardStatus
 }
 
-"""
-"""
+""""""
 input CardRef {
-	"""
-	"""
-	id: ID
+  """"""
+  id: ID
 
-	"""
-	"""
-	interval: Int
+  """"""
+  interval: Int
 
-	"""
-	"""
-	lesson: LessonRef
+  """"""
+  lesson: LessonRef
 
-	"""
-	"""
-	side1: String
+  """"""
+  nextRepetition: DateTime
 
-	"""
-	"""
-	side2: String
+  """"""
+  numRepetitions: Int
+
+  """"""
+  side1: String
+
+  """"""
+  side2: String
+
+  """"""
+  status: CardStatus
 }
 
-"""
-"""
+""""""
+enum CardSide {
+  """"""
+  SIDE1
+
+  """"""
+  SIDE2
+}
+
+""""""
+enum CardStatus {
+  """"""
+  BAD
+
+  """"""
+  EASY
+
+  """"""
+  GOOD
+
+  """"""
+  HARD
+}
+
+""""""
 input ContainsFilter {
-	"""
-	"""
-	point: PointRef
+  """"""
+  point: PointRef
 
-	"""
-	"""
-	polygon: PolygonRef
+  """"""
+  polygon: PolygonRef
 }
 
-"""
-"""
+""""""
 input CustomHTTP {
-	"""
-	"""
-	body: String
+  """"""
+  body: String
 
-	"""
-	"""
-	forwardHeaders: [String!]
+  """"""
+  forwardHeaders: [String!]
 
-	"""
-	"""
-	graphql: String
+  """"""
+  graphql: String
 
-	"""
-	"""
-	introspectionHeaders: [String!]
+  """"""
+  introspectionHeaders: [String!]
 
-	"""
-	"""
-	method: HTTPMethod!
+  """"""
+  method: HTTPMethod!
 
-	"""
-	"""
-	mode: Mode
+  """"""
+  mode: Mode
 
-	"""
-	"""
-	secretHeaders: [String!]
+  """"""
+  secretHeaders: [String!]
 
-	"""
-	"""
-	skipIntrospection: Boolean
+  """"""
+  skipIntrospection: Boolean
 
-	"""
-	"""
-	url: String!
+  """"""
+  url: String!
 }
 
 """
@@ -434,264 +418,199 @@ For example: "1985-04-12T23:20:50.52Z" represents 20 mins 50.52 secs after the 2
 """
 scalar DateTime
 
-"""
-"""
+""""""
 input DateTimeFilter {
-	"""
-	"""
-	between: DateTimeRange
+  """"""
+  between: DateTimeRange
 
-	"""
-	"""
-	eq: DateTime
+  """"""
+  eq: DateTime
 
-	"""
-	"""
-	ge: DateTime
+  """"""
+  ge: DateTime
 
-	"""
-	"""
-	gt: DateTime
+  """"""
+  gt: DateTime
 
-	"""
-	"""
-	in: [DateTime]
+  """"""
+  in: [DateTime]
 
-	"""
-	"""
-	le: DateTime
+  """"""
+  le: DateTime
 
-	"""
-	"""
-	lt: DateTime
+  """"""
+  lt: DateTime
 }
 
-"""
-"""
+""""""
 input DateTimeRange {
-	"""
-	"""
-	max: DateTime!
+  """"""
+  max: DateTime!
 
-	"""
-	"""
-	min: DateTime!
+  """"""
+  min: DateTime!
 }
 
-"""
-"""
+""""""
 type DeleteCardPayload {
-	"""
-	"""
-	card(filter: CardFilter, first: Int, offset: Int, order: CardOrder): [Card]
+  """"""
+  card(filter: CardFilter, first: Int, offset: Int, order: CardOrder): [Card]
 
-	"""
-	"""
-	msg: String
+  """"""
+  msg: String
 
-	"""
-	"""
-	numUids: Int
+  """"""
+  numUids: Int
 }
 
-"""
-"""
+""""""
 type DeleteLessonPayload {
-	"""
-	"""
-	lesson(filter: LessonFilter, first: Int, offset: Int, order: LessonOrder): [Lesson]
+  """"""
+  lesson(filter: LessonFilter, first: Int, offset: Int, order: LessonOrder): [Lesson]
 
-	"""
-	"""
-	msg: String
+  """"""
+  msg: String
 
-	"""
-	"""
-	numUids: Int
+  """"""
+  numUids: Int
 }
 
-"""
-"""
+""""""
 type DeleteSubjectPayload {
-	"""
-	"""
-	msg: String
+  """"""
+  msg: String
 
-	"""
-	"""
-	numUids: Int
+  """"""
+  numUids: Int
 
-	"""
-	"""
-	subject(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
+  """"""
+  subject(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
 }
 
-"""
-"""
+""""""
 enum DgraphIndex {
-	"""
-	"""
-	bool
+  """"""
+  bool
 
-	"""
-	"""
-	day
+  """"""
+  day
 
-	"""
-	"""
-	exact
+  """"""
+  exact
 
-	"""
-	"""
-	float
+  """"""
+  float
 
-	"""
-	"""
-	fulltext
+  """"""
+  fulltext
 
-	"""
-	"""
-	geo
+  """"""
+  geo
 
-	"""
-	"""
-	hash
+  """"""
+  hash
 
-	"""
-	"""
-	hour
+  """"""
+  hour
 
-	"""
-	"""
-	int
+  """"""
+  int
 
-	"""
-	"""
-	int64
+  """"""
+  int64
 
-	"""
-	"""
-	month
+  """"""
+  month
 
-	"""
-	"""
-	regexp
+  """"""
+  regexp
 
-	"""
-	"""
-	term
+  """"""
+  term
 
-	"""
-	"""
-	trigram
+  """"""
+  trigram
 
-	"""
-	"""
-	year
+  """"""
+  year
 }
 
-"""
-"""
+""""""
 input FloatFilter {
-	"""
-	"""
-	between: FloatRange
+  """"""
+  between: FloatRange
 
-	"""
-	"""
-	eq: Float
+  """"""
+  eq: Float
 
-	"""
-	"""
-	ge: Float
+  """"""
+  ge: Float
 
-	"""
-	"""
-	gt: Float
+  """"""
+  gt: Float
 
-	"""
-	"""
-	in: [Float]
+  """"""
+  in: [Float]
 
-	"""
-	"""
-	le: Float
+  """"""
+  le: Float
 
-	"""
-	"""
-	lt: Float
+  """"""
+  lt: Float
 }
 
-"""
-"""
+""""""
 input FloatRange {
-	"""
-	"""
-	max: Float!
+  """"""
+  max: Float!
 
-	"""
-	"""
-	min: Float!
+  """"""
+  min: Float!
 }
 
-"""
-"""
+""""""
 input GenerateMutationParams {
-	"""
-	"""
-	add: Boolean
+  """"""
+  add: Boolean
 
-	"""
-	"""
-	delete: Boolean
+  """"""
+  delete: Boolean
 
-	"""
-	"""
-	update: Boolean
+  """"""
+  update: Boolean
 }
 
-"""
-"""
+""""""
 input GenerateQueryParams {
-	"""
-	"""
-	aggregate: Boolean
+  """"""
+  aggregate: Boolean
 
-	"""
-	"""
-	get: Boolean
+  """"""
+  get: Boolean
 
-	"""
-	"""
-	password: Boolean
+  """"""
+  password: Boolean
 
-	"""
-	"""
-	query: Boolean
+  """"""
+  query: Boolean
 }
 
-"""
-"""
+""""""
 enum HTTPMethod {
-	"""
-	"""
-	DELETE
+  """"""
+  DELETE
 
-	"""
-	"""
-	GET
+  """"""
+  GET
 
-	"""
-	"""
-	PATCH
+  """"""
+  PATCH
 
-	"""
-	"""
-	POST
+  """"""
+  POST
 
-	"""
-	"""
-	PUT
+  """"""
+  PUT
 }
 
 """
@@ -700,894 +619,698 @@ Int64 can represent values in range [-(2^63),(2^63 - 1)].
 """
 scalar Int64
 
-"""
-"""
+""""""
 input Int64Filter {
-	"""
-	"""
-	between: Int64Range
+  """"""
+  between: Int64Range
 
-	"""
-	"""
-	eq: Int64
+  """"""
+  eq: Int64
 
-	"""
-	"""
-	ge: Int64
+  """"""
+  ge: Int64
 
-	"""
-	"""
-	gt: Int64
+  """"""
+  gt: Int64
 
-	"""
-	"""
-	in: [Int64]
+  """"""
+  in: [Int64]
 
-	"""
-	"""
-	le: Int64
+  """"""
+  le: Int64
 
-	"""
-	"""
-	lt: Int64
+  """"""
+  lt: Int64
 }
 
-"""
-"""
+""""""
 input Int64Range {
-	"""
-	"""
-	max: Int64!
+  """"""
+  max: Int64!
 
-	"""
-	"""
-	min: Int64!
+  """"""
+  min: Int64!
 }
 
-"""
-"""
+""""""
 input IntFilter {
-	"""
-	"""
-	between: IntRange
+  """"""
+  between: IntRange
 
-	"""
-	"""
-	eq: Int
+  """"""
+  eq: Int
 
-	"""
-	"""
-	ge: Int
+  """"""
+  ge: Int
 
-	"""
-	"""
-	gt: Int
+  """"""
+  gt: Int
 
-	"""
-	"""
-	in: [Int]
+  """"""
+  in: [Int]
 
-	"""
-	"""
-	le: Int
+  """"""
+  le: Int
 
-	"""
-	"""
-	lt: Int
+  """"""
+  lt: Int
 }
 
-"""
-"""
+""""""
 input IntRange {
-	"""
-	"""
-	max: Int!
+  """"""
+  max: Int!
 
-	"""
-	"""
-	min: Int!
+  """"""
+  min: Int!
 }
 
-"""
-"""
+""""""
 input IntersectsFilter {
-	"""
-	"""
-	multiPolygon: MultiPolygonRef
+  """"""
+  multiPolygon: MultiPolygonRef
 
-	"""
-	"""
-	polygon: PolygonRef
+  """"""
+  polygon: PolygonRef
 }
 
-"""
-"""
+""""""
 type Lesson {
-	"""
-	"""
-	cardDeck(filter: CardFilter, first: Int, offset: Int, order: CardOrder): [Card]
+  """"""
+  cards(filter: CardFilter, first: Int, offset: Int, order: CardOrder): [Card]
 
-	"""
-	"""
-	cardDeckAggregate(filter: CardFilter): CardAggregateResult
+  """"""
+  cardsAggregate(filter: CardFilter): CardAggregateResult
 
-	"""
-	"""
-	content: String
+  """"""
+  content: String
 
-	"""
-	"""
-	id: ID!
+  """"""
+  id: ID!
 
-	"""
-	"""
-	recordingUrl: String
+  """"""
+  recordingUrl: String
 
-	"""
-	"""
-	shortDescription: String!
+  """"""
+  reviewDate: DateTime
 
-	"""
-	"""
-	showSideFirst: cardSide
+  """"""
+  reviewDeck(filter: CardFilter, first: Int, offset: Int, order: CardOrder): [Card]
 
-	"""
-	"""
-	subject(filter: SubjectFilter): Subject!
+  """"""
+  reviewDeckAggregate(filter: CardFilter): CardAggregateResult
 
-	"""
-	"""
-	title: String!
+  """"""
+  shortDescription: String!
+
+  """"""
+  showSideFirst: CardSide
+
+  """"""
+  subject(filter: SubjectFilter): Subject!
+
+  """"""
+  title: String!
 }
 
-"""
-"""
+""""""
 type LessonAggregateResult {
-	"""
-	"""
-	contentMax: String
+  """"""
+  contentMax: String
 
-	"""
-	"""
-	contentMin: String
+  """"""
+  contentMin: String
 
-	"""
-	"""
-	count: Int
+  """"""
+  count: Int
 
-	"""
-	"""
-	recordingUrlMax: String
+  """"""
+  recordingUrlMax: String
 
-	"""
-	"""
-	recordingUrlMin: String
+  """"""
+  recordingUrlMin: String
 
-	"""
-	"""
-	shortDescriptionMax: String
+  """"""
+  reviewDateMax: DateTime
 
-	"""
-	"""
-	shortDescriptionMin: String
+  """"""
+  reviewDateMin: DateTime
 
-	"""
-	"""
-	titleMax: String
+  """"""
+  shortDescriptionMax: String
 
-	"""
-	"""
-	titleMin: String
+  """"""
+  shortDescriptionMin: String
+
+  """"""
+  titleMax: String
+
+  """"""
+  titleMin: String
 }
 
-"""
-"""
+""""""
 input LessonFilter {
-	"""
-	"""
-	and: [LessonFilter]
+  """"""
+  and: [LessonFilter]
 
-	"""
-	"""
-	has: [LessonHasFilter]
+  """"""
+  has: [LessonHasFilter]
 
-	"""
-	"""
-	id: [ID!]
+  """"""
+  id: [ID!]
 
-	"""
-	"""
-	not: LessonFilter
+  """"""
+  not: LessonFilter
 
-	"""
-	"""
-	or: [LessonFilter]
+  """"""
+  or: [LessonFilter]
 }
 
-"""
-"""
+""""""
 enum LessonHasFilter {
-	"""
-	"""
-	cardDeck
+  """"""
+  cards
 
-	"""
-	"""
-	content
+  """"""
+  content
 
-	"""
-	"""
-	recordingUrl
+  """"""
+  recordingUrl
 
-	"""
-	"""
-	shortDescription
+  """"""
+  reviewDate
 
-	"""
-	"""
-	showSideFirst
+  """"""
+  reviewDeck
 
-	"""
-	"""
-	subject
+  """"""
+  shortDescription
 
-	"""
-	"""
-	title
+  """"""
+  showSideFirst
+
+  """"""
+  subject
+
+  """"""
+  title
 }
 
-"""
-"""
+""""""
 input LessonOrder {
-	"""
-	"""
-	asc: LessonOrderable
+  """"""
+  asc: LessonOrderable
 
-	"""
-	"""
-	desc: LessonOrderable
+  """"""
+  desc: LessonOrderable
 
-	"""
-	"""
-	then: LessonOrder
+  """"""
+  then: LessonOrder
 }
 
-"""
-"""
+""""""
 enum LessonOrderable {
-	"""
-	"""
-	content
+  """"""
+  content
 
-	"""
-	"""
-	recordingUrl
+  """"""
+  recordingUrl
 
-	"""
-	"""
-	shortDescription
+  """"""
+  reviewDate
 
-	"""
-	"""
-	title
+  """"""
+  shortDescription
+
+  """"""
+  title
 }
 
-"""
-"""
+""""""
 input LessonPatch {
-	"""
-	"""
-	cardDeck: [CardRef]
+  """"""
+  cards: [CardRef]
 
-	"""
-	"""
-	content: String
+  """"""
+  content: String
 
-	"""
-	"""
-	recordingUrl: String
+  """"""
+  recordingUrl: String
 
-	"""
-	"""
-	shortDescription: String
+  """"""
+  reviewDate: DateTime
 
-	"""
-	"""
-	showSideFirst: cardSide
+  """"""
+  reviewDeck: [CardRef]
 
-	"""
-	"""
-	subject: SubjectRef
+  """"""
+  shortDescription: String
 
-	"""
-	"""
-	title: String
+  """"""
+  showSideFirst: CardSide
+
+  """"""
+  subject: SubjectRef
+
+  """"""
+  title: String
 }
 
-"""
-"""
+""""""
 input LessonRef {
-	"""
-	"""
-	cardDeck: [CardRef]
+  """"""
+  cards: [CardRef]
 
-	"""
-	"""
-	content: String
+  """"""
+  content: String
 
-	"""
-	"""
-	id: ID
+  """"""
+  id: ID
 
-	"""
-	"""
-	recordingUrl: String
+  """"""
+  recordingUrl: String
 
-	"""
-	"""
-	shortDescription: String
+  """"""
+  reviewDate: DateTime
 
-	"""
-	"""
-	showSideFirst: cardSide
+  """"""
+  reviewDeck: [CardRef]
 
-	"""
-	"""
-	subject: SubjectRef
+  """"""
+  shortDescription: String
 
-	"""
-	"""
-	title: String
+  """"""
+  showSideFirst: CardSide
+
+  """"""
+  subject: SubjectRef
+
+  """"""
+  title: String
 }
 
-"""
-"""
+""""""
 enum Mode {
-	"""
-	"""
-	BATCH
+  """"""
+  BATCH
 
-	"""
-	"""
-	SINGLE
+  """"""
+  SINGLE
 }
 
-"""
-"""
+""""""
 type MultiPolygon {
-	"""
-	"""
-	polygons: [Polygon!]!
+  """"""
+  polygons: [Polygon!]!
 }
 
-"""
-"""
+""""""
 input MultiPolygonRef {
-	"""
-	"""
-	polygons: [PolygonRef!]!
+  """"""
+  polygons: [PolygonRef!]!
 }
 
-"""
-"""
+""""""
 type Mutation {
-	"""
-	"""
-	addCard(input: [AddCardInput!]!): AddCardPayload
+  """"""
+  addCard(input: [AddCardInput!]!): AddCardPayload
 
-	"""
-	"""
-	addLesson(input: [AddLessonInput!]!): AddLessonPayload
+  """"""
+  addLesson(input: [AddLessonInput!]!): AddLessonPayload
 
-	"""
-	"""
-	addSubject(input: [AddSubjectInput!]!): AddSubjectPayload
+  """"""
+  addSubject(input: [AddSubjectInput!]!): AddSubjectPayload
 
-	"""
-	"""
-	deleteCard(filter: CardFilter!): DeleteCardPayload
+  """"""
+  deleteCard(filter: CardFilter!): DeleteCardPayload
 
-	"""
-	"""
-	deleteLesson(filter: LessonFilter!): DeleteLessonPayload
+  """"""
+  deleteLesson(filter: LessonFilter!): DeleteLessonPayload
 
-	"""
-	"""
-	deleteSubject(filter: SubjectFilter!): DeleteSubjectPayload
+  """"""
+  deleteSubject(filter: SubjectFilter!): DeleteSubjectPayload
 
-	"""
-	"""
-	updateCard(input: UpdateCardInput!): UpdateCardPayload
+  """"""
+  updateCard(input: UpdateCardInput!): UpdateCardPayload
 
-	"""
-	"""
-	updateLesson(input: UpdateLessonInput!): UpdateLessonPayload
+  """"""
+  updateLesson(input: UpdateLessonInput!): UpdateLessonPayload
 
-	"""
-	"""
-	updateSubject(input: UpdateSubjectInput!): UpdateSubjectPayload
+  """"""
+  updateSubject(input: UpdateSubjectInput!): UpdateSubjectPayload
 }
 
-"""
-"""
+""""""
 input NearFilter {
-	"""
-	"""
-	coordinate: PointRef!
+  """"""
+  coordinate: PointRef!
 
-	"""
-	"""
-	distance: Float!
+  """"""
+  distance: Float!
 }
 
-"""
-"""
+""""""
 type Point {
-	"""
-	"""
-	latitude: Float!
+  """"""
+  latitude: Float!
 
-	"""
-	"""
-	longitude: Float!
+  """"""
+  longitude: Float!
 }
 
-"""
-"""
+""""""
 input PointGeoFilter {
-	"""
-	"""
-	near: NearFilter
+  """"""
+  near: NearFilter
 
-	"""
-	"""
-	within: WithinFilter
+  """"""
+  within: WithinFilter
 }
 
-"""
-"""
+""""""
 type PointList {
-	"""
-	"""
-	points: [Point!]!
+  """"""
+  points: [Point!]!
 }
 
-"""
-"""
+""""""
 input PointListRef {
-	"""
-	"""
-	points: [PointRef!]!
+  """"""
+  points: [PointRef!]!
 }
 
-"""
-"""
+""""""
 input PointRef {
-	"""
-	"""
-	latitude: Float!
+  """"""
+  latitude: Float!
 
-	"""
-	"""
-	longitude: Float!
+  """"""
+  longitude: Float!
 }
 
-"""
-"""
+""""""
 type Polygon {
-	"""
-	"""
-	coordinates: [PointList!]!
+  """"""
+  coordinates: [PointList!]!
 }
 
-"""
-"""
+""""""
 input PolygonGeoFilter {
-	"""
-	"""
-	contains: ContainsFilter
+  """"""
+  contains: ContainsFilter
 
-	"""
-	"""
-	intersects: IntersectsFilter
+  """"""
+  intersects: IntersectsFilter
 
-	"""
-	"""
-	near: NearFilter
+  """"""
+  near: NearFilter
 
-	"""
-	"""
-	within: WithinFilter
+  """"""
+  within: WithinFilter
 }
 
-"""
-"""
+""""""
 input PolygonRef {
-	"""
-	"""
-	coordinates: [PointListRef!]!
+  """"""
+  coordinates: [PointListRef!]!
 }
 
-"""
-"""
+""""""
 type Query {
-	"""
-	"""
-	aggregateCard(filter: CardFilter): CardAggregateResult
+  """"""
+  aggregateCard(filter: CardFilter): CardAggregateResult
 
-	"""
-	"""
-	aggregateLesson(filter: LessonFilter): LessonAggregateResult
+  """"""
+  aggregateLesson(filter: LessonFilter): LessonAggregateResult
 
-	"""
-	"""
-	aggregateSubject(filter: SubjectFilter): SubjectAggregateResult
+  """"""
+  aggregateSubject(filter: SubjectFilter): SubjectAggregateResult
 
-	"""
-	"""
-	getCard(id: ID!): Card
+  """"""
+  getCard(id: ID!): Card
 
-	"""
-	"""
-	getLesson(id: ID!): Lesson
+  """"""
+  getLesson(id: ID!): Lesson
 
-	"""
-	"""
-	getSubject(id: ID!): Subject
+  """"""
+  getSubject(id: ID!): Subject
 
-	"""
-	"""
-	queryCard(filter: CardFilter, first: Int, offset: Int, order: CardOrder): [Card]
+  """"""
+  queryCard(filter: CardFilter, first: Int, offset: Int, order: CardOrder): [Card]
 
-	"""
-	"""
-	queryLesson(filter: LessonFilter, first: Int, offset: Int, order: LessonOrder): [Lesson]
+  """"""
+  queryLesson(filter: LessonFilter, first: Int, offset: Int, order: LessonOrder): [Lesson]
 
-	"""
-	"""
-	querySubject(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
+  """"""
+  querySubject(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
 }
 
-"""
-"""
+""""""
 input StringExactFilter {
-	"""
-	"""
-	between: StringRange
+  """"""
+  between: StringRange
 
-	"""
-	"""
-	eq: String
+  """"""
+  eq: String
 
-	"""
-	"""
-	ge: String
+  """"""
+  ge: String
 
-	"""
-	"""
-	gt: String
+  """"""
+  gt: String
 
-	"""
-	"""
-	in: [String]
+  """"""
+  in: [String]
 
-	"""
-	"""
-	le: String
+  """"""
+  le: String
 
-	"""
-	"""
-	lt: String
+  """"""
+  lt: String
 }
 
-"""
-"""
+""""""
 input StringFullTextFilter {
-	"""
-	"""
-	alloftext: String
+  """"""
+  alloftext: String
 
-	"""
-	"""
-	anyoftext: String
+  """"""
+  anyoftext: String
 }
 
-"""
-"""
+""""""
 input StringHashFilter {
-	"""
-	"""
-	eq: String
+  """"""
+  eq: String
 
-	"""
-	"""
-	in: [String]
+  """"""
+  in: [String]
 }
 
-"""
-"""
+""""""
 input StringRange {
-	"""
-	"""
-	max: String!
+  """"""
+  max: String!
 
-	"""
-	"""
-	min: String!
+  """"""
+  min: String!
 }
 
-"""
-"""
+""""""
 input StringRegExpFilter {
-	"""
-	"""
-	regexp: String
+  """"""
+  regexp: String
 }
 
-"""
-"""
+""""""
 input StringTermFilter {
-	"""
-	"""
-	allofterms: String
+  """"""
+  allofterms: String
 
-	"""
-	"""
-	anyofterms: String
+  """"""
+  anyofterms: String
 }
 
-"""
-"""
+""""""
 type Subject {
-	"""
-	"""
-	currentLevel: String!
+  """"""
+  currentLevel: String!
 
-	"""
-	"""
-	id: ID!
+  """"""
+  id: ID!
 
-	"""
-	"""
-	lessons(filter: LessonFilter, first: Int, offset: Int, order: LessonOrder): [Lesson]
+  """"""
+  lessons(filter: LessonFilter, first: Int, offset: Int, order: LessonOrder): [Lesson]
 
-	"""
-	"""
-	lessonsAggregate(filter: LessonFilter): LessonAggregateResult
+  """"""
+  lessonsAggregate(filter: LessonFilter): LessonAggregateResult
 
-	"""
-	"""
-	name: String!
+  """"""
+  name: String!
 }
 
-"""
-"""
+""""""
 type SubjectAggregateResult {
-	"""
-	"""
-	count: Int
+  """"""
+  count: Int
 
-	"""
-	"""
-	currentLevelMax: String
+  """"""
+  currentLevelMax: String
 
-	"""
-	"""
-	currentLevelMin: String
+  """"""
+  currentLevelMin: String
 
-	"""
-	"""
-	nameMax: String
+  """"""
+  nameMax: String
 
-	"""
-	"""
-	nameMin: String
+  """"""
+  nameMin: String
 }
 
-"""
-"""
+""""""
 input SubjectFilter {
-	"""
-	"""
-	and: [SubjectFilter]
+  """"""
+  and: [SubjectFilter]
 
-	"""
-	"""
-	has: [SubjectHasFilter]
+  """"""
+  has: [SubjectHasFilter]
 
-	"""
-	"""
-	id: [ID!]
+  """"""
+  id: [ID!]
 
-	"""
-	"""
-	not: SubjectFilter
+  """"""
+  not: SubjectFilter
 
-	"""
-	"""
-	or: [SubjectFilter]
+  """"""
+  or: [SubjectFilter]
 }
 
-"""
-"""
+""""""
 enum SubjectHasFilter {
-	"""
-	"""
-	currentLevel
+  """"""
+  currentLevel
 
-	"""
-	"""
-	lessons
+  """"""
+  lessons
 
-	"""
-	"""
-	name
+  """"""
+  name
 }
 
-"""
-"""
+""""""
 input SubjectOrder {
-	"""
-	"""
-	asc: SubjectOrderable
+  """"""
+  asc: SubjectOrderable
 
-	"""
-	"""
-	desc: SubjectOrderable
+  """"""
+  desc: SubjectOrderable
 
-	"""
-	"""
-	then: SubjectOrder
+  """"""
+  then: SubjectOrder
 }
 
-"""
-"""
+""""""
 enum SubjectOrderable {
-	"""
-	"""
-	currentLevel
+  """"""
+  currentLevel
 
-	"""
-	"""
-	name
+  """"""
+  name
 }
 
-"""
-"""
+""""""
 input SubjectPatch {
-	"""
-	"""
-	currentLevel: String
+  """"""
+  currentLevel: String
 
-	"""
-	"""
-	lessons: [LessonRef]
+  """"""
+  lessons: [LessonRef]
 
-	"""
-	"""
-	name: String
+  """"""
+  name: String
 }
 
-"""
-"""
+""""""
 input SubjectRef {
-	"""
-	"""
-	currentLevel: String
+  """"""
+  currentLevel: String
 
-	"""
-	"""
-	id: ID
+  """"""
+  id: ID
 
-	"""
-	"""
-	lessons: [LessonRef]
+  """"""
+  lessons: [LessonRef]
 
-	"""
-	"""
-	name: String
+  """"""
+  name: String
 }
 
-"""
-"""
+""""""
 input UpdateCardInput {
-	"""
-	"""
-	filter: CardFilter!
+  """"""
+  filter: CardFilter!
 
-	"""
-	"""
-	remove: CardPatch
+  """"""
+  remove: CardPatch
 
-	"""
-	"""
-	set: CardPatch
+  """"""
+  set: CardPatch
 }
 
-"""
-"""
+""""""
 type UpdateCardPayload {
-	"""
-	"""
-	card(filter: CardFilter, first: Int, offset: Int, order: CardOrder): [Card]
+  """"""
+  card(filter: CardFilter, first: Int, offset: Int, order: CardOrder): [Card]
 
-	"""
-	"""
-	numUids: Int
+  """"""
+  numUids: Int
 }
 
-"""
-"""
+""""""
 input UpdateLessonInput {
-	"""
-	"""
-	filter: LessonFilter!
+  """"""
+  filter: LessonFilter!
 
-	"""
-	"""
-	remove: LessonPatch
+  """"""
+  remove: LessonPatch
 
-	"""
-	"""
-	set: LessonPatch
+  """"""
+  set: LessonPatch
 }
 
-"""
-"""
+""""""
 type UpdateLessonPayload {
-	"""
-	"""
-	lesson(filter: LessonFilter, first: Int, offset: Int, order: LessonOrder): [Lesson]
+  """"""
+  lesson(filter: LessonFilter, first: Int, offset: Int, order: LessonOrder): [Lesson]
 
-	"""
-	"""
-	numUids: Int
+  """"""
+  numUids: Int
 }
 
-"""
-"""
+""""""
 input UpdateSubjectInput {
-	"""
-	"""
-	filter: SubjectFilter!
+  """"""
+  filter: SubjectFilter!
 
-	"""
-	"""
-	remove: SubjectPatch
+  """"""
+  remove: SubjectPatch
 
-	"""
-	"""
-	set: SubjectPatch
+  """"""
+  set: SubjectPatch
 }
 
-"""
-"""
+""""""
 type UpdateSubjectPayload {
-	"""
-	"""
-	numUids: Int
+  """"""
+  numUids: Int
 
-	"""
-	"""
-	subject(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
+  """"""
+  subject(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
 }
 
-"""
-"""
+""""""
 input WithinFilter {
-	"""
-	"""
-	polygon: PolygonRef!
-}
-
-"""
-"""
-enum cardSide {
-	"""
-	"""
-	SIDE1
-
-	"""
-	"""
-	SIDE2
+  """"""
+  polygon: PolygonRef!
 }

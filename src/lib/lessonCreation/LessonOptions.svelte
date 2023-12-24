@@ -5,7 +5,8 @@
 		cardGenerationSystemInstructions,
 		requestCardSuggestions
 	} from '../../utils/promptGenerators';
-	import { ADD_DECK, ADD_LESSON } from '../../utils/dgraphQueries/lesson';
+	import { ADD_DECK, ADD_LESSON } from '$lib/graphql/lesson';
+
 	const OpenAiUrl = 'https://api.openai.com/v1/chat/completions';
 	const OpenAiKey = import.meta.env.VITE_OPENAI_API_KEY;
 

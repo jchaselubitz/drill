@@ -2,17 +2,19 @@ type Card {
 	id: ID!
 	side1: String!
 	side2: String!
+	nextRepetition: DateTime
 	interval: Int
-	status: cardStatus
-	lesson: Lesson! @hasInverse(field: "cardDeck")
+	numRepetitions: Int
+	status: CardStatus
+	lesson: Lesson! @hasInverse(field: "cards")
 }
 
-enum cardSide {
+enum CardSide {
 	SIDE1
 	SIDE2
 }
 
-enum cardStatus {
+enum CardStatus {
 	BAD
 	HARD
 	GOOD
@@ -26,8 +28,10 @@ type Lesson {
 	shortDescription: String!
 	recordingUrl: String
 	content: String
-	showSideFirst: cardSide
-	cardDeck: [Card] @hasInverse(field: "lesson")
+	showSideFirst: CardSide
+	cards: [Card] @hasInverse(field: "lesson")
+	reviewDeck: [Card]
+	reviewDate: DateTime
 }
 
 type Subject {

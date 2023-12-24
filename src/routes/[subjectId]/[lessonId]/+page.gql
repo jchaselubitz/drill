@@ -5,11 +5,24 @@ query GetLesson($lessonId: ID!) {
 		shortDescription
 		content
 		showSideFirst
-		cardDeck {
-			id
+		reviewDate
+		reviewDeck {
+			nextRepetition
 			side1
 			side2
 			interval
+			numRepetitions
+			status
+			id
+		}
+		cards {
+			nextRepetition
+			side1
+			side2
+			interval
+			status
+			numRepetitions
+			id
 		}
 		subject {
 			id
