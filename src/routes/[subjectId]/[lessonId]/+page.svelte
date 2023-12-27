@@ -5,15 +5,14 @@
 	import type { PageData } from './$houdini';
 	import { REMOVE_CARD_FROM_REVIEW } from '$lib/graphql/lesson';
 	import { graphql } from '$houdini';
-	const todayDate = getDateDay(new Date());
 
 	export let data: PageData;
 	$: ({ GetLesson } = data);
 	$: lesson = $GetLesson.data.getLesson;
 	$: cards = lesson.cards;
 	$: reviewDeck = lesson.reviewDeck;
+	$: console.log('reviewDeck:', reviewDeck);
 	$: reviewDate = toJsDateType(lesson.reviewDate);
-	$: console.log('reviewDate:', reviewDeck);
 
 	const CREATE_REVIEW = graphql`
 		mutation CreateReview($lessonId: [ID!], $reviewDeck: [CardRef], $reviewDate: DateTime!) {
@@ -39,26 +38,28 @@
 		}
 	`;
 
-	async function createNextReview() {
-		console.log('creating next review');
+	export async function load({ fetch }) {
+		const todayDate = getDateDay(new Date());
+		if (!!reviewDeck && isSameDate(getDateDay(reviewDate), todayDate)) {
+			return { props: { lesson: { reviewDeck } } };
+		}
 		const deck = createReviewDeck({ reviewDeck, cards, max_new_cards: 5, max_cards: 40 });
 		const cardRefs = deck.map((card) => ({ id: card.id }));
 		try {
-			await CREATE_REVIEW.mutate({
-				id: lesson.id,
-				reviewDeck: cardRefs,
-				reviewDate: toDbDate(todayDate)
-			});
+			await CREATE_REVIEW.mutate(
+				{
+					id: lesson.id,
+					reviewDeck: cardRefs,
+					reviewDate: toDbDate(todayDate)
+				},
+				{ fetch }
+			);
 		} catch (error: any) {
 			console.log('error:', error);
 			throw Error('Failed to create review:', error);
 		}
-		return deck;
+		return { props: { lesson: { reviewDeck } } };
 	}
-
-	$: !!reviewDeck && isSameDate(getDateDay(reviewDate), todayDate)
-		? reviewDeck
-		: createNextReview();
 
 	async function removeCardFromReview(cardId: string) {
 		try {
@@ -89,8 +90,8 @@
 </svelte:head>
 
 <div class="m-4rounded-lg flex flex-col h-full">
-	<h1 class="text-2xl font-bold">{lesson.title}</h1>
-	<h2 class="text-xl font-bold">level: {lesson.subject.currentLevel}</h2>
+	<h1 class="text-2xl font-bold">{lesson.subject.currentLevel} | {lesson.title}</h1>
+
 	{#if currentCard}
 		<div class="flex justify-center w-full h-full">
 			<FlashCard card={currentCard} {nextCard} {previousCard} {removeCardFromReview} />

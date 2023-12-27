@@ -1,5 +1,6 @@
 <script lang="ts">
-	import SubjectCard from '$lib/components/subject/SubjectCard.svelte';
+	import SubjectCard from '$lib/subject/SubjectCard.svelte';
+
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;

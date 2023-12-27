@@ -1,26 +1,27 @@
 <script lang="ts">
-	import LessonCard from '$lib/components/lesson/LessonCard.svelte';
+	import LessonCard from '$lib/lesson/LessonCard.svelte';
 	import type { PageData } from './$houdini';
 
 	export let data: PageData;
 	$: ({ GetSubject } = data);
-	$: subject = $GetSubject.data.getSubject;
+	$: subject = $GetSubject?.data?.getSubject;
 </script>
 
 <svelte:head>
 	<title>Drill</title>
 </svelte:head>
 
-<div class="m-4 bg-gray-100 rounded-lg">
-	<h1 class="text-2xl font-bold">{subject.name}</h1>
-	<h2 class="text-xl font-bold">level: {subject.currentLevel}</h2>
+{#if subject}
+	<div class="m-4rounded-lg">
+		<h1 class="text-2xl font-bold">{subject.name} {subject.currentLevel}</h1>
 
-	{#each subject.lessons as lesson}
-		<div class="flex flex-col">
-			<LessonCard {lesson} />
-		</div>
-	{/each}
-</div>
+		{#each subject.lessons ?? [] as lesson}
+			<div class="flex flex-col">
+				<LessonCard {lesson} />
+			</div>
+		{/each}
+	</div>
+{/if}
 
 <!-- <div>
 	<LessonCreation />
