@@ -1,11 +1,21 @@
 <script lang="ts">
 	import cn from 'classnames';
-	export let lesson: {
-		id: string;
-		shortDescription: string;
-		title: string;
-		subject: { id: string; name: string; currentLevel: string };
-	};
+	import { fragment, graphql, type Lesson } from '$houdini';
+	export let lesson: Lesson;
+	$: data = fragment(
+		lesson,
+		graphql(`
+			fragment Lesson on Lesson {
+				id
+				title
+				subject {
+					id
+					name
+					currentLevel
+				}
+			}
+		`)
+	);
 </script>
 
 <a href={`${lesson.subject.id}/${lesson.id}`} class="my-2">

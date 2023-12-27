@@ -22,5 +22,8 @@ vite.config.ts.timestamp-*
 
 .vs
 .vscode
+
+.code-workspace
+
 types/
 $houdini

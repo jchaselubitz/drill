@@ -1,23 +1,36 @@
 <script lang="ts">
-	import FeedbackButton from '$lib/components/buttons/FeedbackButton.svelte';
+	import { fragment, graphql } from '$houdini';
+	import FeedbackButton from '$lib/buttons/FeedbackButton.svelte';
 	import { UPDATE_CARD_INTERVAL } from '$lib/graphql/lesson';
 	import { getDateDay, toJsDateType, isSameDate } from '../../utils/helpersDate';
 	import { calculateNextInterval, setNextRepetition } from '../../utils/intervals';
 	import type { UserResponse } from '../../utils/intervals';
+	import type { Card } from '$houdini';
+	import CardBackButton from '$lib/buttons/CardBackButton.svelte';
 
 	let isSide1 = true;
 	export let nextCard = (): void => {};
 	export let previousCard = (): void => {};
 	export let removeCardFromReview = (cardId: string): void => {};
-	export let card: {
-		id: string;
-		side1: string;
-		side2: string;
-		cardStatus: string;
-		nextRepetition: string;
-		interval: number;
-		numRepetitions: number;
-	};
+
+	export let card: Card;
+	$: data = fragment(
+		card,
+		graphql(`
+			fragment Card on Card {
+				id
+				side1
+				side2
+				numRepetitions
+				interval
+				nextRepetition
+				status
+				lesson {
+					id
+				}
+			}
+		`)
+	);
 
 	function toggleSide() {
 		isSide1 = !isSide1;
@@ -60,21 +73,8 @@
 	}
 </script>
 
-<div class="flex border-2 rounded-lg w-full p-2 absolute bottom-0 top-20">
-	<button on:click={previousCard} class="p-2 bg-blue-500 text-white rounded-lg"
-		><svg
-			xmlns="http://www.w3.org/2000/svg"
-			class="h-5 w-5"
-			viewBox="0 0 20 20"
-			fill="currentColor"
-		>
-			<path
-				fill-rule="evenodd"
-				d="M10.707 3.293a1 1 0 010 1.414L6.414 9H16a1 1 0 010 2H6.414l4.293 4.293a1 1 0 01-1.414 1.414l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 0z"
-				clip-rule="evenodd"
-			/>
-		</svg></button
-	>
+<div class="flex border-2 rounded-lg w-full absolute bottom-0 top-20">
+	<CardBackButton {previousCard} />
 
 	<div class="flex flex-col w-full">
 		<div
@@ -84,15 +84,15 @@
 			role="button"
 			tabindex="0"
 		>
-			{#if isSide1}
-				<div class="side1">
-					<p>{card.side1}</p>
-				</div>
-			{:else}
-				<div class="side2">
-					<p>{card.side2}</p>
-				</div>
-			{/if}
+			<div class="mt-20">
+				{#if isSide1}
+					{card.side1}
+				{:else}
+					<div>{card.side1}</div>
+					<hr class="my-20" />
+					<div>{card.side2}</div>
+				{/if}
+			</div>
 		</div>
 		{#if !isSide1}
 			<div class="flex justify-between p-4 gap-10">
