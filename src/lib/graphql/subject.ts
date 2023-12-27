@@ -11,8 +11,8 @@ import { graphql } from '$houdini';
 // `);
 
 export const ADD_SUBJECT = graphql(`
-	mutation AddSubject($name: String!, $currentLevel: String!) {
-		addSubject(input: { name: $name, currentLevel: $currentLevel }) {
+	mutation AddSubject($name: String!, $currentLevel: String!, $userId: ID!) {
+		addSubject(input: { name: $name, currentLevel: $currentLevel, user: { id: $userId } }) {
 			subject {
 				name
 				currentLevel

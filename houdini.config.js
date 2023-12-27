@@ -1,4 +1,5 @@
 import('houdini').ConfigFile;
+// import { rfc3339 } from './src/utils/helpersDate'; // adjust the path to where your rfc3339 function is defined
 
 const config = {
 	watchSchema: {
@@ -6,23 +7,19 @@ const config = {
 	},
 	plugins: {
 		'houdini-svelte': {}
+	},
+	include: ['src/**/*.{svelte,graphql,gql,ts,js}'],
+	scalars: {
+		DateTime: {
+			type: 'Date'
+			// 			unmarshal(val) {
+			// 				return val ? new Date(val) : null;
+			// 			},
+			// 			marshal(date) {
+			// 				return date ? rfc3339(date) : null;
+			// 			}
+		}
 	}
-
-	// scalars: {
-	// 	// the name of the scalar we are configuring
-	// 	DateTime: {
-	// 		// the corresponding typescript type
-	// 		type: 'Date',
-	// 		// turn the api's response into that type
-	// 		unmarshal(val) {
-	// 			return val ? new Date(val) : null;
-	// 		},
-	// 		// turn the value into something the API can use
-	// 		marshal(date) {
-	// 			return date && date.getTime();
-	// 		}
-	// 	}
-	// }
 };
 
 export default config;

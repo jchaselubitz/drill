@@ -125,6 +125,9 @@ input AddSubjectInput {
 
   """"""
   name: String!
+
+  """"""
+  user: UserRef!
 }
 
 """"""
@@ -134,6 +137,39 @@ type AddSubjectPayload {
 
   """"""
   subject(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
+}
+
+""""""
+input AddUserInput {
+  """"""
+  clerkId: String!
+
+  """"""
+  createdAt: DateTime
+
+  """"""
+  emailAddress: String!
+
+  """"""
+  image: String
+
+  """"""
+  name: String
+
+  """"""
+  subjects: [SubjectRef]
+
+  """"""
+  updatedAt: DateTime
+}
+
+""""""
+type AddUserPayload {
+  """"""
+  numUids: Int
+
+  """"""
+  user(filter: UserFilter, first: Int, offset: Int, order: UserOrder): [User]
 }
 
 """"""
@@ -485,6 +521,18 @@ type DeleteSubjectPayload {
 
   """"""
   subject(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
+}
+
+""""""
+type DeleteUserPayload {
+  """"""
+  msg: String
+
+  """"""
+  numUids: Int
+
+  """"""
+  user(filter: UserFilter, first: Int, offset: Int, order: UserOrder): [User]
 }
 
 """"""
@@ -943,6 +991,9 @@ type Mutation {
   addSubject(input: [AddSubjectInput!]!): AddSubjectPayload
 
   """"""
+  addUser(input: [AddUserInput!]!, upsert: Boolean): AddUserPayload
+
+  """"""
   deleteCard(filter: CardFilter!): DeleteCardPayload
 
   """"""
@@ -952,6 +1003,9 @@ type Mutation {
   deleteSubject(filter: SubjectFilter!): DeleteSubjectPayload
 
   """"""
+  deleteUser(filter: UserFilter!): DeleteUserPayload
+
+  """"""
   updateCard(input: UpdateCardInput!): UpdateCardPayload
 
   """"""
@@ -959,6 +1013,9 @@ type Mutation {
 
   """"""
   updateSubject(input: UpdateSubjectInput!): UpdateSubjectPayload
+
+  """"""
+  updateUser(input: UpdateUserInput!): UpdateUserPayload
 }
 
 """"""
@@ -1048,6 +1105,9 @@ type Query {
   aggregateSubject(filter: SubjectFilter): SubjectAggregateResult
 
   """"""
+  aggregateUser(filter: UserFilter): UserAggregateResult
+
+  """"""
   getCard(id: ID!): Card
 
   """"""
@@ -1057,6 +1117,9 @@ type Query {
   getSubject(id: ID!): Subject
 
   """"""
+  getUser(clerkId: String, id: ID): User
+
+  """"""
   queryCard(filter: CardFilter, first: Int, offset: Int, order: CardOrder): [Card]
 
   """"""
@@ -1064,6 +1127,9 @@ type Query {
 
   """"""
   querySubject(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
+
+  """"""
+  queryUser(filter: UserFilter, first: Int, offset: Int, order: UserOrder): [User]
 }
 
 """"""
@@ -1148,6 +1214,9 @@ type Subject {
 
   """"""
   name: String!
+
+  """"""
+  user(filter: UserFilter): User!
 }
 
 """"""
@@ -1196,6 +1265,9 @@ enum SubjectHasFilter {
 
   """"""
   name
+
+  """"""
+  user
 }
 
 """"""
@@ -1229,6 +1301,9 @@ input SubjectPatch {
 
   """"""
   name: String
+
+  """"""
+  user: UserRef
 }
 
 """"""
@@ -1244,6 +1319,9 @@ input SubjectRef {
 
   """"""
   name: String
+
+  """"""
+  user: UserRef
 }
 
 """"""
@@ -1307,6 +1385,228 @@ type UpdateSubjectPayload {
 
   """"""
   subject(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
+}
+
+""""""
+input UpdateUserInput {
+  """"""
+  filter: UserFilter!
+
+  """"""
+  remove: UserPatch
+
+  """"""
+  set: UserPatch
+}
+
+""""""
+type UpdateUserPayload {
+  """"""
+  numUids: Int
+
+  """"""
+  user(filter: UserFilter, first: Int, offset: Int, order: UserOrder): [User]
+}
+
+""""""
+type User {
+  """"""
+  clerkId: String!
+
+  """"""
+  createdAt: DateTime
+
+  """"""
+  emailAddress: String!
+
+  """"""
+  id: ID
+
+  """"""
+  image: String
+
+  """"""
+  name: String
+
+  """"""
+  subjects(filter: SubjectFilter, first: Int, offset: Int, order: SubjectOrder): [Subject]
+
+  """"""
+  subjectsAggregate(filter: SubjectFilter): SubjectAggregateResult
+
+  """"""
+  updatedAt: DateTime
+}
+
+""""""
+type UserAggregateResult {
+  """"""
+  clerkIdMax: String
+
+  """"""
+  clerkIdMin: String
+
+  """"""
+  count: Int
+
+  """"""
+  createdAtMax: DateTime
+
+  """"""
+  createdAtMin: DateTime
+
+  """"""
+  emailAddressMax: String
+
+  """"""
+  emailAddressMin: String
+
+  """"""
+  imageMax: String
+
+  """"""
+  imageMin: String
+
+  """"""
+  nameMax: String
+
+  """"""
+  nameMin: String
+
+  """"""
+  updatedAtMax: DateTime
+
+  """"""
+  updatedAtMin: DateTime
+}
+
+""""""
+input UserFilter {
+  """"""
+  and: [UserFilter]
+
+  """"""
+  clerkId: StringHashFilter
+
+  """"""
+  emailAddress: StringFullTextFilter
+
+  """"""
+  has: [UserHasFilter]
+
+  """"""
+  id: [ID!]
+
+  """"""
+  not: UserFilter
+
+  """"""
+  or: [UserFilter]
+}
+
+""""""
+enum UserHasFilter {
+  """"""
+  clerkId
+
+  """"""
+  createdAt
+
+  """"""
+  emailAddress
+
+  """"""
+  image
+
+  """"""
+  name
+
+  """"""
+  subjects
+
+  """"""
+  updatedAt
+}
+
+""""""
+input UserOrder {
+  """"""
+  asc: UserOrderable
+
+  """"""
+  desc: UserOrderable
+
+  """"""
+  then: UserOrder
+}
+
+""""""
+enum UserOrderable {
+  """"""
+  clerkId
+
+  """"""
+  createdAt
+
+  """"""
+  emailAddress
+
+  """"""
+  image
+
+  """"""
+  name
+
+  """"""
+  updatedAt
+}
+
+""""""
+input UserPatch {
+  """"""
+  createdAt: DateTime
+
+  """"""
+  emailAddress: String
+
+  """"""
+  image: String
+
+  """"""
+  name: String
+
+  """"""
+  subjects: [SubjectRef]
+
+  """"""
+  updatedAt: DateTime
+}
+
+""""""
+input UserRef {
+  """"""
+  clerkId: String
+
+  """"""
+  createdAt: DateTime
+
+  """"""
+  emailAddress: String
+
+  """"""
+  id: ID
+
+  """"""
+  image: String
+
+  """"""
+  name: String
+
+  """"""
+  subjects: [SubjectRef]
+
+  """"""
+  updatedAt: DateTime
 }
 
 """"""

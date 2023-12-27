@@ -34,9 +34,77 @@ type Lesson {
 	reviewDate: DateTime
 }
 
-type Subject {
+type Subject @auth (
+	add: { rule: """
+				query($sub: StringHashFilter!) { 
+							querySubject {
+			
+									user(filter: { clerkId: $sub }) { clerkId }
+				
+					}
+			}"""
+		}
+update:{rule: """
+						query($sub: StringHashFilter!)  { 
+							querySubject {
+										
+
+																user(filter: { clerkId: $sub }) { clerkId }
+						
+									}
+						}"""
+			}	
+	delete:{rule: """
+						query($sub: StringHashFilter!)  { 
+							querySubject {
+									
+																user(filter: { clerkId: $sub }) { clerkId }
+											}
+							
+						}"""
+			}
+) 
+{
 	id: ID!
 	name: String!
 	currentLevel: String!
 	lessons: [Lesson]
+	user: User! @hasInverse(field: "subjects")
 }
+
+type User @auth (
+    # query: {
+    #   or: [
+    #     {
+    #       rule: """
+    #       query ($sub: StringHashFilter!) {queryUser(filter: { clerkId:  $sub } ) {clerkId}}
+    #       """
+    #     }
+				# 	{ rule: "{$nextAuth: { eq: true } }" }
+    #   ]
+    # }
+    # delete: { rule: "{$nextAuth: { eq: true } }" }
+    # add: { rule: "{$nextAuth: { eq: true } }" }
+    # update: {
+    #   or: [
+    #     {
+    #       rule: """
+    #       query ($sub: StringHashFilter!) {queryUser(filter: { clerkId:  $sub } ) {clerkId}}
+    #       """
+    #     }
+   	# 		 { rule: "{$admin: { eq: true } }" }
+    #   ]
+    # }
+  ) 
+  {
+  id: ID
+		clerkId: String! @id
+		name: String
+		emailAddress: String! @search(by:[fulltext])
+		image: String
+		subjects: [Subject] @hasInverse(field:user) 
+		createdAt: DateTime
+		updatedAt: DateTime
+}
+
+# Dgraph.Authorization {"VerificationKey":"","Header":"Db-Auth-Token","jwkurl":"https://wealthy-gnat-95.clerk.accounts.dev/.well-known/jwks.json","Namespace":"https://drill.cooperativ.io/jwt/claims","Algo":"","Audience":["drill"]}

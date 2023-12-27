@@ -60,29 +60,29 @@ export const UPDATE_CARD_INTERVAL = graphql`
 	}
 `;
 
-export const CREATE_REVIEW = graphql`
-	mutation CreateReview1($lessonId: [ID!], $reviewDeck: [CardRef], $reviewDate: DateTime!) {
-		updateLesson(
-			input: {
-				filter: { id: $lessonId }
-				set: { reviewDeck: $reviewDeck, reviewDate: $reviewDate }
-			}
-		) {
-			lesson {
-				id
-				reviewDeck {
-					nextRepetition
-					side1
-					side2
-					interval
-					numRepetitions
-					id
-				}
-				reviewDate
-			}
-		}
-	}
-`;
+// export const CREATE_REVIEW = graphql`
+// 	mutation CreateReview1($lessonId: [ID!], $reviewDeck: [CardRef], $reviewDate: DateTime!) {
+// 		updateLesson(
+// 			input: {
+// 				filter: { id: $lessonId }
+// 				set: { reviewDeck: $reviewDeck, reviewDate: $reviewDate }
+// 			}
+// 		) {
+// 			lesson {
+// 				id
+// 				reviewDeck {
+// 					nextRepetition
+// 					side1
+// 					side2
+// 					interval
+// 					numRepetitions
+// 					id
+// 				}
+// 				reviewDate
+// 			}
+// 		}
+// 	}
+// `;
 
 export const REMOVE_CARD_FROM_REVIEW = graphql`
 	mutation RemoveCardFromReview($cardId: ID!, $lessonId: [ID!]) {
