@@ -4,7 +4,7 @@
 	import type { PageData } from './$types';
 	export let data: PageData;
 
-	$: ({ supabase, session } = data);
+	$: ({ supabase, session, url } = data);
 </script>
 
 <svelte:head>
@@ -16,7 +16,7 @@
 		<Auth
 			supabaseClient={supabase}
 			view="magic_link"
-			redirectTo={`${data.url}/auth/callback`}
+			redirectTo={`${url}/auth/callback`}
 			showLinks={false}
 			appearance={{ theme: ThemeSupa, style: { input: 'color: #000' } }}
 		/>
