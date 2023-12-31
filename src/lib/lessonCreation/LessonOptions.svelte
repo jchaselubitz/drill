@@ -5,7 +5,6 @@
 		cardGenerationSystemInstructions,
 		requestCardSuggestions
 	} from '../../utils/promptGenerators';
-	import { ADD_DECK, ADD_LESSON } from '$lib/graphql/lesson';
 
 	const OpenAiUrl = 'https://api.openai.com/v1/chat/completions';
 	const OpenAiKey = import.meta.env.VITE_OPENAI_API_KEY;
@@ -13,7 +12,7 @@
 	const USERLANGUAGE = 'English';
 	let subjectLanguage = 'German';
 
-	export let subjectId: string;
+	export let createSubjectLessonCards: (lessonTitle: string, cards: Card[]) => void;
 
 	type Option = { title: string; description: string };
 	type Card = { side1: string; side2: string; lesson: string };
@@ -21,31 +20,11 @@
 	let selectedLessons: Option[] = [];
 
 	let cardObjects = [] as Card[];
-	$: lessonId = '';
 
 	function setResponse(response: string) {
 		cardObjects = response && JSON.parse(`[${response}]`).flat();
-		console.log(cardObjects);
 		return cardObjects;
 	}
-
-	const saveLesson = async (title: string, description: string, subjectId: string) => {
-		try {
-			const response = await ADD_LESSON.mutate({ title, description, subjectId });
-			lessonId = response.data.addLesson.lesson[0]?.id;
-		} catch (error) {
-			console.error(error);
-		}
-	};
-
-	const saveDeck = async (cards: Card[]) => {
-		cards.map((object) => {
-			object.lesson = { id: lessonId };
-		});
-		console.log(cards);
-		const test = await ADD_DECK.mutate({ cards });
-		console.log(test);
-	};
 
 	const handleGenerate = async (option) => {
 		const payload = {
@@ -55,8 +34,8 @@
 					role: 'system',
 					content: cardGenerationSystemInstructions({
 						concept: option.title,
-						keyName: 'side1',
-						valueName: 'side2'
+						keyName: 'side_1',
+						valueName: 'side_2'
 					})
 				},
 				{
@@ -82,18 +61,17 @@
 
 		const assistantMessage = response.data.choices[0].message.content;
 		const objects = setResponse(assistantMessage);
-		saveDeck(objects);
+
+		createSubjectLessonCards(option.title, objects);
 	};
 
 	const handleSelected = (option: Option) => {
-		console.log(option);
 		if (selectedLessons.includes(option)) {
 			selectedLessons = selectedLessons.filter((lesson) => lesson !== option);
 		} else {
 			selectedLessons = [...selectedLessons, option];
 		}
 
-		saveLesson(option.title, option.description, subjectId);
 		handleGenerate(option);
 	};
 

@@ -1,75 +1,39 @@
 <script lang="ts">
 	import FlashCard from '$lib/decks/FlashCard.svelte';
-	import { getDateDay, isSameDate, toDbDate, toJsDateType } from '../../../utils/helpersDate';
-	import { createReviewDeck } from '../../../utils/intervals';
-	import type { PageData } from './$houdini';
-	import { REMOVE_CARD_FROM_REVIEW } from '$lib/graphql/lesson';
-	import { graphql } from '$houdini';
 
+	import type { PageData } from './$types';
 	export let data: PageData;
-	$: ({ GetLesson } = data);
-	$: lesson = $GetLesson.data.getLesson;
-	$: cards = lesson.cards;
-	$: reviewDeck = lesson.reviewDeck;
-	$: console.log('reviewDeck:', reviewDeck);
-	$: reviewDate = toJsDateType(lesson.reviewDate);
-
-	const CREATE_REVIEW = graphql`
-		mutation CreateReview($lessonId: [ID!], $reviewDeck: [CardRef], $reviewDate: DateTime!) {
-			updateLesson(
-				input: {
-					filter: { id: $lessonId }
-					set: { reviewDeck: $reviewDeck, reviewDate: $reviewDate }
-				}
-			) {
-				lesson {
-					id
-					reviewDeck {
-						nextRepetition
-						side1
-						side2
-						interval
-						numRepetitions
-						id
-					}
-					reviewDate
-				}
-			}
-		}
-	`;
-
-	export async function load({ fetch }) {
-		const todayDate = getDateDay(new Date());
-		if (!!reviewDeck && isSameDate(getDateDay(reviewDate), todayDate)) {
-			return { props: { lesson: { reviewDeck } } };
-		}
-		const deck = createReviewDeck({ reviewDeck, cards, max_new_cards: 5, max_cards: 40 });
-		const cardRefs = deck.map((card) => ({ id: card.id }));
-		try {
-			await CREATE_REVIEW.mutate(
-				{
-					id: lesson.id,
-					reviewDeck: cardRefs,
-					reviewDate: toDbDate(todayDate)
-				},
-				{ fetch }
-			);
-		} catch (error: any) {
-			console.log('error:', error);
-			throw Error('Failed to create review:', error);
-		}
-		return { props: { lesson: { reviewDeck } } };
-	}
+	$: ({ supabase, lesson, reviewDeck } = data);
+	$: currentCard = reviewDeck[currentCardIndex];
 
 	async function removeCardFromReview(cardId: string) {
-		try {
-			await REMOVE_CARD_FROM_REVIEW.mutate({
-				lessonId: lesson.id,
-				cardId
-			});
-		} catch (error: any) {
-			console.log('error:', error);
-			throw Error('Failed to remove card from review:', error);
+		const cardRefs = reviewDeck.map((card) => card.id);
+		const newCardList = cardRefs.filter((id) => id !== cardId);
+		const { data, error } = await supabase
+			.from('lessons')
+			.update({ review_deck: newCardList })
+			.eq('id', lesson.id);
+		if (error) {
+			throw Error(`${'Failed to remove card from review:'} ${error.message}`);
+		}
+		reviewDeck = reviewDeck.filter((card) => card.id !== cardId);
+	}
+
+	async function updateCardStatusInDatabase(
+		numRepetitions: number,
+		interval_minutes: number,
+		nextRepetition: string
+	) {
+		const { data, error } = await supabase
+			.from('cards')
+			.update({
+				num_repetitions: numRepetitions,
+				interval_min: interval_minutes,
+				next_repetition: nextRepetition
+			})
+			.eq('id', currentCard.id);
+		if (error) {
+			throw Error(`${'Failed to update card status:'} ${error.message}`);
 		}
 	}
 
@@ -81,8 +45,6 @@
 	function previousCard() {
 		currentCardIndex = (currentCardIndex - 1 + reviewDeck.length) % reviewDeck.length;
 	}
-
-	$: currentCard = reviewDeck[currentCardIndex];
 </script>
 
 <svelte:head>
@@ -90,11 +52,18 @@
 </svelte:head>
 
 <div class="m-4rounded-lg flex flex-col h-full">
-	<h1 class="text-2xl font-bold">{lesson.subject.currentLevel} | {lesson.title}</h1>
+	<h1 class="text-2xl font-bold">{lesson.title}</h1>
 
 	{#if currentCard}
 		<div class="flex justify-center w-full h-full">
-			<FlashCard card={currentCard} {nextCard} {previousCard} {removeCardFromReview} />
+			<FlashCard
+				card={currentCard}
+				cardsRemaining={reviewDeck.length}
+				{nextCard}
+				{previousCard}
+				{removeCardFromReview}
+				{updateCardStatusInDatabase}
+			/>
 		</div>
 	{:else}
 		<div class="flex justify-center w-full h-full">

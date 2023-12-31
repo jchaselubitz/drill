@@ -1,19 +1,19 @@
 <script lang="ts">
 	import axios from 'axios';
-	import { ADD_SUBJECT } from '../graphql/subject';
-
+	import type { Card } from '$types';
 	import {
 		lessonGenerationSystemInstructions,
 		requestLessonSuggestions
 	} from '../../utils/promptGenerators';
 
 	import LessonOptions from './LessonOptions.svelte';
-	import { graphql } from '$houdini';
 
 	const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 	const OPENAI_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 	export let level: string;
 	export let language: string;
+
+	export let createSubjectLessonCards: (lessonTitle: string, cards: Card[]) => void;
 
 	const AITESTSTRING = `[
 	  {
@@ -58,14 +58,13 @@
 		optionListObject = aiResponse && JSON.parse(`[${aiResponse}]`).flat();
 	}
 
-	const saveSubjectAndLevel = async () => {
-		try {
-			const response = await ADD_SUBJECT.mutate({ name: language, currentLevel: level });
-			subjectId = response.data.addSubject.subject[0]?.id;
-		} catch (error) {
-			console.error(error);
-		}
-	};
+	// const saveSubjectAndLevel = async () => {
+	// 	try {
+	// 		await supabase.from('subject').insert([{ name: language, currentLevel: level }]);
+	// 	} catch (error) {
+	// 		console.error(error);
+	// 	}
+	// };
 
 	// const handleGenerate = async () => {
 	// 	console.log(prompt);
@@ -94,55 +93,9 @@
 	// 		console.log('error', response.status + ' ' + response.statusText);
 	// 	}
 	// };
-
-	const handleGenerate = async () => {
-		saveSubjectAndLevel();
-		// try {
-		// 	const response = await axios.post(
-		// 		OPENAI_URL,
-		// 		{
-		// 			model: 'gpt-3.5-turbo',
-		// 			messages: [
-		// 				{
-		// 					role: 'system',
-		// 					content: lessonGenerationSystemInstructions
-		// 				},
-		// 				{ role: 'user', content: prompt }
-		// 			],
-		// 			presence_penalty: 0,
-		// 			frequency_penalty: 0,
-		// 			temperature: 0.5,
-		// 			max_tokens: 1000
-		// 		},
-		// 		{
-		// 			headers: {
-		// 				'Content-Type': 'application/json',
-		// 				Authorization: `Bearer ${OPENAI_KEY}`
-		// 			}
-		// 		}
-		// 	);
-		// 	const assistantMessage = response.data.choices[0].message.content;
-		// 	console.log(assistantMessage);
-		// 	setResponse(assistantMessage);
-		// 	return {
-		// 		status: 200,
-		// 		body: {
-		// 			message: assistantMessage
-		// 		}
-		// 	};
-		// } catch (error) {
-		// 	console.error('OpenAI API Error:', error.response?.data, error.response?.message);
-		// 	return {
-		// 		status: 500,
-		// 		body: {
-		// 			message: 'I am having trouble connecting to my server. Try sending me another message.'
-		// 		}
-		// 	};
-		// }
-	};
 </script>
 
 <button class="bg-blue-600 rounded-lg text-white p-2" on:click={handleGenerate}>Generate</button>
-{#if optionListObject && subjectId !== ''}
-	<LessonOptions options={optionListObject} {subjectId} />
+{#if optionListObject}
+	<LessonOptions options={optionListObject} {createSubjectLessonCards} />
 {/if}

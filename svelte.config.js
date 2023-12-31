@@ -16,10 +16,10 @@ const config = {
 		// },
 		// resolve: {
 		alias: {
-			$houdini: './$houdini',
 			$lib: './src/lib',
 			'$lib/*': './src/lib/*',
-			'$src/*': './src/*'
+			'$src/*': './src/*',
+			'$types/*': './src/types/*'
 		}
 		// }
 		// }

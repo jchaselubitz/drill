@@ -1,36 +1,23 @@
 <script lang="ts">
-	import { fragment, graphql } from '$houdini';
 	import FeedbackButton from '$lib/buttons/FeedbackButton.svelte';
-	import { UPDATE_CARD_INTERVAL } from '$lib/graphql/lesson';
 	import { getDateDay, toJsDateType, isSameDate } from '../../utils/helpersDate';
 	import { calculateNextInterval, setNextRepetition } from '../../utils/intervals';
 	import type { UserResponse } from '../../utils/intervals';
-	import type { Card } from '$houdini';
+
 	import CardBackButton from '$lib/buttons/CardBackButton.svelte';
 
 	let isSide1 = true;
+	export let cardsRemaining: number;
 	export let nextCard = (): void => {};
 	export let previousCard = (): void => {};
 	export let removeCardFromReview = (cardId: string): void => {};
+	export let updateCardStatusInDatabase = (
+		numRepetitions: number,
+		interval_minutes: number,
+		nextRepetition: string
+	): void => {};
 
 	export let card: Card;
-	$: data = fragment(
-		card,
-		graphql(`
-			fragment Card on Card {
-				id
-				side1
-				side2
-				numRepetitions
-				interval
-				nextRepetition
-				status
-				lesson {
-					id
-				}
-			}
-		`)
-	);
 
 	function toggleSide() {
 		isSide1 = !isSide1;
@@ -38,36 +25,16 @@
 
 	// remove card from review if it doesn't show again
 
-	async function updateCardStatusInDatabase(
-		numRepetitions: number,
-		interval: number,
-		nextRepetition: string
-	) {
-		try {
-			const response = await UPDATE_CARD_INTERVAL.mutate({
-				cardId: card.id,
-				numRepetitions: numRepetitions,
-				interval: interval,
-				nextRepetition: nextRepetition
-			});
-			console.log('response:', response);
-		} catch (error: any) {
-			console.log('error:', error);
-			throw Error('Failed to update card status:', error);
-		}
-	}
-
 	function updateCard(response: UserResponse) {
 		const now = new Date();
 		const nowDay = getDateDay(now);
-		const currentRepDate = toJsDateType(card.nextRepetition);
-		const newInterval = calculateNextInterval(card.interval, card.numRepetitions, response);
-		const nextRepetition = setNextRepetition(newInterval, currentRepDate);
-		const repeatsToday = isSameDate(getDateDay(new Date(nextRepetition)), nowDay);
+		const newInterval = calculateNextInterval(card.interval_min, card.num_repetitions, response);
+		const nextRepetition = setNextRepetition(newInterval);
+		const repeatsToday = isSameDate(new Date(nextRepetition), now);
 		if (!repeatsToday) {
 			removeCardFromReview(card.id);
 		}
-		updateCardStatusInDatabase(card.numRepetitions + 1, newInterval, nextRepetition);
+		updateCardStatusInDatabase(card.num_repetitions + 1, newInterval, nextRepetition);
 		nextCard();
 		isSide1 = true;
 	}
@@ -86,11 +53,11 @@
 		>
 			<div class="mt-20">
 				{#if isSide1}
-					{card.side1}
+					{card.side_1}
 				{:else}
-					<div>{card.side1}</div>
+					<div>{card.side_1}</div>
 					<hr class="my-20" />
-					<div>{card.side2}</div>
+					<div>{card.side_2}</div>
 				{/if}
 			</div>
 		</div>
@@ -100,6 +67,10 @@
 				<FeedbackButton updateCard={() => updateCard('HARD')} buttonColor="yellow" text="Hard" />
 				<FeedbackButton updateCard={() => updateCard('GOOD')} buttonColor="green" text="Good" />
 				<FeedbackButton updateCard={() => updateCard('EASY')} buttonColor="blue" text="Easy" />
+			</div>
+		{:else}
+			<div class="text-center mt-4">
+				<p class="text-gray-500">Cards Remaining: {cardsRemaining}</p>
 			</div>
 		{/if}
 	</div>

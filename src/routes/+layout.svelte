@@ -1,16 +1,49 @@
-<script>
+<script lang="ts">
 	import '../app.css';
-	import UserButton from 'clerk-sveltekit/client/UserButton.svelte';
-	import SignedIn from 'clerk-sveltekit/client/SignedIn.svelte';
-	import SignedOut from 'clerk-sveltekit/client/SignedOut.svelte';
+	import { invalidate } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import NavBar from '$lib/navbar/index.svelte';
+	import type { PageData } from './$types';
+	import type { SubmitFunction } from '@sveltejs/kit';
+
+	export let data: PageData;
+
+	let { supabase, session } = data;
+	$: ({ supabase, session } = data);
+
+	onMount(() => {
+		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
+			if (_session?.expires_at !== session?.expires_at) {
+				invalidate('supabase:auth');
+			}
+		});
+
+		async function getUser() {
+			const { error } = await supabase.auth.getUser(session?.access_token);
+			if (error) {
+				console.error('Error: ', error.message);
+				supabase.auth.signOut();
+			}
+		}
+		getUser();
+
+		return () => data.subscription.unsubscribe();
+	});
+
+	const submitLogout: SubmitFunction = async ({ cancel }) => {
+		const { error } = await supabase.auth.signOut();
+		if (error) {
+			console.error(error);
+		}
+		cancel();
+	};
 </script>
 
-<SignedIn>
-	<UserButton afterSignOutUrl="/" />
-</SignedIn>
-<SignedOut>
-	<a href="/sign-in">Sign in</a> <span>|</span> <a href="/sign-up">Sign up</a>
-	<!-- You could also use <SignInButton mode="modal" /> and <SignUpButton mode="modal" /> here -->
-</SignedOut>
+<svelte:head>
+	<title>Drill</title>
+</svelte:head>
 
-<slot />
+<div>
+	<NavBar {session} {submitLogout} />
+	<slot />
+</div>
