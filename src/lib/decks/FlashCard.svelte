@@ -1,6 +1,6 @@
 <script lang="ts">
 	import FeedbackButton from '$lib/buttons/FeedbackButton.svelte';
-	import { getDateDay, toJsDateType, isSameDate } from '../../utils/helpersDate';
+	import { getDateDay, isSameDate } from '../../utils/helpersDate';
 	import { calculateNextInterval, setNextRepetition } from '../../utils/intervals';
 	import type { UserResponse } from '../../utils/intervals';
 
