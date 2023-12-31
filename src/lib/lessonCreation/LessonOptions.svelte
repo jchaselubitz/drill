@@ -6,13 +6,17 @@
 		requestCardSuggestions
 	} from '../../utils/promptGenerators';
 
-	const OpenAiUrl = 'https://api.openai.com/v1/chat/completions';
+	const OpenAiUrl = import.meta.env.VITE_OPENAI_CHAT_URL;
 	const OpenAiKey = import.meta.env.VITE_OPENAI_API_KEY;
 
 	const USERLANGUAGE = 'English';
 	let subjectLanguage = 'German';
 
-	export let createSubjectLessonCards: (lessonTitle: string, cards: Card[]) => void;
+	export let createSubjectLessonCards: (
+		lessonTitle: string,
+		lessonDescription: string,
+		cards: Card[]
+	) => void;
 
 	type Option = { title: string; description: string };
 	type Card = { side1: string; side2: string; lesson: string };
@@ -62,7 +66,7 @@
 		const assistantMessage = response.data.choices[0].message.content;
 		const objects = setResponse(assistantMessage);
 
-		createSubjectLessonCards(option.title, objects);
+		createSubjectLessonCards(option.title, option.description, objects);
 	};
 
 	const handleSelected = (option: Option) => {

@@ -102,12 +102,17 @@
 		// }
 	};
 
-	const createSubjectLessonCards = async (lessonTitle: string, cards: any) => {
+	const createSubjectLessonCards = async (
+		lessonTitle: string,
+		lessonDescription: string,
+		cards: any
+	) => {
 		const { data, error } = await supabase.rpc('create_subject_lesson_cards', {
 			_user_id: user?.id,
 			_subject_name: language,
 			_current_level: level,
 			_lesson_title: lessonTitle,
+			_lesson_description: lessonDescription,
 			_cards: cards
 		});
 		if (error) {
