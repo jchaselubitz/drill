@@ -6,6 +6,8 @@
 	$: ({ supabase, lesson, reviewDeck } = data);
 	$: currentCard = reviewDeck[currentCardIndex];
 
+	$: console.log('lesson', lesson);
+
 	async function removeCardFromReview(cardId: string) {
 		const cardRefs = reviewDeck.map((card) => card.id);
 		const newCardList = cardRefs.filter((id) => id !== cardId);

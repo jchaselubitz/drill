@@ -7,8 +7,8 @@ export const requestLessonSuggestions = ({
 	language,
 	level
 }: {
-	language: string;
-	level: string;
+	language: string | FormDataEntryValue | null;
+	level: string | FormDataEntryValue | null;
 }) => {
 	return `I am studying ${language}, and my current skill level is: ${level}. What are the top seven grammatical concepts you think I should drill? `;
 };

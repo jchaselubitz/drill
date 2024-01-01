@@ -1,106 +1,61 @@
 <script lang="ts">
 	import LessonOptions from '$lib/lessonCreation/LessonOptions.svelte';
+	import axios from 'axios';
+	import { enhance } from '$app/forms';
 
 	// import LessonSuggestions from '$lib/lessonCreation/LessonSuggestions.svelte';
 	import SubjectLevelSelector from '$lib/lessonCreation/SubjectLevelSelector.svelte';
-	import { requestLessonSuggestions } from '$src/utils/promptGenerators';
-	import type { PageData } from './$types';
-
-	const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
-	const OPENAI_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+	import {
+		lessonGenerationSystemInstructions,
+		requestLessonSuggestions
+	} from '$src/utils/promptGenerators';
+	import type { ActionData, PageData } from './$types';
 
 	export let data: PageData;
+	export let generation: ActionData;
 	$: ({ supabase, session } = data);
 	$: user = session?.user;
 
 	let level = '';
 	let language = '';
+	let isLoading = false;
 
-	const AITESTSTRING = `[
-	  {
-	    "title": "Noun Gender",
-	    "description": "Learn the gender (masculine, feminine, or neuter) of German nouns."
-	  },
-	  {
-	    "title": "Verb Conjugation",
-	    "description": "Practice conjugating regular and irregular verbs in different tenses."
-	  },
-	  {
-	    "title": "Cases (Nominative, Accusative, Dative, Genitive)",
-	    "description": "Understand how to use different cases for nouns, pronouns, and articles."
-	  },
-	  {
-	    "title": "Word Order",
-	    "description": "Master the correct word order in German sentences, including main and subordinate clauses."
-	  },
-	  {
-	    "title": "Modal Verbs",
-	    "description": "Learn how to use modal verbs like können, müssen, wollen, etc. in different contexts."
-	  },
-	  {
-	    "title": "Relative Clauses",
-	    "description": "Practice constructing and using relative clauses to provide additional information."
-	  },
-	  {
-	    "title": "Prepositions",
-	    "description": "Familiarize yourself with common prepositions and their usage in different contexts."
-	  }
-	]`;
+	// const AITESTSTRING = `[
+	//   {
+	//     "title": "Noun Gender",
+	//     "description": "Learn the gender (masculine, feminine, or neuter) of German nouns."
+	//   },
+	//   {
+	//     "title": "Verb Conjugation",
+	//     "description": "Practice conjugating regular and irregular verbs in different tenses."
+	//   },
+	//   {
+	//     "title": "Cases (Nominative, Accusative, Dative, Genitive)",
+	//     "description": "Understand how to use different cases for nouns, pronouns, and articles."
+	//   },
+	//   {
+	//     "title": "Word Order",
+	//     "description": "Master the correct word order in German sentences, including main and subordinate clauses."
+	//   },
+	//   {
+	//     "title": "Modal Verbs",
+	//     "description": "Learn how to use modal verbs like können, müssen, wollen, etc. in different contexts."
+	//   },
+	//   {
+	//     "title": "Relative Clauses",
+	//     "description": "Practice constructing and using relative clauses to provide additional information."
+	//   },
+	//   {
+	//     "title": "Prepositions",
+	//     "description": "Familiarize yourself with common prepositions and their usage in different contexts."
+	//   }
+	// ]`;
 
-	$: prompt = requestLessonSuggestions({ level, language });
-	$: aiResponse = '';
-	let optionListObject = JSON.parse(`[${AITESTSTRING}]`).flat();
+	$: aiResponse = null;
+	$: optionListObject = aiResponse ? JSON.parse(`[${aiResponse}]`).flat() : null;
+	$: console.log({ generation, aiResponse, optionListObject, isLoading });
+	// $: optionListObject = JSON.parse(`[${AITESTSTRING}]`).flat();
 	// let optionListObject = [] as { title: string; description: string }[];
-
-	function setResponse(response: string) {
-		aiResponse = response;
-		optionListObject = aiResponse && JSON.parse(`[${aiResponse}]`).flat();
-	}
-
-	const handleGenerate = async () => {
-		// try {
-		// 	const response = await axios.post(
-		// 		OPENAI_URL,
-		// 		{
-		// 			model: 'gpt-3.5-turbo',
-		// 			messages: [
-		// 				{
-		// 					role: 'system',
-		// 					content: lessonGenerationSystemInstructions
-		// 				},
-		// 				{ role: 'user', content: prompt }
-		// 			],
-		// 			presence_penalty: 0,
-		// 			frequency_penalty: 0,
-		// 			temperature: 0.5,
-		// 			max_tokens: 1000
-		// 		},
-		// 		{
-		// 			headers: {
-		// 				'Content-Type': 'application/json',
-		// 				Authorization: `Bearer ${OPENAI_KEY}`
-		// 			}
-		// 		}
-		// 	);
-		// 	const assistantMessage = response.data.choices[0].message.content;
-		// 	console.log(assistantMessage);
-		// 	setResponse(assistantMessage);
-		// 	return {
-		// 		status: 200,
-		// 		body: {
-		// 			message: assistantMessage
-		// 		}
-		// 	};
-		// } catch (error) {
-		// 	console.error('OpenAI API Error:', error.response?.data, error.response?.message);
-		// 	return {
-		// 		status: 500,
-		// 		body: {
-		// 			message: 'I am having trouble connecting to my server. Try sending me another message.'
-		// 		}
-		// 	};
-		// }
-	};
 
 	const createSubjectLessonCards = async (
 		lessonTitle: string,
@@ -145,8 +100,22 @@
 	<SubjectLevelSelector bind:language bind:level />
 
 	{#if level && language}
-		<button class="bg-blue-600 rounded-lg text-white p-2" on:click={handleGenerate}>Generate</button
+		<form
+			method="POST"
+			action="?/genLessons"
+			use:enhance={() => {
+				isLoading = true;
+				return async ({ result, update }) => {
+					isLoading = false;
+					aiResponse = result.data.result;
+				};
+			}}
 		>
+			<button class="bg-blue-600 rounded-lg text-white p-2" type="submit"
+				>{isLoading ? 'Loading...' : 'Generate'}</button
+			>
+		</form>
+
 		{#if optionListObject}
 			<LessonOptions options={optionListObject} {createSubjectLessonCards} />
 		{/if}
