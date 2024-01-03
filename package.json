@@ -27,6 +27,10 @@
 		"old-stop": "docker-compose stop"
 	},
 	"dependencies": {
+		"@fortawesome/fontawesome-svg-core": "^6.5.1",
+		"@fortawesome/free-brands-svg-icons": "^6.5.1",
+		"@fortawesome/free-regular-svg-icons": "^6.5.1",
+		"@fortawesome/free-solid-svg-icons": "^6.5.1",
 		"@supabase/auth-helpers-sveltekit": "^0.10.7",
 		"@supabase/auth-ui-shared": "^0.1.8",
 		"@supabase/auth-ui-svelte": "^0.2.8",
@@ -36,6 +40,7 @@
 		"classnames": "^2.3.2",
 		"path": "^0.12.7",
 		"postcss-load-config": "^4.0.1",
+		"svelte-awesome": "^3.3.0",
 		"svelte-markdown": "^0.4.0"
 	},
 	"devDependencies": {

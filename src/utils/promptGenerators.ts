@@ -20,18 +20,18 @@ export const cardGenerationSystemInstructions = ({
 	keyName,
 	valueName
 }: {
-	concept: string;
-	keyName: string;
-	valueName: string;
+	concept: string | FormDataEntryValue | null;
+	keyName: string | FormDataEntryValue | null;
+	valueName: string | FormDataEntryValue | null;
 }) =>
-	`You will be provided with a request for a list of ${concept} examples. Return a JSON that is a list of objects, each including ${keyName} and ${valueName}. Your response will be parsed as follows: JSON.parse([<your-response>]).flat()`;
+	`You will be provided with a request for a list of ${concept} examples. Return a JSON that is a list of objects, each including key:${keyName} and value:${valueName}. Your response will be parsed as follows: JSON.parse([<your-response>]).flat()`;
 
 export const requestCardSuggestions = ({
 	concept,
 	subject
 }: {
-	concept: string;
-	subject: string;
+	concept: string | FormDataEntryValue | null;
+	subject: string | FormDataEntryValue | null;
 }) => {
 	return `Please generate twenty sentences that demonstrate the concept of ${concept} in ${subject}. `;
 };

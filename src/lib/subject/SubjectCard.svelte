@@ -6,6 +6,7 @@
 		current_level: string;
 		lessons: { id: string; name: string; description: string }[];
 	};
+	$: console.log(subject);
 </script>
 
 <a href={`${subject.id}`}>
