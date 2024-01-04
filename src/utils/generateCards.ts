@@ -5,18 +5,24 @@ export type AiMessage = {
 	role: string;
 	content: string;
 };
+
 export enum OpenAiModel {
 	'gpt3' = 'gpt-3.5-turbo',
 	'gpt4' = 'gpt-4-1106-preview'
 }
 
+export const getModelSelection = (localStorage) => {
+	const selection = localStorage.getItem('OpenAIModel') ?? 'gpt3';
+	return selection === 'gpt4' ? OpenAiModel.gpt4 : OpenAiModel.gpt3;
+};
+
 const OpenAiUrl = import.meta.env.VITE_OPENAI_CHAT_URL;
-const OpenAiKey = import.meta.env.VITE_OPENAI_API_KEY;
-const ModelSelection = 'gpt3';
+// const OpenAiKey = localStorage.getItem('OpenAIKey') ?? '';
+// const ModelSelection = localStorage.getItem('OpenAIModel') ?? 'gpt3';
 
 export const generateCards = async (messages: AiMessage) => {
 	const payload = {
-		model: ModelSelection ?? 'gpt-3.5-turbo',
+		model: getModelSelection,
 		messages: messages,
 		presence_penalty: 0,
 		frequency_penalty: 0,

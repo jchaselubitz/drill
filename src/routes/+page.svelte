@@ -19,14 +19,13 @@
 				<SubjectCard {subject} />
 			{/each}
 		</div>
-	{:else}
-		<div class="flex justify-center">
-			<LinkButton
-				classes="flex max-w-max p-3 bg-blue-700 text-white rounded-md hover:bg-blue-800"
-				href="./create-lesson">Create a lesson</LinkButton
-			>
-		</div>
 	{/if}
+	<div class="flex justify-center">
+		<LinkButton
+			classes="flex max-w-max p-3 bg-blue-700 text-white rounded-md hover:bg-blue-800"
+			href="./create-lesson">Create a lesson</LinkButton
+		>
+	</div>
 </div>
 
 <style lang="postcss">

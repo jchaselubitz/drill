@@ -3,6 +3,19 @@
 	import Select from '$lib/inputs/Select.svelte';
 	import Input from '$lib/inputs/Input.svelte';
 	import { enhance } from '$app/forms';
+	import { getModelSelection } from '$src/utils/generateCards';
+	import { onMount } from 'svelte';
+
+	$: openApiKey = '';
+	$: modelSelection = '';
+
+	onMount(() => {
+		openApiKey = localStorage.getItem('OpenAIKey') ?? '';
+		if (!openApiKey) {
+			alert('Please add your OpenAI API key in the settings page');
+		}
+		modelSelection = getModelSelection(localStorage);
+	});
 
 	let level = '';
 	let language = '';
@@ -61,6 +74,8 @@
 			};
 		}}
 	>
+		<input type="hidden" name="openApiKey" value={openApiKey} />
+		<input type="hidden" name="modelSelection" value={modelSelection} />
 		<Select
 			className="mb-3"
 			label="Language"

@@ -9,7 +9,6 @@ import { redirect } from '@sveltejs/kit';
 import axios from 'axios';
 
 const OPENAI_URL = import.meta.env.VITE_OPENAI_CHAT_URL;
-const OPENAI_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
 export const load = async ({ locals }) => {
 	const session = await locals.getSession();
@@ -67,6 +66,7 @@ export const actions = {
 		const level = data.get('level');
 		const language = data.get('language');
 		const modelSelection = data.get('modelSelection');
+		const openApiKey = data.get('openApiKey');
 		const session = await locals.getSession();
 		if (!session) {
 			throw redirect(301, 'auth/sign-in');
@@ -90,7 +90,7 @@ export const actions = {
 			const response = await axios.post(OPENAI_URL, payload, {
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${OPENAI_KEY}`
+					Authorization: `Bearer ${openApiKey}`
 				}
 			});
 			const assistantMessage = response.data.choices[0].message.content;
@@ -103,6 +103,7 @@ export const actions = {
 	genCards: async ({ request, locals }) => {
 		const data = await request.formData();
 		const modelSelection = data.get('modelSelection');
+		const openApiKey = data.get('openApiKey');
 		const lessonTitle = data.get('lessonTitle');
 		const lessonDescription = data.get('lessonDescription');
 		const currentLevel = data.get('currentLevel');
@@ -138,7 +139,7 @@ export const actions = {
 			const response = await axios.post(OPENAI_URL, payload, {
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${OPENAI_KEY}`
+					Authorization: `Bearer ${openApiKey}`
 				}
 			});
 			const assistantMessage = response.data.choices[0].message.content;
@@ -157,7 +158,7 @@ export const actions = {
 			});
 			return { result: result };
 		} catch (error: any) {
-			console.error('OpenAI API Error:', error);
+			console.error('OpenAI API Card Gen Error:', error);
 		}
 	}
 };

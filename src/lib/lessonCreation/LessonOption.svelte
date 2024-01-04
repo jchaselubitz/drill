@@ -1,11 +1,22 @@
 <script lang="ts">
 	import cn from 'classnames';
 	import { enhance } from '$app/forms';
-	import { redirect } from '@sveltejs/kit';
 	import Icon from 'svelte-awesome';
 	import { faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons/faUpRightFromSquare';
-
 	import type { Option } from './types';
+	import { getModelSelection } from '$src/utils/generateCards';
+	import { onMount } from 'svelte';
+
+	$: openApiKey = '';
+	$: modelSelection = '';
+
+	onMount(() => {
+		openApiKey = localStorage.getItem('OpenAIKey') ?? '';
+		if (!openApiKey) {
+			alert('Please add your OpenAI API key in the settings page');
+		}
+		modelSelection = getModelSelection(localStorage);
+	});
 
 	export let selectedLessons: Option[] = [];
 	export let option: Option;
@@ -44,6 +55,8 @@
 		};
 	}}
 >
+	<input type="hidden" name="openApiKey" value={openApiKey} />
+	<input type="hidden" name="modelSelection" value={modelSelection} />
 	<input type="hidden" name="language" value={userLanguage} />
 	<input type="hidden" name="currentLevel" value={currentLevel} />
 	<input type="hidden" name="subjectLanguage" value={subjectLanguage} />
