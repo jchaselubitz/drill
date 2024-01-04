@@ -2,19 +2,7 @@
 	import LessonOptions from '$lib/lessonCreation/LessonOptions.svelte';
 	import Select from '$lib/inputs/Select.svelte';
 	import Input from '$lib/inputs/Input.svelte';
-	import axios from 'axios';
 	import { enhance } from '$app/forms';
-
-	import {
-		lessonGenerationSystemInstructions,
-		requestLessonSuggestions
-	} from '$src/utils/promptGenerators';
-	import type { ActionData, PageData } from './$types';
-
-	export let data: PageData;
-	export let generation: ActionData;
-	$: ({ session } = data);
-	$: user = session?.user;
 
 	let level = '';
 	let language = '';
@@ -60,10 +48,6 @@
 <svelte:head>
 	<title>Drill</title>
 </svelte:head>
-
-<div class="m-4 bg-gray-100 rounded-lg">
-	<p>{user?.id}</p>
-</div>
 
 <div class="flex flex-col m-4 gap-4">
 	<form

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import LinkButton from '$lib/buttons/LinkButton.svelte';
 	import SubjectCard from '$lib/subject/SubjectCard.svelte';
 	import type { PageData } from './$types';
 
@@ -19,7 +20,12 @@
 			{/each}
 		</div>
 	{:else}
-		<div class=""><a href="./create-lesson">Create a lesson</a></div>
+		<div class="flex justify-center">
+			<LinkButton
+				classes="flex max-w-max p-3 bg-blue-700 text-white rounded-md hover:bg-blue-800"
+				href="./create-lesson">Create a lesson</LinkButton
+			>
+		</div>
 	{/if}
 </div>
 

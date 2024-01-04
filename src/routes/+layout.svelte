@@ -4,12 +4,12 @@
 	import { onMount } from 'svelte';
 	import NavBar from '$lib/navbar/index.svelte';
 	import type { PageData } from './$types';
-	import type { SubmitFunction } from '@sveltejs/kit';
+	import { redirect, type SubmitFunction } from '@sveltejs/kit';
+	import AuthModal from '$lib/authForm/AuthModal.svelte';
 
 	export let data: PageData;
 
-	let { supabase, session } = data;
-	$: ({ supabase, session } = data);
+	$: ({ supabase, session, url } = data);
 
 	onMount(() => {
 		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
@@ -45,5 +45,8 @@
 
 <div>
 	<NavBar {session} {submitLogout} />
+	{#if !session}
+		<AuthModal {supabase} {url} />
+	{/if}
 	<slot />
 </div>

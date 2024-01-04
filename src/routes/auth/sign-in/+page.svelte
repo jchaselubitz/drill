@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { Auth } from '@supabase/auth-ui-svelte';
-	import { ThemeSupa } from '@supabase/auth-ui-shared';
 	import type { PageData } from './$types';
+	import AuthModal from '$lib/authForm/AuthModal.svelte';
 	export let data: PageData;
 
-	$: ({ supabase, session, url } = data);
+	$: ({ supabase, url } = data);
 </script>
 
 <svelte:head>
@@ -12,15 +11,7 @@
 </svelte:head>
 
 <div class="m-4rounded-lg">
-	<div class="col-6 form-widget">
-		<Auth
-			supabaseClient={supabase}
-			view="magic_link"
-			redirectTo={`${url}/auth/callback`}
-			showLinks={false}
-			appearance={{ theme: ThemeSupa, style: { input: 'color: #000' } }}
-		/>
-	</div>
+	<AuthModal {supabase} {url} />
 </div>
 
 <style lang="postcss">
