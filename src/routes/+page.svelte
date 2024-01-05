@@ -12,7 +12,7 @@
 </svelte:head>
 
 <div class="m-4rounded-lg">
-	<h1 class="text-2xl font-bold">My Subjects</h1>
+	<h1 class="text-2xl font-bold mb-4">My Subjects</h1>
 	{#if subjects.length > 0}
 		<div class="flex flex-col gap-4">
 			{#each subjects as subject, i}
@@ -20,7 +20,7 @@
 			{/each}
 		</div>
 	{/if}
-	<div class="flex justify-center">
+	<div class="flex justify-center mt-4">
 		<LinkButton
 			classes="flex max-w-max p-3 bg-blue-700 text-white rounded-md hover:bg-blue-800"
 			href="./create-lesson">Create a lesson</LinkButton

@@ -45,6 +45,7 @@ const createSubjectLessonCards = async ({
 	userId
 }: CreateSubjectLessonCardsProps) => {
 	const { data, error } = await supabase.rpc('create_subject_lesson_cards', {
+		_subject_id: null,
 		_user_id: userId,
 		_subject_name: language,
 		_current_level: currentLevel,
@@ -56,7 +57,7 @@ const createSubjectLessonCards = async ({
 		return data;
 	}
 	if (error) {
-		throw Error('Error saving cards to db:', error);
+		console.log('Error saving cards to db:', error);
 	}
 };
 
@@ -144,6 +145,7 @@ export const actions = {
 			});
 			const assistantMessage = response.data.choices[0].message.content;
 			const cardsJson = JSON.parse(`[${assistantMessage}]`).flat();
+			// const cardsJson = JSON.parse(`[{"side_1":"german", "side_2":"english"}]`).flat();
 			if (cardsJson.length === 0) {
 				return { result: 'No cards generated. Try again.' };
 			}

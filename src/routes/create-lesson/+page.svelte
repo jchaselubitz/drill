@@ -11,9 +11,6 @@
 
 	onMount(() => {
 		openApiKey = localStorage.getItem('OpenAIKey') ?? '';
-		if (!openApiKey) {
-			alert('Please add your OpenAI API key in the settings page');
-		}
 		modelSelection = getModelSelection(localStorage);
 	});
 
@@ -57,10 +54,6 @@
 	// $: optionListObject = JSON.parse(`[${AITESTSTRING}]`).flat();
 	// $: console.log('optionListObject', optionListObject, language, level);
 </script>
-
-<svelte:head>
-	<title>Drill</title>
-</svelte:head>
 
 <div class="flex flex-col m-4 gap-4">
 	<form

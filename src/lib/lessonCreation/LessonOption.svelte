@@ -12,9 +12,6 @@
 
 	onMount(() => {
 		openApiKey = localStorage.getItem('OpenAIKey') ?? '';
-		if (!openApiKey) {
-			alert('Please add your OpenAI API key in the settings page');
-		}
 		modelSelection = getModelSelection(localStorage);
 	});
 
