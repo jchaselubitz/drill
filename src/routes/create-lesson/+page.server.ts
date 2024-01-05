@@ -94,6 +94,7 @@ export const actions = {
 					Authorization: `Bearer ${openApiKey}`
 				}
 			});
+			console.log('OpenAI API Response:', response.data);
 			const assistantMessage = response.data.choices[0].message.content;
 			return { result: assistantMessage };
 		} catch (error: any) {
