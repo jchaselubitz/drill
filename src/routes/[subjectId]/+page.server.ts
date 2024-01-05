@@ -59,7 +59,6 @@ const createSubjectLessonCards = async ({
 	}
 	if (error) {
 		console.log('Error saving cards to db:', error);
-		throw Error('Error saving cards to db:', error);
 	}
 };
 
@@ -74,7 +73,7 @@ export const actions = {
 		if (!session) {
 			throw redirect(301, 'auth/sign-in');
 		}
-
+		const { prompt, format } = requestLessonSuggestions({ level, language });
 		const payload = {
 			model: modelSelection ?? 'gpt-3.5-turbo',
 			messages: [
@@ -82,8 +81,9 @@ export const actions = {
 					role: 'system',
 					content: lessonGenerationSystemInstructions
 				},
-				{ role: 'user', content: requestLessonSuggestions({ level, language }) }
+				{ role: 'user', content: prompt }
 			],
+			response_format: { type: format },
 			presence_penalty: 0,
 			frequency_penalty: 0,
 			temperature: 0.5,
@@ -113,6 +113,11 @@ export const actions = {
 		const currentLevel = data.get('currentLevel');
 		const subjectLanguage = data.get('subjectLanguage');
 		const session = await locals.getSession();
+
+		const { prompt, format } = requestCardSuggestions({
+			concept: lessonTitle,
+			subject: subjectLanguage
+		});
 		const messages = [
 			{
 				role: 'system',
@@ -124,16 +129,14 @@ export const actions = {
 			},
 			{
 				role: 'user',
-				content: requestCardSuggestions({
-					concept: lessonTitle,
-					subject: subjectLanguage
-				})
+				content: prompt
 			}
 		];
 
 		const payload = {
 			model: modelSelection ?? 'gpt-3.5-turbo',
 			messages: messages,
+			response_format: { type: format },
 			presence_penalty: 0,
 			frequency_penalty: 0,
 			temperature: 0.5,
@@ -147,6 +150,7 @@ export const actions = {
 				}
 			});
 			const assistantMessage = response.data.choices[0].message.content;
+
 			const cardsJson = JSON.parse(`[${assistantMessage}]`).flat();
 			// const cardsJson = JSON.parse(`[{"side_1":"german", "side_2":"english"}]`).flat();
 			if (cardsJson.length === 0) {

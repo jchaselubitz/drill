@@ -7,18 +7,17 @@
 	import { onMount } from 'svelte';
 
 	$: openApiKey = '';
-	$: modelSelection = '';
+	$: modelSelection = getModelSelection() ?? '';
 
 	onMount(() => {
 		openApiKey = localStorage.getItem('OpenAIKey') ?? '';
-		modelSelection = getModelSelection(localStorage);
 	});
 
 	let level = '';
 	let language = '';
 	let isLoading = false;
 
-	// const AITESTSTRING = `[
+	// const AITESTSTRING = `{"concepts":[
 	//   {
 	//     "title": "Noun Gender",
 	//     "description": "Learn the gender (masculine, feminine, or neuter) of German nouns."
@@ -47,12 +46,11 @@
 	//     "title": "Prepositions",
 	//     "description": "Familiarize yourself with common prepositions and their usage in different contexts."
 	//   }
-	// ]`;
+	// ]}`;
 
 	$: aiResponse = null;
-	$: optionListObject = aiResponse ? JSON.parse(`[${aiResponse}]`).flat() : null;
-	// $: optionListObject = JSON.parse(`[${AITESTSTRING}]`).flat();
-	// $: console.log('optionListObject', optionListObject, language, level);
+	$: optionListObject = aiResponse ? JSON.parse(aiResponse).concepts : null;
+	// $: optionListObject = aiResponse ? JSON.parse(aiResponse) : null;
 </script>
 
 <div class="flex flex-col m-4 gap-4">

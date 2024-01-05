@@ -8,11 +8,10 @@
 	import { onMount } from 'svelte';
 
 	$: openApiKey = '';
-	$: modelSelection = '';
+	$: modelSelection = getModelSelection() ?? '';
 
 	onMount(() => {
 		openApiKey = localStorage.getItem('OpenAIKey') ?? '';
-		modelSelection = getModelSelection(localStorage);
 	});
 
 	export let selectedLessons: Option[] = [];
