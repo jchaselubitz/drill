@@ -40,7 +40,7 @@
 	}
 </script>
 
-<div class="flex border-2 rounded-lg w-full absolute bottom-0 top-20">
+<div class="flex border-2 rounded-lg w-full h-full">
 	<CardBackButton {previousCard} />
 
 	<div class="flex flex-col w-full">
@@ -51,7 +51,7 @@
 			role="button"
 			tabindex="0"
 		>
-			<div class="mt-20">
+			<div class="mt-20 px-4 text-center">
 				{#if isSide1}
 					{card.side_1}
 				{:else}

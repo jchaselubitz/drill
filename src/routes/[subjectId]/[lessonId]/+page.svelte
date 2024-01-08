@@ -55,7 +55,7 @@
 	<h1 class="text-2xl font-bold">{lesson.title}</h1>
 
 	{#if currentCard}
-		<div class="flex justify-center w-full h-full">
+		<div class="flex justify-center w-full h-full mt-4">
 			<FlashCard
 				card={currentCard}
 				cardsRemaining={reviewDeck.length}

@@ -9,6 +9,7 @@
 		requestCardSuggestions
 	} from '$src/utils/promptGenerators';
 	import type { SupabaseClient } from '@supabase/supabase-js';
+	import { invalidate } from '$app/navigation';
 
 	export let selectedLessons: Option[] = [];
 	export let option: Option;
@@ -25,7 +26,8 @@
 
 	const { prompt, format } = requestCardSuggestions({
 		concept: option.title,
-		subject: subjectLanguage
+		subject: subjectLanguage,
+		level: currentLevel
 	});
 
 	const messages = [
@@ -75,6 +77,7 @@
 			});
 			if (dbData) {
 				lessonLink = `/${dbData.subject_id}/${dbData.lesson_id}`;
+				invalidate('app:generated-lesson');
 				isLoading = false;
 			}
 			if (error) {

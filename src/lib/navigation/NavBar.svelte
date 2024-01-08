@@ -9,14 +9,14 @@
 	export let session: Session | null;
 	export let sidebarOpen: boolean;
 	export let submitLogout: SubmitFunction;
-	export let handleSidebar: (open: boolean) => void;
+	export let toggleSidebar: (open: boolean) => void;
 </script>
 
 <div
 	class={cn(sidebarOpen ? 'justify-end' : 'justify-between', 'border-b-2 p-2 flex items-center')}
 >
 	{#if !sidebarOpen}
-		<button on:click={() => handleSidebar(true)}><Icon data={faBars} /></button>
+		<button on:click={() => toggleSidebar(true)}><Icon data={faBars} /></button>
 	{/if}
 	{#if session}
 		<form action="/auth/sign-out" method="POST" use:enhance={submitLogout}>

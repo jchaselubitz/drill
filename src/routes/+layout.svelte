@@ -40,7 +40,7 @@
 		cancel();
 	};
 
-	const handleSidebar = () => {
+	const toggleSidebar = () => {
 		sidebarOpen = !sidebarOpen;
 	};
 </script>
@@ -54,11 +54,11 @@
 		<AuthModal {supabase} {url} />
 	{/if}
 	{#if sidebarOpen}
-		<SideBar {session} {handleSidebar} />
+		<SideBar {session} {sidebarOpen} {toggleSidebar} />
 	{/if}
 	<div class="flex flex-col w-full">
-		<NavBar {session} {sidebarOpen} {handleSidebar} {submitLogout} />
-		<div class="p-4 w-full">
+		<NavBar {session} {sidebarOpen} {toggleSidebar} {submitLogout} />
+		<div class="p-4 w-full h-full">
 			<slot />
 		</div>
 	</div>

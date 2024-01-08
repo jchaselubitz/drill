@@ -9,10 +9,10 @@ export const requestLessonSuggestions = ({
 	language,
 	level
 }: {
-	language: string | FormDataEntryValue | null;
-	level: string | FormDataEntryValue | null;
+	language: string;
+	level: string;
 }): { prompt: string; format: gptFormatType } => {
-	const prompt = `I am studying ${language}, and my current skill level is: ${level}. What are the top seven grammatical concepts you think I should drill? `;
+	const prompt = `I am studying ${language}, and my current skill level is: ${level} (according to the Common European Framework of Reference for Languages). What are the top seven grammatical concepts you think I should drill? `;
 	const format = 'json_object';
 	return { prompt, format };
 };
@@ -24,20 +24,22 @@ export const cardGenerationSystemInstructions = ({
 	keyName,
 	valueName
 }: {
-	concept: string | FormDataEntryValue | null;
-	keyName: string | FormDataEntryValue | null;
-	valueName: string | FormDataEntryValue | null;
+	concept: string;
+	keyName: string;
+	valueName: string;
 }) =>
 	`You will be provided with a request for a list of ${concept} examples. Return a "cards" JSON that is a list of objects, each including key:${keyName} and value:${valueName}. Your response will be parsed as follows: JSON.parse(<your-response>)`;
 
 export const requestCardSuggestions = ({
 	concept,
-	subject
+	subject,
+	level
 }: {
-	concept: string | FormDataEntryValue | null;
-	subject: string | FormDataEntryValue | null;
+	concept: string;
+	subject: string;
+	level: string;
 }): { prompt: string; format: gptFormatType } => {
-	const prompt = `Please generate twenty sentences that demonstrate the concept of ${concept} in ${subject}. `;
+	const prompt = `You are creating flashcards for a language student who's level is ${level} (according to the Common European Framework of Reference for Languages). Generate twenty long sentences that demonstrate the concept of ${concept} in ${subject}. `;
 	const format = 'json_object';
 	return { prompt, format };
 };
