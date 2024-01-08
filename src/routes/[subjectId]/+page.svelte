@@ -1,60 +1,65 @@
 <script lang="ts">
-	import LinkButton from '$lib/buttons/LinkButton.svelte';
 	import LessonCard from '$lib/lesson/LessonCard.svelte';
-	import { enhance } from '$app/forms';
-	import { getModelSelection } from '$src/utils/generateCards';
-	import { onMount } from 'svelte';
+	import { aiGenerate } from '$src/utils/generateCards';
 	import LessonOptions from '$lib/lessonCreation/LessonOptions.svelte';
+	import {
+		lessonGenerationSystemInstructions,
+		requestLessonSuggestions
+	} from '$src/utils/promptGenerators.js';
 
 	export let data;
-	$: ({ subject, lessons } = data);
-
-	$: openApiKey = '';
-	$: modelSelection = '';
-
-	onMount(() => {
-		openApiKey = localStorage.getItem('OpenAIKey') ?? '';
-		modelSelection = getModelSelection(localStorage);
-	});
+	$: ({ session, supabase, subject, lessons } = data);
+	$: userId = session?.user?.id;
 
 	let isLoading = false;
 
-	const AITESTSTRING = `{"concepts":[
-	  {
-	    "title": "Noun Gender",
-	    "description": "Learn the gender (masculine, feminine, or neuter) of German nouns."
-	  },
-	  {
-	    "title": "Verb Conjugation",
-	    "description": "Practice conjugating regular and irregular verbs in different tenses."
-	  },
-	  {
-	    "title": "Cases (Nominative, Accusative, Dative, Genitive)",
-	    "description": "Understand how to use different cases for nouns, pronouns, and articles."
-	  },
-	  {
-	    "title": "Word Order",
-	    "description": "Master the correct word order in German sentences, including main and subordinate clauses."
-	  },
-	  {
-	    "title": "Modal Verbs",
-	    "description": "Learn how to use modal verbs like können, müssen, wollen, etc. in different contexts."
-	  },
-	  {
-	    "title": "Relative Clauses",
-	    "description": "Practice constructing and using relative clauses to provide additional information."
-	  },
-	  {
-	    "title": "Prepositions",
-	    "description": "Familiarize yourself with common prepositions and their usage in different contexts."
-	  }
-	]}`;
+	// const AITESTSTRING = `{"concepts":[
+	//   {
+	//     "title": "Noun Gender",
+	//     "description": "Learn the gender (masculine, feminine, or neuter) of German nouns."
+	//   },
+	//   {
+	//     "title": "Verb Conjugation",
+	//     "description": "Practice conjugating regular and irregular verbs in different tenses."
+	//   },
+	//   {
+	//     "title": "Cases (Nominative, Accusative, Dative, Genitive)",
+	//     "description": "Understand how to use different cases for nouns, pronouns, and articles."
+	//   },
+	//   {
+	//     "title": "Word Order",
+	//     "description": "Master the correct word order in German sentences, including main and subordinate clauses."
+	//   },
+	//   {
+	//     "title": "Modal Verbs",
+	//     "description": "Learn how to use modal verbs like können, müssen, wollen, etc. in different contexts."
+	//   },
+	//   {
+	//     "title": "Relative Clauses",
+	//     "description": "Practice constructing and using relative clauses to provide additional information."
+	//   },
+	//   {
+	//     "title": "Prepositions",
+	//     "description": "Familiarize yourself with common prepositions and their usage in different contexts."
+	//   }
+	// ]}`;
 
 	$: aiResponse = null;
-	$: console.log('ai', aiResponse);
 	$: optionListObject = aiResponse ? JSON.parse(aiResponse).concepts : null;
 	// $: optionListObject = aiResponse ? JSON.parse(aiResponse) : null;
-	$: console.log('optionListObject', optionListObject);
+
+	$: language = subject.name;
+	$: level = subject.current_level;
+
+	const { prompt, format } = requestLessonSuggestions({ level, language });
+	const modelParams = { format };
+	const messages = [
+		{
+			role: 'system',
+			content: lessonGenerationSystemInstructions
+		},
+		{ role: 'user', content: prompt }
+	];
 </script>
 
 <svelte:head>
@@ -75,31 +80,27 @@
 
 <div class="flex flex-col m-4 gap-4">
 	<div class="flex justify-center mt-4">
-		<form
-			method="POST"
-			action="?/genLessons"
-			use:enhance={() => {
-				isLoading = true;
-				return async ({ result, update }) => {
+		<form method="GET">
+			<button
+				class="bg-blue-600 rounded-lg text-white p-2 mt-4"
+				type="submit"
+				on:click={async () => {
+					isLoading = true;
+					const response = await aiGenerate({
+						modelParams,
+						messages
+					});
+					aiResponse = response;
 					isLoading = false;
-					console.log('result', result);
-					aiResponse = result.data.result;
-				};
-			}}
-		>
-			<input type="hidden" name="openApiKey" value={openApiKey} />
-			<input type="hidden" name="modelSelection" value={modelSelection} />
-			<input type="hidden" name="language" value={'English'} />
-			<input type="hidden" name="currentLevel" value={subject.current_level} />
-			<input type="hidden" name="subjectLanguage" value={subject.name} />
-
-			<button class="bg-blue-600 rounded-lg text-white p-2 mt-4" type="submit"
-				>{isLoading ? 'Loading...' : 'Generate Lessons'}</button
+				}}>{isLoading ? 'Loading...' : 'Generate Lessons'}</button
 			>
 		</form>
 	</div>
 	{#if optionListObject}
 		<LessonOptions
+			{userId}
+			{supabase}
+			subjectId={subject.id}
 			options={optionListObject}
 			subjectLanguage={subject.name}
 			userLanguage={'English'}

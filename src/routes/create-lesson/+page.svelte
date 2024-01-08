@@ -2,16 +2,15 @@
 	import LessonOptions from '$lib/lessonCreation/LessonOptions.svelte';
 	import Select from '$lib/inputs/Select.svelte';
 	import Input from '$lib/inputs/Input.svelte';
-	import { enhance } from '$app/forms';
-	import { getModelSelection } from '$src/utils/generateCards';
-	import { onMount } from 'svelte';
+	import { aiGenerate } from '$src/utils/generateCards';
+	import {
+		lessonGenerationSystemInstructions,
+		requestLessonSuggestions
+	} from '$src/utils/promptGenerators';
 
-	$: openApiKey = '';
-	$: modelSelection = getModelSelection() ?? '';
-
-	onMount(() => {
-		openApiKey = localStorage.getItem('OpenAIKey') ?? '';
-	});
+	export let data;
+	$: ({ session, supabase } = data);
+	$: userId = session?.user?.id;
 
 	let level = '';
 	let language = '';
@@ -51,22 +50,20 @@
 	$: aiResponse = null;
 	$: optionListObject = aiResponse ? JSON.parse(aiResponse).concepts : null;
 	// $: optionListObject = aiResponse ? JSON.parse(aiResponse) : null;
+
+	const { prompt, format } = requestLessonSuggestions({ level, language });
+	const modelParams = { format: format };
+	const messages = [
+		{
+			role: 'system',
+			content: lessonGenerationSystemInstructions
+		},
+		{ role: 'user', content: prompt }
+	];
 </script>
 
 <div class="flex flex-col m-4 gap-4">
-	<form
-		method="POST"
-		action="?/genLessons"
-		use:enhance={() => {
-			isLoading = true;
-			return async ({ result, update }) => {
-				isLoading = false;
-				aiResponse = result.data.result;
-			};
-		}}
-	>
-		<input type="hidden" name="openApiKey" value={openApiKey} />
-		<input type="hidden" name="modelSelection" value={modelSelection} />
+	<form method="GET">
 		<Select
 			className="mb-3"
 			label="Language"
@@ -82,8 +79,18 @@
 
 		<Input label="Level" name="level" bind:value={level} placeholder="Level" />
 		{#if level && language}
-			<button class="bg-blue-600 rounded-lg text-white p-2 mt-4" type="submit"
-				>{isLoading ? 'Loading...' : 'Generate Lessons'}</button
+			<button
+				class="bg-blue-600 rounded-lg text-white p-2 mt-4"
+				type="submit"
+				on:click={async () => {
+					isLoading = true;
+					const response = await aiGenerate({
+						modelParams,
+						messages
+					});
+					aiResponse = response;
+					isLoading = false;
+				}}>{isLoading ? 'Loading...' : 'Generate Lessons'}</button
 			>
 		{/if}
 	</form>
@@ -94,6 +101,9 @@
 			subjectLanguage={language}
 			userLanguage={'English'}
 			currentLevel={level}
+			subjectId={null}
+			{supabase}
+			{userId}
 		/>
 	{/if}
 </div>

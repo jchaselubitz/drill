@@ -15,6 +15,7 @@
 		</button>
 	</div>
 	<SideBarItem text="My Subjects" path="/" />
+	<SideBarItem text="Create Lesson" path="/create-lesson" />
 
 	<div class="absolute bottom-4 left-4 right-4"><ApiKeyForm /></div>
 </div>

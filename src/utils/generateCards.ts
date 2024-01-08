@@ -24,8 +24,9 @@ export const getOpenAiKey = () => {
 	}
 };
 
+export type gptFormatType = 'json_object' | 'text';
 export type ModelParamsType = {
-	format: 'json_object' | 'text';
+	format: gptFormatType;
 	presence_penalty?: number;
 	frequency_penalty?: number;
 	temperature?: number;
@@ -35,21 +36,20 @@ export type ModelParamsType = {
 export type AiGenerateProps = {
 	modelParams: ModelParamsType;
 	messages: AiMessage[];
-	localStorage: any;
-	dbParams: any;
-	dbCallback: any;
+	dbParams?: any;
+	dbCallback?: any;
 };
 
 export const aiGenerate = async ({
 	modelParams,
 	messages,
-	localStorage,
 	dbParams,
 	dbCallback
 }: AiGenerateProps) => {
 	const OpenAiKey = getOpenAiKey();
+
 	const {
-		format,
+		format = 'json_object',
 		presence_penalty = 0,
 		frequency_penalty = 0,
 		temperature = 0.5,
