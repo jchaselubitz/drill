@@ -152,6 +152,7 @@ export const actions = {
 			if (cardsJson.length === 0) {
 				return { result: 'No cards generated. Try again.' };
 			}
+			console.log('reaches assistantMessage');
 			const result = await createSubjectLessonCards({
 				lessonTitle,
 				lessonDescription,
@@ -161,6 +162,7 @@ export const actions = {
 				supabase: locals.supabase,
 				userId: session?.user?.id
 			});
+			console.log('reaches createSubjectLessonCards');
 			return { result: result };
 		} catch (error: any) {
 			console.error('OpenAI API Card Gen Error:', error);

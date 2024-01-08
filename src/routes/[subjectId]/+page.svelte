@@ -52,7 +52,7 @@
 
 	$: aiResponse = null;
 	$: console.log('ai', aiResponse);
-	$: optionListObject = aiResponse ? JSON.parse(aiResponse)[0].concepts : null;
+	$: optionListObject = aiResponse ? JSON.parse(aiResponse).concepts : null;
 	// $: optionListObject = aiResponse ? JSON.parse(aiResponse) : null;
 	$: console.log('optionListObject', optionListObject);
 </script>
@@ -82,6 +82,7 @@
 				isLoading = true;
 				return async ({ result, update }) => {
 					isLoading = false;
+					console.log('result', result);
 					aiResponse = result.data.result;
 				};
 			}}
