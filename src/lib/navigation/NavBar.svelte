@@ -7,16 +7,16 @@
 	import type { Session } from '@supabase/supabase-js';
 
 	export let session: Session | null;
-	export let sidebarOpen: boolean;
+	export let sidebarIsOpen: boolean;
 	export let submitLogout: SubmitFunction;
-	export let toggleSidebar: (open: boolean) => void;
+	export let toggleSidebar: () => void;
 </script>
 
 <div
-	class={cn(sidebarOpen ? 'justify-end' : 'justify-between', 'border-b-2 p-2 flex items-center')}
+	class={cn(sidebarIsOpen ? 'justify-end' : 'justify-between', 'border-b-2 p-2 flex items-center')}
 >
-	{#if !sidebarOpen}
-		<button on:click={() => toggleSidebar(true)}><Icon data={faBars} /></button>
+	{#if !sidebarIsOpen}
+		<button on:click={() => toggleSidebar()}><Icon data={faBars} /></button>
 	{/if}
 	{#if session}
 		<form action="/auth/sign-out" method="POST" use:enhance={submitLogout}>

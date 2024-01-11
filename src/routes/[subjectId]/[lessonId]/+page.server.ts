@@ -1,7 +1,7 @@
 import { getDateDay, isSameDate, toDbDate, toJsDateType } from '$src/utils/helpersDate';
 import { createReviewDeck } from '$src/utils/intervals';
 
-export async function load({ locals, params }) {
+export async function load({ locals, params, depends }) {
 	const lessonId = params.lessonId;
 	const todayDate = getDateDay(new Date());
 
@@ -12,31 +12,54 @@ export async function load({ locals, params }) {
 		.eq('id', lessonId); // Filter the query by lessonId
 
 	const lesson = lessons ? lessons[0] : {};
+	const reviewDeckDict = lesson.review_deck ?? [];
 	const cards = lesson.cards ?? [];
 
-	// GET REVIEW DECK
-	const { data: reviewDeck, error: errorDeck } = await locals.supabase
-		.from('cards')
-		.select('*')
-		.in('id', lesson.review_deck ?? []);
+	// if the the latest review date is today, pull in the whole current review deck and match it to the cards
+	depends('app:cardUpdate');
+	if (!!lesson.review_date && isSameDate(toJsDateType(lesson.review_date), todayDate)) {
+		const incomingDeck = reviewDeckDict.map((card) => {
+			return card.id;
+		});
+		// GET REVIEW DECK
+		const { data: reviewDeckAll, error: errorDeck } = await locals.supabase
+			.from('cards')
+			.select('*')
+			.in('id', incomingDeck ?? []); // this needs to include just the ids
 
-	if (
-		!!reviewDeck &&
-		!!lesson.review_date &&
-		isSameDate(toJsDateType(lesson.review_date), todayDate)
-	) {
 		return {
 			lesson: lesson,
-			reviewDeck: reviewDeck ?? []
+			reviewDeckDict: reviewDeckDict ?? [],
+			reviewDeckCards: reviewDeckAll ?? []
 		};
 	}
 
-	const deck = createReviewDeck({ reviewDeck, cards, max_new_cards: 5, max_cards: 40 });
-	const cardRefs = deck.map((card) => card.id);
+	// if the latest review date is not today, create a new review deck, but include the uncompleted cards from the previous deck
+	const incomingDeckUncompleted = reviewDeckDict.filter((card) => {
+		if (!card.completed) {
+			return card.id;
+		}
+	});
+
+	const { data: reviewDeckUncompleted, error: errorDeck } = await locals.supabase
+		.from('cards')
+		.select('*')
+		.in('id', incomingDeckUncompleted ?? []); // this needs to include just the ids
+
+	const deck = createReviewDeck({
+		latestReview: reviewDeckUncompleted,
+		cards,
+		max_new_cards: 10,
+		max_cards: 40
+	});
+
+	const newReviewDeckDict = deck.map((card) => {
+		return { id: card.id, completed: false };
+	});
 
 	const { error: errorDeckUpdate } = await locals.supabase
 		.from('lessons')
-		.update({ review_deck: cardRefs, review_date: toDbDate(todayDate) })
+		.update({ review_deck: newReviewDeckDict, review_date: toDbDate(todayDate) })
 		.eq('id', lesson.id);
 
 	if (errorLessons) {
@@ -49,6 +72,7 @@ export async function load({ locals, params }) {
 
 	return {
 		lesson: lesson,
-		reviewDeck: deck ?? []
+		reviewDeckDict: newReviewDeckDict ?? [],
+		reviewDeckCards: deck ?? []
 	};
 }

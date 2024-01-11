@@ -1,8 +1,8 @@
 <script lang="ts">
-	export let previousCard: () => void;
+	export let undo: () => void;
 </script>
 
-<button on:click={previousCard} class="p-2 bg-blue-500 text-white rounded-l-md"
+<button on:click={undo} class="p-2 bg-blue-500 text-white md:rounded-l-md"
 	><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
 		<path
 			fill-rule="evenodd"

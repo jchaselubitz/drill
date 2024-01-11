@@ -4,14 +4,15 @@
 	import { onMount } from 'svelte';
 	import NavBar from '$lib/navigation/NavBar.svelte';
 	import type { PageData } from './$types';
-	import { redirect, type SubmitFunction } from '@sveltejs/kit';
+	import { type SubmitFunction } from '@sveltejs/kit';
 	import AuthModal from '$lib/authForm/AuthModal.svelte';
 	import SideBar from '$lib/navigation/SideBar.svelte';
 
 	export let data: PageData;
 
 	$: ({ supabase, session, url } = data);
-	$: sidebarOpen = false;
+
+	$: sidebarIsOpen = false;
 
 	onMount(() => {
 		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
@@ -19,6 +20,8 @@
 				invalidate('supabase:auth');
 			}
 		});
+
+		sidebarIsOpen = localStorage.getItem('sidebarIsOpen') === 'true';
 
 		async function getUser() {
 			const { error } = await supabase.auth.getUser(session?.access_token);
@@ -41,7 +44,8 @@
 	};
 
 	const toggleSidebar = () => {
-		sidebarOpen = !sidebarOpen;
+		localStorage.setItem('sidebarIsOpen', (!sidebarIsOpen).toString());
+		sidebarIsOpen = !sidebarIsOpen;
 	};
 </script>
 
@@ -53,12 +57,12 @@
 	{#if !session}
 		<AuthModal {supabase} {url} />
 	{/if}
-	{#if sidebarOpen}
-		<SideBar {session} {sidebarOpen} {toggleSidebar} />
+	{#if sidebarIsOpen}
+		<SideBar {sidebarIsOpen} {toggleSidebar} />
 	{/if}
 	<div class="flex flex-col w-full">
-		<NavBar {session} {sidebarOpen} {toggleSidebar} {submitLogout} />
-		<div class="p-4 w-full h-full">
+		<NavBar {session} {sidebarIsOpen} {toggleSidebar} {submitLogout} />
+		<div class="p-1 md:p-4 w-full h-full">
 			<slot />
 		</div>
 	</div>

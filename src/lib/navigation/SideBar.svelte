@@ -1,29 +1,41 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import Icon from 'svelte-awesome';
 	import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
-	import type { Session } from '@supabase/supabase-js';
 	import ApiKeyForm from './APIKeyForm.svelte';
 	import SideBarItem from './SideBarItem.svelte';
-	export let session: Session | null;
-	export let sidebarOpen: boolean;
+	export let sidebarIsOpen: boolean;
+
 	export let toggleSidebar: (open: boolean) => void;
 
 	let sidebarRef: HTMLDivElement;
 
+	let screenSize = { width: 0, height: 0 };
+
 	onMount(() => {
 		setTimeout(() => {
+			updateScreenSize();
+			window.addEventListener('resize', updateScreenSize);
 			window.addEventListener('click', handleClickOutside);
+
+			return () => {
+				window.removeEventListener('resize', updateScreenSize);
+				window.removeEventListener('click', handleClickOutside);
+			};
 		}, 0);
 	});
 
-	onDestroy(() => {
-		window.removeEventListener('click', handleClickOutside);
-	});
+	function updateScreenSize() {
+		screenSize.width = window.innerWidth;
+		screenSize.height = window.innerHeight;
+	}
 
 	function handleClickOutside(event) {
-		if (sidebarOpen && sidebarRef && !sidebarRef.contains(event.target)) {
-			toggleSidebar(false);
+		if (screenSize.width <= 768) {
+			// Example breakpoint for mobile devices
+			if (sidebarIsOpen && sidebarRef && !sidebarRef.contains(event.target)) {
+				toggleSidebar(false);
+			}
 		}
 	}
 </script>
