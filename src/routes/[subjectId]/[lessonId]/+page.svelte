@@ -2,12 +2,14 @@
 	import { invalidate } from '$app/navigation';
 	import DeckList from '$lib/decks/DeckList.svelte';
 	import FlashCard from '$lib/decks/FlashCard.svelte';
+	import GenerateMoreCards from '$lib/lesson/GenerateMoreCards.svelte';
 	import { downloadCSV } from '$src/utils/helpersExport';
 
 	import type { PageData } from './$types';
 	export let data: PageData;
 	let currentCardIndex = 0;
-	$: ({ supabase, lesson, reviewDeckDict, reviewDeckCards } = data);
+	$: ({ supabase, session, lesson, reviewDeckDict, reviewDeckCards } = data);
+	$: userId = session?.user?.id;
 	$: currentCard = reviewDeckCards[currentCardIndex];
 	$: uncompletedCardRefs = reviewDeckDict.filter((cardRef) => !cardRef.completed);
 	$: reviewHistory = [];
@@ -96,7 +98,17 @@
 	</div>
 	{#if showLessonSettings}
 		<div class="flex flex-col">
-			<div class="flex flex-col">
+			<hr class="border-gray-300 my-5" />
+			<GenerateMoreCards
+				{userId}
+				lessonId={lesson.id}
+				lessonTitle={lesson.title}
+				subjectLanguage={lesson.subjects.name}
+				currentLevel={lesson.subjects.current_level}
+				{supabase}
+			/>
+			<hr class="border-gray-300 my-5" />
+			<div class="flex flex-col mb-4">
 				<label for="title">Title</label>
 				<input
 					type="text"

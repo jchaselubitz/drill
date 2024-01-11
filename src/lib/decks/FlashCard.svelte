@@ -59,7 +59,6 @@
 			tabindex="0"
 		>
 			<div class="mt-20 px-1 md:px-4 text-center">
-				{card.id}
 				{#if isSide1}
 					{card.side_1}
 				{:else}

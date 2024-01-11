@@ -51,15 +51,26 @@
 	$: language = subject.name;
 	$: level = subject.current_level;
 
-	const { prompt, format } = requestLessonSuggestions({ level, language });
-	const modelParams = { format };
-	const messages = [
-		{
-			role: 'system',
-			content: lessonGenerationSystemInstructions
-		},
-		{ role: 'user', content: prompt }
-	];
+	const handleGenerate = async () => {
+		isLoading = true;
+		const { prompt, format } = requestLessonSuggestions({ level, language });
+
+		const modelParams = { format };
+		const messages = [
+			{
+				role: 'system',
+				content: lessonGenerationSystemInstructions
+			},
+			{ role: 'user', content: prompt }
+		];
+
+		const response = await aiGenerate({
+			modelParams,
+			messages
+		});
+		aiResponse = response;
+		isLoading = false;
+	};
 </script>
 
 <svelte:head>
@@ -84,15 +95,7 @@
 			<button
 				class="bg-blue-600 rounded-lg text-white p-2 mt-4"
 				type="submit"
-				on:click={async () => {
-					isLoading = true;
-					const response = await aiGenerate({
-						modelParams,
-						messages
-					});
-					aiResponse = response;
-					isLoading = false;
-				}}>{isLoading ? 'Loading...' : 'Generate Lessons'}</button
+				on:click={handleGenerate}>{isLoading ? 'Loading...' : 'Generate Lessons'}</button
 			>
 		</form>
 	</div>

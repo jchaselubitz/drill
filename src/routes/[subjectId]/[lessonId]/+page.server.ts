@@ -8,7 +8,7 @@ export async function load({ locals, params, depends }) {
 	// GET LESSON
 	const { data: lessons, error: errorLessons } = await locals.supabase
 		.from('lessons')
-		.select('id, review_deck, review_date, subject_id, title, short_description, cards (*)')
+		.select('id, review_deck, review_date, subjects(id, name), title, short_description, cards (*)')
 		.eq('id', lessonId); // Filter the query by lessonId
 
 	const lesson = lessons ? lessons[0] : {};

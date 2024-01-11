@@ -34,7 +34,6 @@
 		{
 			role: 'system',
 			content: cardGenerationSystemInstructions({
-				concept: option.title,
 				keyName: 'side_1',
 				valueName: 'side_2'
 			})
@@ -62,7 +61,6 @@
 				messages
 			});
 			const cardsArray = JSON.parse(response).cards;
-			// const cardsArray = JSON.parse(`[{"side_1":"german", "side_2":"english"}]`).flat();
 			if (cardsArray.length === 0) {
 				return { result: 'No cards generated. Try again.' };
 			}
