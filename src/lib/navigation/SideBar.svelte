@@ -11,6 +11,7 @@
 	let sidebarRef: HTMLDivElement;
 
 	let screenSize = { width: 0, height: 0 };
+	$: isMobile = screenSize.width <= 768;
 
 	onMount(() => {
 		setTimeout(() => {
@@ -31,7 +32,7 @@
 	}
 
 	function handleClickOutside(event) {
-		if (screenSize.width <= 768) {
+		if (isMobile) {
 			// Example breakpoint for mobile devices
 			if (sidebarIsOpen && sidebarRef && !sidebarRef.contains(event.target)) {
 				toggleSidebar(false);
@@ -50,8 +51,8 @@
 		</button>
 	</div>
 	<div class="flex flex-col gap-3 mt-6">
-		<SideBarItem text="My Subjects" path="/" />
-		<SideBarItem text="Create Lesson" path="/create-lesson" />
+		<SideBarItem text="My Subjects" path="/" {toggleSidebar} {isMobile} />
+		<SideBarItem text="Create Lesson" path="/create-lesson" {toggleSidebar} {isMobile} />
 	</div>
 
 	<div class="absolute bottom-4 left-4 right-4"><ApiKeyForm /></div>

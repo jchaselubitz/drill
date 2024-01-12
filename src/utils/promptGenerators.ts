@@ -26,7 +26,7 @@ export const cardGenerationSystemInstructions = ({
 	keyName: string;
 	valueName: string;
 }) =>
-	`The student will ask you for a list of examples, which will be added to flashcards. Your response will be parsed as follows: JSON.parse(<your-response>). Return a "cards" JSON that is a list of objects, each including key:${keyName} and value:${valueName}.`;
+	`The student will ask you for a list of examples, which will be added to flashcards. ${valueName} should be a translation of ${keyName}. Your response will be parsed as follows: JSON.parse(<your-response>). Return a "cards" JSON that is a list of objects, each including key: ${keyName} and value: ${valueName}.`;
 
 export const requestCardSuggestions = ({
 	concept,
@@ -37,7 +37,25 @@ export const requestCardSuggestions = ({
 	subject: string;
 	level: string;
 }): { prompt: string; format: gptFormatType } => {
-	const prompt = `You are helping a student studying ${subject} at a level that matches ${level} (according to the Common European Framework of Reference for Languages). Generate twenty long sentences that demonstrate the concept of ${concept} in ${subject}. `;
+	if (subject === '' || concept === '' || level === '') {
+		throw new Error('subject, concept, or level is empty');
+	}
+	const prompt = `You are helping a student study ${subject} at a level that matches ${level} (according to the Common European Framework of Reference for Languages). Generate twenty long sentences that demonstrate the concept of ${concept} in ${subject}. `;
+	const format = 'json_object';
+	return { prompt, format };
+};
+
+export const requestSpecificContent = ({
+	subject,
+	userPrompt
+}: {
+	subject: string;
+	userPrompt: string;
+}): { prompt: string; format: gptFormatType } => {
+	if (subject === '' || userPrompt === '') {
+		throw new Error('subject or userPrompt is empty');
+	}
+	const prompt = `You are helping me studying ${subject}. Generate twenty long sentences that demonstrate ${userPrompt}.`;
 	const format = 'json_object';
 	return { prompt, format };
 };

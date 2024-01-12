@@ -7,7 +7,7 @@
 	import type { Session } from '@supabase/supabase-js';
 
 	export let session: Session | null;
-	export let sidebarIsOpen: boolean;
+	export let sidebarIsOpen: boolean | undefined;
 	export let submitLogout: SubmitFunction;
 	export let toggleSidebar: () => void;
 </script>

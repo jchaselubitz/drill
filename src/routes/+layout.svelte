@@ -12,16 +12,15 @@
 
 	$: ({ supabase, session, url } = data);
 
-	$: sidebarIsOpen = false;
+	$: sidebarIsOpen = undefined as boolean | undefined;
 
 	onMount(() => {
+		sidebarIsOpen = localStorage.getItem('sidebarIsOpen') === 'true';
 		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
 			if (_session?.expires_at !== session?.expires_at) {
 				invalidate('supabase:auth');
 			}
 		});
-
-		sidebarIsOpen = localStorage.getItem('sidebarIsOpen') === 'true';
 
 		async function getUser() {
 			const { error } = await supabase.auth.getUser(session?.access_token);
@@ -53,17 +52,19 @@
 	<title>Drill</title>
 </svelte:head>
 
-<div class="flex absolute top-0 bottom-0 w-full">
-	{#if !session}
-		<AuthModal {supabase} {url} />
-	{/if}
-	{#if sidebarIsOpen}
-		<SideBar {sidebarIsOpen} {toggleSidebar} />
-	{/if}
-	<div class="flex flex-col w-full">
-		<NavBar {session} {sidebarIsOpen} {toggleSidebar} {submitLogout} />
-		<div class="p-1 md:p-4 w-full h-full">
-			<slot />
+{#if sidebarIsOpen !== undefined}
+	<div class="flex absolute top-0 bottom-0 w-full">
+		{#if !session}
+			<AuthModal {supabase} {url} />
+		{/if}
+		{#if sidebarIsOpen}
+			<SideBar {sidebarIsOpen} {toggleSidebar} />
+		{/if}
+		<div class="flex flex-col w-full">
+			<NavBar {session} {sidebarIsOpen} {toggleSidebar} {submitLogout} />
+			<div class="p-1 md:p-4 w-full h-full">
+				<slot />
+			</div>
 		</div>
 	</div>
-</div>
+{/if}

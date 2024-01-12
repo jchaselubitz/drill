@@ -1,4 +1,4 @@
-export function downloadCSV(lesson: { id: string; title: string }) {
+export function downloadCSV(lesson: { id: number; title: string }) {
 	fetch(`/api/downloads/${lesson.id}`, {
 		method: 'POST'
 	})
