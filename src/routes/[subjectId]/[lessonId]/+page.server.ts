@@ -1,3 +1,4 @@
+import type { CardRef, Lesson } from '$src/types/primaryTypes.js';
 import { getDateDay, isSameDate, toDbDate, toJsDateType } from '$src/utils/helpersDate';
 import { createReviewDeck } from '$src/utils/intervals';
 
@@ -11,14 +12,14 @@ export async function load({ locals, params, depends }) {
 		.select('id, review_deck, review_date, subjects(id, name), title, short_description, cards (*)')
 		.eq('id', lessonId); // Filter the query by lessonId
 
-	const lesson = lessons ? lessons[0] : {};
+	const lesson = lessons ? lessons[0] : ({} as Lesson);
 	const reviewDeckDict = lesson.review_deck ?? [];
 	const cards = lesson.cards ?? [];
 
 	// if the the latest review date is today, pull in the whole current review deck and match it to the cards
 	depends('app:cardUpdate');
 	if (!!lesson.review_date && isSameDate(toJsDateType(lesson.review_date), todayDate)) {
-		const incomingDeck = reviewDeckDict.map((card) => {
+		const incomingDeck = reviewDeckDict.map((card: CardRef) => {
 			return card.id;
 		});
 		// GET REVIEW DECK
@@ -35,7 +36,7 @@ export async function load({ locals, params, depends }) {
 	}
 
 	// if the latest review date is not today, create a new review deck, but include the uncompleted cards from the previous deck
-	const incomingDeckUncompleted = reviewDeckDict.filter((card) => {
+	const incomingDeckUncompleted = reviewDeckDict.filter((card: CardRef) => {
 		if (!card.completed) {
 			return card.id;
 		}

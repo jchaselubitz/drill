@@ -3,6 +3,7 @@
 	import DeckList from '$lib/decks/DeckList.svelte';
 	import FlashCard from '$lib/decks/FlashCard.svelte';
 	import GenerateMoreCards from '$lib/lesson/GenerateMoreCards.svelte';
+	import type { Card, CardRef } from '$src/types/primaryTypes';
 	import { downloadCSV } from '$src/utils/helpersExport';
 
 	import type { PageData } from './$types';
@@ -11,8 +12,8 @@
 	$: ({ supabase, session, lesson, reviewDeckDict, reviewDeckCards } = data);
 	$: userId = session?.user?.id;
 	$: currentCard = reviewDeckCards[currentCardIndex];
-	$: uncompletedCardRefs = reviewDeckDict.filter((cardRef) => !cardRef.completed);
-	$: reviewHistory = [];
+	$: uncompletedCardRefs = reviewDeckDict.filter((cardRef: CardRef) => !cardRef.completed);
+	$: reviewHistory = [] as Card[];
 	$: showLessonSettings = false;
 
 	function toggleLessonSettings() {
@@ -20,7 +21,7 @@
 	}
 
 	async function setCardCompletion(cardId: number, completed: boolean) {
-		const updatedReviewDeckDict = reviewDeckDict.map((cardRef) => {
+		const updatedReviewDeckDict = reviewDeckDict.map((cardRef: CardRef) => {
 			return cardRef.id === cardId ? { ...cardRef, completed: completed } : cardRef;
 		});
 		const { error } = await supabase
@@ -34,6 +35,7 @@
 
 	async function updateCardInDatabase(
 		cardId: number,
+
 		updatedIntervals: number[],
 		updatedRepHistory: string[]
 	) {
@@ -108,7 +110,7 @@
 				{supabase}
 			/>
 			<hr class="border-gray-300 my-5" />
-			<div class="flex flex-col mb-4">
+			<!-- <div class="flex flex-col mb-4">
 				<label for="title">Title</label>
 				<input
 					type="text"
@@ -117,9 +119,9 @@
 					value={lesson.title}
 					class="border-2 border-gray-300 rounded-md"
 				/>
-			</div>
+			</div> -->
 
-			<DeckList cards={lesson.cards} />
+			<DeckList cards={lesson.cards} {supabase} />
 		</div>
 	{:else if currentCard}
 		<div class="flex justify-center w-full h-full mt-4">

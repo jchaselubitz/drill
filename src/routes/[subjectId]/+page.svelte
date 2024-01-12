@@ -1,7 +1,7 @@
 <script lang="ts">
 	import LessonCard from '$lib/lesson/LessonCard.svelte';
 	import { aiGenerate } from '$src/utils/generateCards';
-	import LessonOptions from '$lib/lessonCreation/LessonOptions.svelte';
+	import LessonOptions from '$lib/lesson/LessonOptions.svelte';
 	import {
 		lessonGenerationSystemInstructions,
 		requestLessonSuggestions

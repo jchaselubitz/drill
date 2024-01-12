@@ -1,20 +1,15 @@
 <script lang="ts">
-	import LessonOptions from '$lib/lessonCreation/LessonOptions.svelte';
-	import Select from '$lib/inputs/Select.svelte';
-	import Input from '$lib/inputs/Input.svelte';
-	import { aiGenerate } from '$src/utils/generateCards';
-	import {
-		lessonGenerationSystemInstructions,
-		requestLessonSuggestions
-	} from '$src/utils/promptGenerators';
+	import LessonOptions from '$lib/lesson/LessonOptions.svelte';
+	import LessonCreationForm from '$lib/lesson/LessonCreationForm.svelte';
+	import { json } from '@sveltejs/kit';
 
 	export let data;
 	$: ({ session, supabase } = data);
 	$: userId = session?.user?.id;
 
-	let level = '';
-	let language = '';
-	let isLoading = false;
+	$: level = '';
+	$: language = '';
+	$: request = '';
 
 	// const AITESTSTRING = `{"concepts":[
 	//   {
@@ -47,53 +42,12 @@
 	//   }
 	// ]}`;
 
-	$: aiResponse = null;
-	$: optionListObject = aiResponse ? JSON.parse(aiResponse).concepts : null;
-	// $: optionListObject = aiResponse ? JSON.parse(aiResponse) : null;
-
-	const { prompt, format } = requestLessonSuggestions({ level, language });
-	const modelParams = { format: format };
-	const messages = [
-		{
-			role: 'system',
-			content: lessonGenerationSystemInstructions
-		},
-		{ role: 'user', content: prompt }
-	];
+	$: optionListObject = null;
+	// $: optionListObject = JSON.parse(AITESTSTRING).concepts;
 </script>
 
 <div class="flex flex-col m-4 gap-4">
-	<form method="GET">
-		<Select
-			className="mb-3"
-			label="Language"
-			name="language"
-			bind:value={language}
-			placeholder="language"
-		>
-			<option value="German">German</option>
-			<option value="English">English</option>
-			<option value="French">French</option>
-			<option value="Spanish">Spanish</option>
-		</Select>
-
-		<Input label="Level" name="level" bind:value={level} placeholder="Level" />
-		{#if level && language}
-			<button
-				class="bg-blue-600 rounded-lg text-white p-2 mt-4"
-				type="submit"
-				on:click={async () => {
-					isLoading = true;
-					const response = await aiGenerate({
-						modelParams,
-						messages
-					});
-					aiResponse = response;
-					isLoading = false;
-				}}>{isLoading ? 'Loading...' : 'Generate Lessons'}</button
-			>
-		{/if}
-	</form>
+	<LessonCreationForm bind:language bind:level bind:optionListObject bind:request />
 
 	{#if optionListObject && level && language}
 		<LessonOptions

@@ -1,0 +1,108 @@
+<script lang="ts">
+	import Select from '$lib/inputs/Select.svelte';
+	import Input from '$lib/inputs/Input.svelte';
+	import { aiGenerate } from '$src/utils/generateCards';
+	import {
+		requestLessonSuggestions,
+		lessonGenerationSystemInstructions,
+		requestSpecificContent,
+		cardGenerationSystemInstructions
+	} from '$src/utils/promptGenerators';
+	export let language: string;
+	export let level: string;
+	export let request: string;
+	export let optionListObject: any;
+
+	$: isLoading = false;
+	$: useSuggestions = false;
+
+	let languages = [
+		{ name: 'German', value: 'German' },
+		{ name: 'English', value: 'English' },
+		{ name: 'French', value: 'French' },
+		{ name: 'Spanish', value: 'Spanish' }
+	];
+
+	let levels = [
+		{ name: 'A1', value: 'A1' },
+		{ name: 'A2', value: 'A2' },
+		{ name: 'B1', value: 'B1' },
+		{ name: 'B2', value: 'B2' },
+		{ name: 'C1', value: 'C1' },
+		{ name: 'C2', value: 'C2' }
+	];
+
+	const handleGenerateCustomLesson = async () => {
+		isLoading = true;
+		const { prompt, format } = requestSpecificContent({ userPrompt: request, subject: language });
+
+		const modelParams = { format: format };
+		const messages = [
+			{
+				role: 'system',
+				content: cardGenerationSystemInstructions({ keyName: 'side_1', valueName: 'side-2' })
+			},
+			{ role: 'user', content: prompt }
+		];
+
+		const response = await aiGenerate({
+			modelParams,
+			messages
+		});
+
+		optionListObject = [{ title: request, description: level, cards: JSON.parse(response).cards }];
+		isLoading = false;
+	};
+
+	const handleGenerateLessonSuggestions = async () => {
+		isLoading = true;
+		const { prompt, format } = requestLessonSuggestions({ level, language });
+
+		const modelParams = { format: format };
+		const messages = [
+			{
+				role: 'system',
+				content: lessonGenerationSystemInstructions
+			},
+			{ role: 'user', content: prompt }
+		];
+
+		const response = await aiGenerate({
+			modelParams,
+			messages
+		});
+		optionListObject = JSON.parse(response).concepts;
+
+		isLoading = false;
+	};
+</script>
+
+<form method="GET">
+	<Select className="mb-3" label="Language" name="language" bind:value={language}>
+		{#each languages as language}
+			<option value={language.value}>{language.name}</option>
+		{/each}
+	</Select>
+
+	<Select className="mb-3" label="Level" name="level" bind:value={level}>
+		{#each levels as level}
+			<option value={level.value}>{level.name}</option>
+		{/each}
+	</Select>
+	<!-- 
+	<Input
+		label="Describe the material you would like to drill"
+		name="request"
+		isTextArea
+		bind:value={request}
+	/> -->
+
+	{#if language && level}
+		<button
+			class="bg-blue-600 rounded-lg text-white p-2 mt-4"
+			type="submit"
+			on:click={handleGenerateLessonSuggestions}
+			>{isLoading ? 'Generating...' : 'Generate Lesson Suggestions'}</button
+		>
+	{/if}
+</form>

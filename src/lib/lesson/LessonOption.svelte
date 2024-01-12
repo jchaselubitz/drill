@@ -1,0 +1,61 @@
+<script lang="ts">
+	import cn from 'classnames';
+	import type { Option } from './types';
+	import type { SupabaseClient } from '@supabase/supabase-js';
+	import LessonOptionDetails from './LessonOptionDetails.svelte';
+
+	export let option: Option;
+	export let userLanguage: string;
+	export let subjectLanguage: string;
+	export let currentLevel: string;
+	export let supabase: SupabaseClient<any, 'public', any>;
+	export let userId: string | undefined;
+	export let subjectId: string | null;
+	let isLoading = false;
+
+	$: isOpen = false;
+
+	const handleSelected = () => {
+		isOpen = !isOpen;
+	};
+
+	const handleKeyDown = (event: KeyboardEvent, option: Option) => {
+		if (event.key === ' ') {
+			handleSelected();
+		}
+	};
+</script>
+
+<div
+	class={cn(
+		'flex rounded-lg p-4 w-full items-center justify-start',
+		' hover:bg-gray-200 hover:shadow-sm focus:bg-slate-300 transition-colors duration-200 ease-in-out',
+		'bg-gray-100'
+	)}
+>
+	<div class="flex flex-col gap-3 w-full">
+		<button
+			disabled={isLoading}
+			type="submit"
+			class="grid grid-cols-12 items-start"
+			tabindex="0"
+			on:click={() => handleSelected(option)}
+			on:keydown={(e) => handleKeyDown(e, option)}
+		>
+			<div class="col-span-11 flex flex-col items-start">
+				<div class="text-gray-700 text-sm font-bold mb-2">{option.title}</div>
+				<div class="text-gray-700 text-sm text-left">{option.description}</div>
+			</div>
+		</button>
+		{#if isOpen}
+			<LessonOptionDetails
+				{option}
+				{userId}
+				{subjectId}
+				{subjectLanguage}
+				{currentLevel}
+				{supabase}
+			/>
+		{/if}
+	</div>
+</div>
