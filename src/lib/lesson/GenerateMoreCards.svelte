@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
+	import type { Card } from '$src/types/primaryTypes';
 	import { aiGenerate } from '$src/utils/generateCards';
 	import {
 		cardGenerationSystemInstructions,
+		cardResponseChecks,
 		requestCardSuggestions
 	} from '$src/utils/promptGenerators';
 	import type { SupabaseClient } from '@supabase/supabase-js';
@@ -11,6 +13,7 @@
 	export let lessonId: number;
 	export let lessonTitle: string;
 	export let subjectLanguage: string;
+	export let userLanguage: string;
 	export let currentLevel: string;
 	export let supabase: SupabaseClient<any, 'public', any>;
 	let isLoading = false;
@@ -19,7 +22,8 @@
 		isLoading = true;
 		const { prompt, format } = requestCardSuggestions({
 			concept: lessonTitle,
-			subject: subjectLanguage,
+			studyLanguage: subjectLanguage,
+			userLanguage: userLanguage,
 			level: currentLevel
 		});
 
@@ -27,8 +31,8 @@
 			{
 				role: 'system',
 				content: cardGenerationSystemInstructions({
-					keyName: 'side_1',
-					valueName: 'side_2'
+					key1: 'side_1',
+					key2: 'side_2'
 				})
 			},
 			{
@@ -45,11 +49,9 @@
 				modelParams,
 				messages
 			});
-			const cardsArray = JSON.parse(response).cards;
-			if (cardsArray.length === 0) {
-				return { result: 'No cards generated. Try again.' };
-			}
-			const cardsArrayWithLesson = cardsArray.map((card) => {
+			const cardsArray = cardResponseChecks(response);
+
+			const cardsArrayWithLesson = cardsArray.map((card: Card) => {
 				return { ...card, lesson_id: lessonId, user_id: userId };
 			});
 			const { error } = await supabase.from('cards').insert(cardsArrayWithLesson);

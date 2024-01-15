@@ -7,7 +7,6 @@
 	export let userLanguage: string;
 	export let subjectLanguage: string;
 	export let currentLevel: string;
-	let selectedLessons: Option[] = [];
 	export let supabase: SupabaseClient<any, 'public', any>;
 	export let userId: string | undefined;
 	export let subjectId: string | null;
@@ -18,7 +17,6 @@
 		<LessonOption
 			{option}
 			{subjectLanguage}
-			{selectedLessons}
 			{userLanguage}
 			{currentLevel}
 			{userId}

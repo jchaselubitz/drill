@@ -1,5 +1,6 @@
 // ==== Lesson Suggestions ====
 
+import type { Json } from '$src/types/database.types';
 import type { gptFormatType } from './generateCards';
 
 export const lessonGenerationSystemInstructions =
@@ -19,43 +20,42 @@ export const requestLessonSuggestions = ({
 
 // ==== Card Content Generation ====
 
-export const cardGenerationSystemInstructions = ({
-	keyName,
-	valueName
-}: {
-	keyName: string;
-	valueName: string;
-}) =>
-	`The student will ask you for a list of examples, which will be added to flashcards. ${valueName} should be a translation of ${keyName}. Your response will be parsed as follows: JSON.parse(<your-response>). Return a "cards" JSON that is a list of objects, each including key: ${keyName} and value: ${valueName}.`;
+export const cardGenerationSystemInstructions = ({ key1, key2 }: { key1: string; key2: string }) =>
+	`The student will ask you for a list of examples, which will be added to flashcards. The Your response will be parsed as follows: JSON.parse(<your-response>). Return a "cards" JSON that is a list of objects, each with the following keys: ${key1}, ${key2}`;
+
+export const cardResponseChecks = (response: string) => {
+	if (response === '') {
+		throw Error('No cards generated. Try again.');
+	}
+	const cardsObject = JSON.parse(response);
+	if (!cardsObject.cards) {
+		throw Error('OpenAI returned wrong format (not .cards). Please try again.');
+	}
+	const cardsArray = JSON.parse(response).cards;
+	if (cardsArray.length === 0) {
+		throw Error('No cards generated. Try again.');
+	}
+	if (!cardsArray[0].side_1 || !cardsArray[0].side_2) {
+		throw Error('OpenAI returned wrong format (not side_1/side_2). Please try again.');
+	}
+	return cardsArray;
+};
 
 export const requestCardSuggestions = ({
 	concept,
-	subject,
+	userLanguage,
+	studyLanguage,
 	level
 }: {
 	concept: string;
-	subject: string;
+	studyLanguage: string;
+	userLanguage: string;
 	level: string;
 }): { prompt: string; format: gptFormatType } => {
-	if (subject === '' || concept === '' || level === '') {
-		throw new Error('subject, concept, or level is empty');
+	if (studyLanguage === '' || concept === '' || level === '' || userLanguage === '') {
+		throw new Error('studyLanguage, concept, or level is empty');
 	}
-	const prompt = `You are helping a student study ${subject} at a level that matches ${level} (according to the Common European Framework of Reference for Languages). Generate twenty long sentences that demonstrate the concept of ${concept} in ${subject}. `;
-	const format = 'json_object';
-	return { prompt, format };
-};
-
-export const requestSpecificContent = ({
-	subject,
-	userPrompt
-}: {
-	subject: string;
-	userPrompt: string;
-}): { prompt: string; format: gptFormatType } => {
-	if (subject === '' || userPrompt === '') {
-		throw new Error('subject or userPrompt is empty');
-	}
-	const prompt = `You are helping me studying ${subject}. Generate twenty long sentences that demonstrate ${userPrompt}.`;
+	const prompt = `You are helping a student study ${studyLanguage} at a level that matches ${level} (according to the Common European Framework of Reference for Languages). You are creating flashcards, with ${userLanguage} on one side and ${studyLanguage} on the other. Generate twenty long sentences that demonstrate the concept of ${concept} in ${studyLanguage}. `;
 	const format = 'json_object';
 	return { prompt, format };
 };

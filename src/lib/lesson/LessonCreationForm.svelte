@@ -5,10 +5,12 @@
 	import {
 		requestLessonSuggestions,
 		lessonGenerationSystemInstructions,
-		requestSpecificContent,
-		cardGenerationSystemInstructions
+		cardGenerationSystemInstructions,
+		requestCardSuggestions,
+		cardResponseChecks
 	} from '$src/utils/promptGenerators';
-	export let language: string;
+	export let studyLanguage: string;
+	export let userLanguage: string;
 	export let level: string;
 	export let request: string;
 	export let optionListObject: any;
@@ -34,13 +36,18 @@
 
 	const handleGenerateCustomLesson = async () => {
 		isLoading = true;
-		const { prompt, format } = requestSpecificContent({ userPrompt: request, subject: language });
+		const { prompt, format } = requestCardSuggestions({
+			userLanguage: userLanguage,
+			studyLanguage: studyLanguage,
+			level: level,
+			concept: request
+		});
 
 		const modelParams = { format: format };
 		const messages = [
 			{
 				role: 'system',
-				content: cardGenerationSystemInstructions({ keyName: 'side_1', valueName: 'side_2' })
+				content: cardGenerationSystemInstructions({ key1: 'side_1', key2: 'side_2' })
 			},
 			{ role: 'user', content: prompt }
 		];
@@ -49,14 +56,14 @@
 			modelParams,
 			messages
 		});
-
-		optionListObject = [{ title: request, description: level, cards: JSON.parse(response).cards }];
+		const cardsArray = cardResponseChecks(response);
+		optionListObject = [{ title: request, description: level, cards: cardsArray }];
 		isLoading = false;
 	};
 
 	const handleGenerateLessonSuggestions = async () => {
 		isLoading = true;
-		const { prompt, format } = requestLessonSuggestions({ level, language });
+		const { prompt, format } = requestLessonSuggestions({ level, language: studyLanguage });
 
 		const modelParams = { format: format };
 		const messages = [
@@ -78,7 +85,7 @@
 </script>
 
 <form method="GET">
-	<Select className="mb-3" label="Language" name="language" bind:value={language}>
+	<Select className="mb-3" label="Language" name="language" bind:value={studyLanguage}>
 		{#each languages as language}
 			<option value={language.value}>{language.name}</option>
 		{/each}
@@ -92,7 +99,7 @@
 
 	{#if request === ''}
 		<button
-			disabled={!language || !level}
+			disabled={!studyLanguage || !level}
 			class="bg-blue-600 rounded-lg text-white p-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
 			type="submit"
 			on:click={handleGenerateLessonSuggestions}

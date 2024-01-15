@@ -106,6 +106,7 @@
 				lessonId={lesson.id}
 				lessonTitle={lesson.title}
 				subjectLanguage={lesson.subjects.name}
+				userLanguage={'English'}
 				currentLevel={lesson.subjects.current_level}
 				{supabase}
 			/>

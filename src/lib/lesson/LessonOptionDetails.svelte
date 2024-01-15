@@ -3,6 +3,7 @@
 	import { aiGenerate } from '$src/utils/generateCards';
 	import {
 		cardGenerationSystemInstructions,
+		cardResponseChecks,
 		requestCardSuggestions
 	} from '$src/utils/promptGenerators';
 	import { invalidate } from '$app/navigation';
@@ -15,6 +16,7 @@
 	export let userId: string | undefined;
 	export let subjectId: string | null;
 	export let subjectLanguage: string;
+	export let userLanguage: string;
 	export let currentLevel: string;
 	export let supabase: SupabaseClient<any, 'public', any>;
 
@@ -22,13 +24,12 @@
 	$: cardsArray = option.cards ?? [];
 	$: lessonLink = null;
 
-	$: console.log(cardsArray);
-
 	const fetchSuggestedCards = async () => {
 		isLoading = true;
 		const { prompt, format } = requestCardSuggestions({
 			concept: option.title,
-			subject: subjectLanguage,
+			studyLanguage: subjectLanguage,
+			userLanguage: userLanguage,
 			level: currentLevel
 		});
 
@@ -36,8 +37,8 @@
 			{
 				role: 'system',
 				content: cardGenerationSystemInstructions({
-					keyName: 'side_1',
-					valueName: 'side_2'
+					key1: 'side_1',
+					key2: 'side_2'
 				})
 			},
 			{
@@ -55,7 +56,7 @@
 			messages
 		});
 
-		cardsArray = JSON.parse(response).cards;
+		cardsArray = cardResponseChecks(response);
 		isLoading = false;
 	};
 

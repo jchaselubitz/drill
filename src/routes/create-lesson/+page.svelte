@@ -7,8 +7,9 @@
 	$: ({ session, supabase } = data);
 	$: userId = session?.user?.id;
 
+	let userLanguage = 'English';
 	$: level = '';
-	$: language = '';
+	$: studyLanguage = '';
 	$: request = '';
 
 	// const AITESTSTRING = `{"concepts":[
@@ -47,12 +48,18 @@
 </script>
 
 <div class="flex flex-col m-2 md:m-4 gap-4">
-	<LessonCreationForm bind:language bind:level bind:optionListObject bind:request />
+	<LessonCreationForm
+		{userLanguage}
+		bind:studyLanguage
+		bind:level
+		bind:optionListObject
+		bind:request
+	/>
 
-	{#if optionListObject && level && language}
+	{#if optionListObject && level && studyLanguage}
 		<LessonOptions
 			options={optionListObject}
-			subjectLanguage={language}
+			subjectLanguage={studyLanguage}
 			userLanguage={'English'}
 			currentLevel={level}
 			subjectId={null}
