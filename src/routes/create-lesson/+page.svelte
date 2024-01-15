@@ -46,7 +46,7 @@
 	// $: optionListObject = JSON.parse(AITESTSTRING).concepts;
 </script>
 
-<div class="flex flex-col m-4 gap-4">
+<div class="flex flex-col m-2 md:m-4 gap-4">
 	<LessonCreationForm bind:language bind:level bind:optionListObject bind:request />
 
 	{#if optionListObject && level && language}

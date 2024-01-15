@@ -28,25 +28,27 @@
 
 <div
 	class={cn(
-		'flex rounded-lg p-4 w-full items-center justify-start',
+		'flex rounded-lg w-full items-center justify-start',
 		' hover:bg-gray-200 hover:shadow-sm focus:bg-slate-300 transition-colors duration-200 ease-in-out',
 		'bg-gray-100'
 	)}
 >
-	<div class="flex flex-col gap-3 w-full">
-		<button
-			disabled={isLoading}
-			type="submit"
-			class="grid grid-cols-12 items-start"
-			tabindex="0"
-			on:click={() => handleSelected(option)}
-			on:keydown={(e) => handleKeyDown(e, option)}
-		>
-			<div class="col-span-11 flex flex-col items-start">
-				<div class="text-gray-700 text-sm font-bold mb-2">{option.title}</div>
-				<div class="text-gray-700 text-sm text-left">{option.description}</div>
-			</div>
-		</button>
+	<div class="flex flex-col gap-3 w-full pb-4">
+		<div class="px-4 pt-4">
+			<button
+				disabled={isLoading}
+				type="submit"
+				class="grid grid-cols-12 items-start"
+				tabindex="0"
+				on:click={() => handleSelected(option)}
+				on:keydown={(e) => handleKeyDown(e, option)}
+			>
+				<div class="col-span-11 flex flex-col items-start">
+					<div class="text-gray-700 text-sm font-bold mb-2 text-left">{option.title}</div>
+					<div class="text-gray-700 text-sm text-left">{option.description}</div>
+				</div>
+			</button>
+		</div>
 		{#if isOpen}
 			<LessonOptionDetails
 				{option}

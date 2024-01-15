@@ -40,7 +40,7 @@
 		const messages = [
 			{
 				role: 'system',
-				content: cardGenerationSystemInstructions({ keyName: 'side_1', valueName: 'side-2' })
+				content: cardGenerationSystemInstructions({ keyName: 'side_1', valueName: 'side_2' })
 			},
 			{ role: 'user', content: prompt }
 		];
@@ -89,20 +89,36 @@
 			<option value={level.value}>{level.name}</option>
 		{/each}
 	</Select>
-	<!-- 
+
+	{#if request === ''}
+		<button
+			disabled={!language || !level}
+			class="bg-blue-600 rounded-lg text-white p-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+			type="submit"
+			on:click={handleGenerateLessonSuggestions}
+			>{isLoading ? 'Generating...' : 'Generate Lesson Suggestions'}</button
+		>
+
+		<div class="flex gap-12 items-center my-4">
+			<hr class="flex-1 border-gray-300" />
+			OR
+			<hr class="flex-1 border-gray-300" />
+		</div>
+	{/if}
+
 	<Input
 		label="Describe the material you would like to drill"
 		name="request"
 		isTextArea
 		bind:value={request}
-	/> -->
+	/>
 
-	{#if language && level}
+	{#if request !== ''}
 		<button
 			class="bg-blue-600 rounded-lg text-white p-2 mt-4"
-			type="submit"
-			on:click={handleGenerateLessonSuggestions}
-			>{isLoading ? 'Generating...' : 'Generate Lesson Suggestions'}</button
+			type="button"
+			on:click={handleGenerateCustomLesson}
+			>{isLoading ? 'Generating...' : 'Generate Custom Lesson'}</button
 		>
 	{/if}
 </form>

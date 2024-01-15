@@ -1,6 +1,4 @@
 <script lang="ts">
-	import Icon from 'svelte-awesome';
-	import { faUpRightFromSquare } from '@fortawesome/free-solid-svg-icons/faUpRightFromSquare';
 	import type { Option } from './types';
 	import { aiGenerate } from '$src/utils/generateCards';
 	import {
@@ -23,6 +21,8 @@
 	$: isLoading = false;
 	$: cardsArray = option.cards ?? [];
 	$: lessonLink = null;
+
+	$: console.log(cardsArray);
 
 	const fetchSuggestedCards = async () => {
 		isLoading = true;
@@ -86,11 +86,11 @@
 	};
 </script>
 
-<div>
-	<div class="flex gap-2 w-full">
-		{#if lessonLink}
-			<a href={lessonLink}>
-				<button class="bg-blue-600 rounded-lg text-white p-2 w-full">Go to deck</button>
+<div class="p-1">
+	<div class="flex px-4 pb-4 gap-2 w-full">
+		{#if !lessonLink}
+			<a class="bg-blue-600 rounded-lg p-2 w-full" href={lessonLink}>
+				<button class=" text-white text-center w-full">Go to deck</button>
 			</a>
 		{:else}
 			<button
@@ -99,14 +99,26 @@
 			>
 		{/if}
 		<button class="bg-blue-600 rounded-lg text-white p-2 w-full" on:click={fetchSuggestedCards}
-			>{isLoading ? 'Generating' : 'Generate Cards'}</button
+			><div class="flex justify-center items-center">
+				{isLoading ? 'Generating' : cardsArray.length > 0 ? 'Regenerate Cards' : 'Generate Cards'}
+				{#if isLoading}
+					<img src={loadingImage} alt="loading" class="ml-1 h-4 w-4 p-0 m-0 animate-spin" />
+				{/if}
+			</div></button
 		>
 	</div>
+
 	{#if cardsArray}
 		{#each cardsArray as card}
-			<div class="flex flex-col mt-2">
-				<div class="flex">Side 1: {card.side_1}</div>
-				<div class="flex">Side 2: {card.side_2}</div>
+			<div class="flex flex-col odd:bg-white even:bg-gray-100 p-2">
+				<span class="flex leading-tight">
+					<span class="font-bold whitespace-nowrap mr-1">Side 1:</span>
+					<span>{card.side_1}</span>
+				</span>
+				<span class="flex leading-tight">
+					<span class="font-bold whitespace-nowrap mr-1">Side 2:</span>
+					<span>{card.side_2}</span>
+				</span>
 			</div>
 		{/each}
 	{/if}
