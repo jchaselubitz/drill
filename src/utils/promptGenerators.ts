@@ -4,7 +4,7 @@ import type { Json } from '$src/types/database.types';
 import type { gptFormatType } from './generateCards';
 
 export const lessonGenerationSystemInstructions =
-	'Return a JSON that is a list of objects, each including the title of the concept and a very short description. Your response will be parsed as follows: JSON.parse(<your-response>)';
+	'Return a JSON that is a list of objects, each including the "title" of the concept and a very short "description". Your response will be parsed as follows: JSON.parse(<your-response>)';
 
 export const requestLessonSuggestions = ({
 	language,

@@ -1,9 +1,10 @@
+import type { Card } from '$src/types/primaryTypes';
 import { getDateDay, toJsDateType, toDbDate, minutesToMilliseconds } from './helpersDate';
 
 export type UserResponse = 'BAD' | 'HARD' | 'GOOD' | 'EASY';
 
 const isNewCard = (card: Card) => {
-	return !card.next_repetition || card.repetition_history.length === 0;
+	return !card.repetition_history || card.repetition_history.length === 0;
 };
 
 export function createReviewDeck({
@@ -17,7 +18,6 @@ export function createReviewDeck({
 	max_new_cards: number;
 	max_cards: number;
 }): Card[] {
-	console.log('hi');
 	const maxReviews = max_cards - max_new_cards;
 	const now = new Date();
 	const nowDay = getDateDay(now);
@@ -35,11 +35,14 @@ export function createReviewDeck({
 	});
 
 	cards.map((card) => {
+		const latestRepetition =
+			card.repetition_history && card.repetition_history[card.repetition_history.length - 1];
+
 		if (isNewCard(card) && newList.length < max_new_cards) {
 			newList.push(card);
 		}
 		if (!isNewCard(card) && nextReview.length < maxReviews) {
-			const cardDay = getDateDay(toJsDateType(card.next_repetition));
+			const cardDay = getDateDay(toJsDateType(latestRepetition as string));
 			// prioritize cards that are due today and missed cards get bumped to the end of the list
 			if (cardDay === nowDay) {
 				nextReview.push(card);
@@ -57,7 +60,7 @@ export function createReviewDeck({
 
 export function calculateNextInterval(
 	intervals_minutes: number[],
-	repetition_history: number[],
+	repetition_history: string[],
 	response: UserResponse
 ): number {
 	const latest_interval = intervals_minutes[intervals_minutes?.length - 1] ?? 0;

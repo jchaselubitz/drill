@@ -9,17 +9,19 @@ export async function load({ locals, params, depends }) {
 	// GET LESSON
 	const { data: lessons, error: errorLessons } = await locals.supabase
 		.from('lessons')
-		.select('id, review_deck, review_date, subjects(id, name), title, short_description, cards (*)')
+		.select(
+			'id, review_deck, review_date, show_side_2_first, subjects(id, name, current_level), title, short_description, cards (*)'
+		)
 		.eq('id', lessonId); // Filter the query by lessonId
 
-	const lesson = lessons ? lessons[0] : ({} as Lesson);
-	const reviewDeckDict = lesson.review_deck ?? [];
+	const lesson = lessons ? (lessons[0] as Lesson) : ({} as Lesson);
+	const reviewDeckDict = (lesson.review_deck as CardRef[]) ?? [];
 	const cards = lesson.cards ?? [];
 
 	// if the the latest review date is today, pull in the whole current review deck and match it to the cards
 	depends('app:cardUpdate');
 	if (!!lesson.review_date && isSameDate(toJsDateType(lesson.review_date), todayDate)) {
-		const incomingDeck = reviewDeckDict.map((card: CardRef) => {
+		const incomingDeck = reviewDeckDict.map((card: any) => {
 			return card.id;
 		});
 		// GET REVIEW DECK
@@ -36,7 +38,7 @@ export async function load({ locals, params, depends }) {
 	}
 
 	// if the latest review date is not today, create a new review deck, but include the uncompleted cards from the previous deck
-	const incomingDeckUncompleted = reviewDeckDict.filter((card: CardRef) => {
+	const incomingDeckUncompleted = reviewDeckDict.filter((card: any) => {
 		if (!card.completed) {
 			return card.id;
 		}

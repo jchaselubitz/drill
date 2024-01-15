@@ -16,7 +16,6 @@
 	export let optionListObject: any;
 
 	$: isLoading = false;
-	$: useSuggestions = false;
 
 	let languages = [
 		{ name: 'German', value: 'German' },

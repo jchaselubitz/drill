@@ -1,12 +1,13 @@
 <script lang="ts">
 	import FeedbackButton from '$lib/buttons/FeedbackButton.svelte';
-	import { getDateDay, isSameDate } from '../../utils/helpersDate';
+	import { isSameDate } from '../../utils/helpersDate';
 	import { calculateNextInterval, setNextRepetition } from '../../utils/intervals';
 	import type { UserResponse } from '../../utils/intervals';
 
 	import CardBackButton from '$lib/buttons/CardBackButton.svelte';
+	import type { Card } from '$src/types/primaryTypes';
 
-	let isSide1 = true;
+	export let showSide2First = false as boolean | null;
 	export let card: Card;
 	export let totalCards: number;
 	export let cardsRemaining: number;
@@ -20,8 +21,12 @@
 		updatedRepHistory: string[]
 	): void => {};
 
+	$: frontSide = showSide2First ? card.side_2 : card.side_1;
+	$: backSide = showSide2First ? card.side_1 : card.side_2;
+	let isStartSide = true;
+
 	function toggleSide() {
-		isSide1 = !isSide1;
+		isStartSide = !isStartSide;
 	}
 
 	// remove card from review if it doesn't show again
@@ -43,7 +48,7 @@
 			repetitionHistory.concat(nextRepetition)
 		);
 		setNextCard();
-		isSide1 = true;
+		isStartSide = true;
 	}
 </script>
 
@@ -59,16 +64,16 @@
 			tabindex="0"
 		>
 			<div class="mt-20 px-1 md:px-4 text-center">
-				{#if isSide1}
-					{card.side_1}
+				{#if isStartSide}
+					{frontSide}
 				{:else}
-					<div>{card.side_1}</div>
+					<div>{frontSide}</div>
 					<hr class="my-20" />
-					<div>{card.side_2}</div>
+					<div>{backSide}</div>
 				{/if}
 			</div>
 		</div>
-		{#if !isSide1}
+		{#if !isStartSide}
 			<div class="flex flex-grow-0 justify-between md:p-4 gap-1 md:gap-10">
 				<FeedbackButton updateCard={() => updateCard('BAD')} buttonColor="red" text="Bad" />
 				<FeedbackButton updateCard={() => updateCard('HARD')} buttonColor="yellow" text="Hard" />
