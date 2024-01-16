@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Select from '$lib/inputs/Select.svelte';
 	import Input from '$lib/inputs/Input.svelte';
+	import LoadingButton from '$lib/buttons/LoadingButton.svelte';
 	import { genText } from '$src/utils/helpersAI';
 	import {
 		requestLessonSuggestions,
@@ -97,13 +98,14 @@
 	</Select>
 
 	{#if request === ''}
-		<button
-			disabled={!studyLanguage || !level}
+		<LoadingButton
 			class="bg-blue-600 rounded-lg text-white p-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+			{isLoading}
+			text="Generate Lesson Suggestions"
+			loadingText="Generating..."
+			onClick={handleGenerateLessonSuggestions}
 			type="submit"
-			on:click={handleGenerateLessonSuggestions}
-			>{isLoading ? 'Generating...' : 'Generate Lesson Suggestions'}</button
-		>
+		/>
 
 		<div class="flex gap-12 items-center my-4">
 			<hr class="flex-1 border-gray-300" />
@@ -120,11 +122,12 @@
 	/>
 
 	{#if request !== ''}
-		<button
-			class="bg-blue-600 rounded-lg text-white p-2 mt-4"
-			type="button"
-			on:click={handleGenerateCustomLesson}
-			>{isLoading ? 'Generating...' : 'Generate Custom Lesson'}</button
-		>
+		<LoadingButton
+			class="bg-blue-600 rounded-lg text-white p-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+			{isLoading}
+			text="Generate Custom Lesson"
+			loadingText="Generating..."
+			onClick={handleGenerateCustomLesson}
+		/>
 	{/if}
 </form>

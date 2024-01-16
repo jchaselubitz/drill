@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Option } from './types';
 	import { genText } from '$src/utils/helpersAI';
+	import LoadingButton from '$lib/buttons/LoadingButton.svelte';
 	import {
 		cardGenerationSystemInstructions,
 		cardResponseChecks,
@@ -99,14 +100,14 @@
 				on:click={() => handleSave(option)}>Save Cards</button
 			>
 		{/if}
-		<button class="bg-blue-600 rounded-lg text-white p-2 w-full" on:click={fetchSuggestedCards}
-			><div class="flex justify-center items-center">
-				{isLoading ? 'Generating' : cardsArray.length > 0 ? 'Regenerate Cards' : 'Generate Cards'}
-				{#if isLoading}
-					<img src={loadingImage} alt="loading" class="ml-1 h-4 w-4 p-0 m-0 animate-spin" />
-				{/if}
-			</div></button
-		>
+		<LoadingButton
+			class="bg-blue-600 rounded-lg text-white p-2 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+			disabled={isLoading}
+			{isLoading}
+			text={cardsArray.length > 0 ? 'Regenerate Cards' : 'Generate Cards'}
+			loadingText="Generating..."
+			onClick={fetchSuggestedCards}
+		/>
 	</div>
 
 	{#if cardsArray}

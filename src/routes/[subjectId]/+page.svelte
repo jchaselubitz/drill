@@ -6,43 +6,13 @@
 		lessonGenerationSystemInstructions,
 		requestLessonSuggestions
 	} from '$src/utils/promptGenerators.js';
+	import LoadingButton from '$lib/buttons/LoadingButton.svelte';
 
 	export let data;
 	$: ({ session, supabase, subject, lessons } = data);
 	$: userId = session?.user?.id;
 
 	let isLoading = false;
-
-	// const AITESTSTRING = `{"concepts":[
-	//   {
-	//     "title": "Noun Gender",
-	//     "description": "Learn the gender (masculine, feminine, or neuter) of German nouns."
-	//   },
-	//   {
-	//     "title": "Verb Conjugation",
-	//     "description": "Practice conjugating regular and irregular verbs in different tenses."
-	//   },
-	//   {
-	//     "title": "Cases (Nominative, Accusative, Dative, Genitive)",
-	//     "description": "Understand how to use different cases for nouns, pronouns, and articles."
-	//   },
-	//   {
-	//     "title": "Word Order",
-	//     "description": "Master the correct word order in German sentences, including main and subordinate clauses."
-	//   },
-	//   {
-	//     "title": "Modal Verbs",
-	//     "description": "Learn how to use modal verbs like können, müssen, wollen, etc. in different contexts."
-	//   },
-	//   {
-	//     "title": "Relative Clauses",
-	//     "description": "Practice constructing and using relative clauses to provide additional information."
-	//   },
-	//   {
-	//     "title": "Prepositions",
-	//     "description": "Familiarize yourself with common prepositions and their usage in different contexts."
-	//   }
-	// ]}`;
 
 	$: aiResponse = null;
 	$: optionListObject = aiResponse ? JSON.parse(aiResponse).concepts : null;
@@ -89,14 +59,16 @@
 	</div>
 {/if}
 
-<div class="flex flex-col m-4 gap-4">
+<div class="flex flex-col gap-4">
 	<div class="flex justify-center mt-4">
 		<form method="GET">
-			<button
-				class="bg-blue-600 rounded-lg text-white p-2 mt-4"
-				type="submit"
-				on:click={handleGenerate}>{isLoading ? 'Loading...' : 'Generate Lessons'}</button
-			>
+			<LoadingButton
+				class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded"
+				{isLoading}
+				text="Generate Lesson Suggestions"
+				loadingText="Generating..."
+				onClick={handleGenerate}
+			/>
 		</form>
 	</div>
 	{#if optionListObject}

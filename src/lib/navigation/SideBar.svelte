@@ -45,7 +45,8 @@
 	class="absolute md:relative top-0 bottom-0 bg-gray-300 w-64 border-b-2 p-2"
 	bind:this={sidebarRef}
 >
-	<div class="flex justify-end">
+	<div class="flex justify-between">
+		<img src="/drill-logo.png" alt="Logo" class="w-6 h-6" />
 		<button on:click={() => toggleSidebar(false)}>
 			<Icon data={faBars} />
 		</button>
