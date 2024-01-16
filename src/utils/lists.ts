@@ -2,7 +2,8 @@ export const Languages = [
 	{ name: 'German', value: 'German' },
 	{ name: 'English', value: 'English' },
 	{ name: 'French', value: 'French' },
-	{ name: 'Spanish', value: 'Spanish' }
+	{ name: 'Spanish', value: 'Spanish' },
+	{ name: 'Russian', value: 'Russian' }
 	// { name: 'Arabic', value: 'Arabic' }
 ];
 
