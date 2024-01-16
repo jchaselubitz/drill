@@ -1,5 +1,4 @@
 import axios from 'axios';
-import OpenAI from 'openai';
 
 export type AiMessage = {
 	role: string;
@@ -24,15 +23,6 @@ export const getOpenAiKey = () => {
 };
 const OpenAiUrl = import.meta.env.VITE_OPENAI_CHAT_URL;
 
-const createOpenAI = () => {
-	if (typeof window !== 'undefined') {
-		return new OpenAI({
-			apiKey: localStorage.getItem('OpenAIKey') ?? '',
-			dangerouslyAllowBrowser: true
-		});
-	}
-};
-
 export type gptFormatType = 'json_object' | 'text';
 export type ModelParamsType = {
 	format: gptFormatType;
@@ -51,6 +41,10 @@ export type AiGenerateProps = {
 
 export const genText = async ({ modelParams, messages, dbParams, dbCallback }: AiGenerateProps) => {
 	const OpenAiKey = getOpenAiKey();
+	if (!OpenAiKey) {
+		alert('OpenAI Key not found. Sign up for one at https://platform.openai.com/api-keys');
+		return;
+	}
 
 	const {
 		format = 'json_object',
