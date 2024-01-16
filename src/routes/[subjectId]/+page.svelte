@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LessonCard from '$lib/lesson/LessonCard.svelte';
-	import { aiGenerate } from '$src/utils/generateCards';
+	import { genText } from '$src/utils/helpersAI.js';
 	import LessonOptions from '$lib/lesson/LessonOptions.svelte';
 	import {
 		lessonGenerationSystemInstructions,
@@ -64,7 +64,7 @@
 			{ role: 'user', content: prompt }
 		];
 
-		const response = await aiGenerate({
+		const response = await genText({
 			modelParams,
 			messages
 		});

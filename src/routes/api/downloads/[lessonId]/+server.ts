@@ -1,3 +1,4 @@
+import type { Card, Lesson } from '$src/types/primaryTypes';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ params, locals }) => {
@@ -10,7 +11,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	if (errorLessons) {
 		return new Response(errorLessons.message, { status: 500 });
 	}
-	const lesson = lessons ? lessons[0] : {};
+	const lesson = lessons ? (lessons[0] as Lesson) : ({} as Lesson);
 	const cards = lesson.cards ?? [];
 	const csvContent = cards.map((card) => Object.values(card).join(',')).join('\n');
 

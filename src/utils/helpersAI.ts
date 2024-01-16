@@ -1,4 +1,5 @@
 import axios from 'axios';
+import OpenAI from 'openai';
 
 export type AiMessage = {
 	role: string;
@@ -10,8 +11,6 @@ export enum OpenAiModel {
 	'gpt4' = 'gpt-4-1106-preview'
 }
 
-const OpenAiUrl = import.meta.env.VITE_OPENAI_CHAT_URL;
-
 export const getModelSelection = () => {
 	if (typeof window !== 'undefined') {
 		const selection = localStorage.getItem('OpenAIModel') ?? 'gpt3';
@@ -21,6 +20,16 @@ export const getModelSelection = () => {
 export const getOpenAiKey = () => {
 	if (typeof window !== 'undefined') {
 		return localStorage.getItem('OpenAIKey') ?? '';
+	}
+};
+const OpenAiUrl = import.meta.env.VITE_OPENAI_CHAT_URL;
+
+const createOpenAI = () => {
+	if (typeof window !== 'undefined') {
+		return new OpenAI({
+			apiKey: localStorage.getItem('OpenAIKey') ?? '',
+			dangerouslyAllowBrowser: true
+		});
 	}
 };
 
@@ -40,12 +49,7 @@ export type AiGenerateProps = {
 	dbCallback?: any;
 };
 
-export const aiGenerate = async ({
-	modelParams,
-	messages,
-	dbParams,
-	dbCallback
-}: AiGenerateProps) => {
+export const genText = async ({ modelParams, messages, dbParams, dbCallback }: AiGenerateProps) => {
 	const OpenAiKey = getOpenAiKey();
 
 	const {

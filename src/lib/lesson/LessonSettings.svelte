@@ -3,6 +3,7 @@
 	import type { Lesson } from '$src/types/primaryTypes';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import GenerateMoreCards from './GenerateMoreCards.svelte';
+	import { invalidate } from '$app/navigation';
 
 	export let lesson: Lesson;
 	export let userId: string | undefined;
@@ -14,6 +15,7 @@
 			.from('lessons')
 			.update({ show_side_2_first: showSide2First })
 			.eq('id', lesson.id);
+		invalidate('app:lesson');
 		if (error) {
 			throw Error(`${'Failed to update card status:'} ${error.message}`);
 		}

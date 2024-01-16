@@ -21,7 +21,7 @@
 		if (error) {
 			throw Error(`${'Failed to update card status:'} ${error.message}`);
 		}
-		invalidate('app:cardUpdate');
+		invalidate('app:lesson');
 	}
 
 	const lastInterval = (card: Card) => {

@@ -6,7 +6,12 @@
 
 	import CardBackButton from '$lib/buttons/CardBackButton.svelte';
 	import type { Card } from '$src/types/primaryTypes';
+	import type { SupabaseClient } from '@supabase/supabase-js';
+	import { cleanFileName } from '$src/utils/helpersDB';
+	import { getAudioFile, playSpeech } from '$src/utils/helpersAudio';
+	import TextPlayButton from '$lib/buttons/TextPlayButton.svelte';
 
+	export let supabase: SupabaseClient<any, 'public', any>;
 	export let showSide2First = false as boolean | null;
 	export let card: Card;
 	export let totalCards: number;
@@ -24,6 +29,7 @@
 	$: frontSide = showSide2First ? card.side_2 : card.side_1;
 	$: backSide = showSide2First ? card.side_1 : card.side_2;
 	let isStartSide = true;
+	let isLoading = false;
 
 	function toggleSide() {
 		isStartSide = !isStartSide;
@@ -31,6 +37,7 @@
 
 	// remove card from review if it doesn't show again
 
+	const bucket = 'text_to_speech';
 	function updateCard(response: UserResponse) {
 		const now = new Date();
 		reviewHistory.push(card);
@@ -48,7 +55,19 @@
 			repetitionHistory.concat(nextRepetition)
 		);
 		setNextCard();
-		isStartSide = true;
+		isStartSide = false;
+	}
+
+	async function handlePlaySpeech(text: string) {
+		isLoading = true;
+		const fileName = cleanFileName(text) + '.mp3';
+		const playedExistingFile = await playSpeech({ fileName, supabase, bucket });
+		if (playedExistingFile) {
+			isLoading = false;
+			return;
+		}
+		await getAudioFile({ text, fileName, supabase, bucket });
+		isLoading = false;
 	}
 </script>
 
@@ -57,17 +76,19 @@
 
 	<div class="flex flex-col w-full p-4">
 		<div
-			class="text-2xl md:text-3xl font-bold h-full items-center mx-auto"
+			class="text-2xl md:text-3xl font-bold h-full w-full items-center mx-auto"
 			on:click={toggleSide}
 			on:keydown={toggleSide}
 			role="button"
 			tabindex="0"
 		>
-			<div class="mt-20 px-1 md:px-4 text-center">
+			<div class=" h-full flex flex-col mt-20 gap-4 px-1 md:px-4 text-center items-center">
 				{#if isStartSide}
 					{frontSide}
+					<TextPlayButton {isLoading} handleClick={() => handlePlaySpeech(frontSide)} />
 				{:else}
 					<div>{frontSide}</div>
+					<TextPlayButton {isLoading} handleClick={() => handlePlaySpeech(frontSide)} />
 					<hr class="my-20" />
 					<div>{backSide}</div>
 				{/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Option } from './types';
-	import { aiGenerate } from '$src/utils/generateCards';
+	import { genText } from '$src/utils/helpersAI';
 	import {
 		cardGenerationSystemInstructions,
 		cardResponseChecks,
@@ -22,7 +22,7 @@
 
 	$: isLoading = false;
 	$: cardsArray = option.cards ?? [];
-	$: lessonLink = null;
+	$: lessonLink = null as string | null;
 
 	const fetchSuggestedCards = async () => {
 		isLoading = true;
@@ -51,7 +51,7 @@
 			format
 		};
 
-		const response = await aiGenerate({
+		const response = await genText({
 			modelParams,
 			messages
 		});
@@ -82,14 +82,14 @@
 			}
 		} catch (error) {
 			isLoading = false;
-			console.log('aiGenerate Error', error);
+			console.log('genText Error', error);
 		}
 	};
 </script>
 
 <div class="p-1">
 	<div class="flex px-4 pb-4 gap-2 w-full">
-		{#if !lessonLink}
+		{#if lessonLink}
 			<a class="bg-blue-600 rounded-lg p-2 w-full" href={lessonLink}>
 				<button class=" text-white text-center w-full">Go to deck</button>
 			</a>

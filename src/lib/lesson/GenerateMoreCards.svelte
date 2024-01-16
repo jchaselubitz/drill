@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
 	import type { Card } from '$src/types/primaryTypes';
-	import { aiGenerate } from '$src/utils/generateCards';
+	import { genText } from '$src/utils/helpersAI';
 	import {
 		cardGenerationSystemInstructions,
 		cardResponseChecks,
@@ -45,7 +45,7 @@
 			format
 		};
 		try {
-			const response = await aiGenerate({
+			const response = await genText({
 				modelParams,
 				messages
 			});
@@ -59,11 +59,11 @@
 				throw Error(`${'Failed to insert cards:'} ${error.message}`);
 			}
 
-			invalidate('app:cardUpdate');
+			invalidate('app:lesson');
 			isLoading = false;
 		} catch (error) {
 			isLoading = false;
-			console.log('aiGenerate Error', error);
+			console.log('genText Error', error);
 		}
 	}
 </script>

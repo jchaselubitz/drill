@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Select from '$lib/inputs/Select.svelte';
 	import Input from '$lib/inputs/Input.svelte';
-	import { aiGenerate } from '$src/utils/generateCards';
+	import { genText } from '$src/utils/helpersAI';
 	import {
 		requestLessonSuggestions,
 		lessonGenerationSystemInstructions,
@@ -51,7 +51,7 @@
 			{ role: 'user', content: prompt }
 		];
 
-		const response = await aiGenerate({
+		const response = await genText({
 			modelParams,
 			messages
 		});
@@ -73,7 +73,7 @@
 			{ role: 'user', content: prompt }
 		];
 
-		const response = await aiGenerate({
+		const response = await genText({
 			modelParams,
 			messages
 		});

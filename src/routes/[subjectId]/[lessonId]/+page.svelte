@@ -3,7 +3,6 @@
 	import LessonControlBar from '$lib/lesson/LessonControlBar.svelte';
 	import LessonSettings from '$lib/lesson/LessonSettings.svelte';
 	import type { Card, CardRef } from '$src/types/primaryTypes';
-	import { downloadCSV } from '$src/utils/helpersExport';
 
 	import type { PageData } from './$types';
 	export let data: PageData;
@@ -97,6 +96,7 @@
 				{undo}
 				{setCardCompletion}
 				{updateCardInDatabase}
+				{supabase}
 			/>
 		</div>
 	{:else}

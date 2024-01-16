@@ -19,7 +19,7 @@ export async function load({ locals, params, depends }) {
 	const cards = lesson.cards ?? [];
 
 	// if the the latest review date is today, pull in the whole current review deck and match it to the cards
-	depends('app:cardUpdate');
+	depends('app:lesson');
 	if (!!lesson.review_date && isSameDate(toJsDateType(lesson.review_date), todayDate)) {
 		const incomingDeck = reviewDeckDict.map((card: any) => {
 			return card.id;
