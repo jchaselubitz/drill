@@ -34,21 +34,20 @@
 	)}
 >
 	<div class="flex flex-col gap-3 w-full pb-4">
-		<div class="px-4 pt-4">
-			<button
-				disabled={isLoading}
-				type="submit"
-				class="grid grid-cols-12 items-start"
-				tabindex="0"
-				on:click={() => handleSelected(option)}
-				on:keydown={(e) => handleKeyDown(e, option)}
-			>
-				<div class="col-span-11 flex flex-col items-start">
-					<div class="text-gray-700 text-sm font-bold mb-2 text-left">{option.title}</div>
-					<div class="text-gray-700 text-sm text-left">{option.description}</div>
-				</div>
-			</button>
-		</div>
+		<button
+			disabled={isLoading}
+			type="submit"
+			class="flex px-4 pt-4 w-full items-start"
+			tabindex="0"
+			on:click={() => handleSelected(option)}
+			on:keydown={(e) => handleKeyDown(e, option)}
+		>
+			<div class="col-span-11 flex flex-col items-start">
+				<div class="text-gray-700 text-sm font-bold mb-2 text-left">{option.title}</div>
+				<div class="text-gray-700 text-sm text-left">{option.description}</div>
+			</div>
+		</button>
+
 		{#if isOpen}
 			<LessonOptionDetails
 				{option}
