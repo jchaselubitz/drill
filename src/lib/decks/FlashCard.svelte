@@ -91,6 +91,7 @@
 					<TextPlayButton {isLoading} handleClick={() => handlePlaySpeech(frontSide)} />
 					<hr class="my-20" />
 					<div>{backSide}</div>
+					<TextPlayButton {isLoading} handleClick={() => handlePlaySpeech(frontSide)} />
 				{/if}
 			</div>
 		</div>

@@ -20,7 +20,7 @@ export async function load({ locals, params, depends }) {
 
 	// if the the latest review date is today, pull in the whole current review deck and match it to the cards
 	depends('app:lesson');
-	if (!!lesson.review_date && isSameDate(toJsDateType(lesson.review_date), todayDate)) {
+	if (lesson.review_date && isSameDate(toJsDateType(lesson.review_date), todayDate)) {
 		const incomingDeck = reviewDeckDict.map((card: any) => {
 			return card.id;
 		});
@@ -38,11 +38,13 @@ export async function load({ locals, params, depends }) {
 	}
 
 	// if the latest review date is not today, create a new review deck, but include the uncompleted cards from the previous deck
-	const incomingDeckUncompleted = reviewDeckDict.filter((card: any) => {
-		if (!card.completed) {
+	const incomingDeckUncompleted = reviewDeckDict
+		.filter((card: any) => {
+			!card.completed;
+		})
+		.map((card: any) => {
 			return card.id;
-		}
-	});
+		});
 
 	const { data: reviewDeckUncompleted, error: errorDeck } = await locals.supabase
 		.from('cards')
@@ -66,11 +68,11 @@ export async function load({ locals, params, depends }) {
 		.eq('id', lesson.id);
 
 	if (errorLessons) {
-		throw Error(`'Error fetching lessons:',${errorLessons.message}`);
+		throw Error(`Error fetching lessons: ${errorLessons.message}`);
 	} else if (errorDeck) {
-		throw Error(`'Error fetching deck:',${errorDeck.message}`);
+		throw Error(`Error fetching deck: ${errorDeck.message}`);
 	} else if (errorDeckUpdate) {
-		throw Error(`'Error updating deck:',${errorDeckUpdate.message}`);
+		throw Error(`Error updating deck: ${errorDeckUpdate.message}`);
 	}
 
 	return {

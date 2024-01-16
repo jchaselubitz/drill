@@ -118,6 +118,7 @@
 		label="Describe the material you would like to drill"
 		name="request"
 		isTextArea
+		placeholder="e.g. verb-adjective agreement, or business and political topics"
 		bind:value={request}
 	/>
 

@@ -10,8 +10,6 @@
 	import { invalidate } from '$app/navigation';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
-	let loadingImage = '/images/loading-circle.png';
-
 	export let option: Option;
 
 	export let userId: string | undefined;
