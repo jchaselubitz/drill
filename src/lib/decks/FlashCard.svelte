@@ -60,14 +60,15 @@
 
 	async function handlePlaySpeech(text: string) {
 		isLoading = true;
-		const fileName = cleanFileName(text) + '.mp3';
-		const playedExistingFile = await playSpeech({ fileName, supabase, bucket });
-		if (playedExistingFile) {
+		function setIsloadingFalse() {
 			isLoading = false;
+		}
+		const fileName = cleanFileName(text) + '.mp3';
+		const playedExistingFile = await playSpeech({ fileName, supabase, bucket, setIsloadingFalse });
+		if (playedExistingFile) {
 			return;
 		}
-		await getAudioFile({ text, fileName, supabase, bucket });
-		isLoading = false;
+		await getAudioFile({ text, fileName, supabase, bucket, setIsloadingFalse });
 	}
 </script>
 

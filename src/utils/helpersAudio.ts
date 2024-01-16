@@ -1,14 +1,24 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getOpenAiKey } from './helpersAI';
 
-export type GetAudioFileProps = {
-	text: string;
+export type PlaySpeechProps = {
 	fileName: string;
 	supabase: SupabaseClient<any, 'public', any>;
 	bucket: string;
+	setIsloadingFalse: () => void;
 };
 
-export async function getAudioFile({ text, fileName, supabase, bucket }: GetAudioFileProps) {
+export type GetAudioFileProps = PlaySpeechProps & {
+	text: string;
+};
+
+export async function getAudioFile({
+	text,
+	fileName,
+	supabase,
+	bucket,
+	setIsloadingFalse
+}: GetAudioFileProps) {
 	const apiKey = getOpenAiKey();
 	fetch(`/api/AI`, {
 		method: 'POST',
@@ -19,19 +29,18 @@ export async function getAudioFile({ text, fileName, supabase, bucket }: GetAudi
 	})
 		.then((res) => res.json())
 		.then((data) => {
-			playSpeech({ fileName: data.data, supabase, bucket });
+			playSpeech({ fileName: data.data, supabase, bucket, setIsloadingFalse });
 			return data;
 		})
 		.catch((err) => console.log(err));
 }
 
-export type PlaySpeechProps = {
-	fileName: string;
-	supabase: SupabaseClient<any, 'public', any>;
-	bucket: string;
-};
-
-export async function playSpeech({ fileName, supabase, bucket }: PlaySpeechProps) {
+export async function playSpeech({
+	fileName,
+	supabase,
+	bucket,
+	setIsloadingFalse
+}: PlaySpeechProps) {
 	const { data: existingFile, error: existingError } = await supabase.storage
 		.from(bucket)
 		.download(fileName);
@@ -42,6 +51,7 @@ export async function playSpeech({ fileName, supabase, bucket }: PlaySpeechProps
 		audio.play();
 		audio.onended = () => {
 			URL.revokeObjectURL(url);
+			setIsloadingFalse();
 		};
 		return true;
 	}

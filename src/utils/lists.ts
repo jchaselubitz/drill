@@ -2,8 +2,8 @@ export const Languages = [
 	{ name: 'German', value: 'German' },
 	{ name: 'English', value: 'English' },
 	{ name: 'French', value: 'French' },
-	{ name: 'Spanish', value: 'Spanish' },
-	{ name: 'Arabic', value: 'Arabic' }
+	{ name: 'Spanish', value: 'Spanish' }
+	// { name: 'Arabic', value: 'Arabic' }
 ];
 
 export const Levels = [

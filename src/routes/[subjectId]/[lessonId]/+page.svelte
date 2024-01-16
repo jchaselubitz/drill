@@ -81,7 +81,7 @@
 </svelte:head>
 
 <div class="m-4rounded-lg flex flex-col h-full">
-	<LessonControlBar {lesson} bind:showLessonSettings />
+	<LessonControlBar {lesson} {supabase} bind:showLessonSettings />
 	{#if showLessonSettings}
 		<LessonSettings {lesson} {userId} {supabase} />
 	{:else if currentCard}
