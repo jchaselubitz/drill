@@ -29,6 +29,7 @@ export const cardResponseChecks = (response: string) => {
 	}
 	const cardsObject = JSON.parse(response);
 	if (!cardsObject.cards) {
+		alert('OpenAI returned wrong format. This happens sometimes. Please try again.');
 		throw Error('OpenAI returned wrong format (not .cards). Please try again.');
 	}
 	const cardsArray = JSON.parse(response).cards;
@@ -36,6 +37,7 @@ export const cardResponseChecks = (response: string) => {
 		throw Error('No cards generated. Try again.');
 	}
 	if (!cardsArray[0].side_1 || !cardsArray[0].side_2) {
+		alert('OpenAI returned wrong format. This happens sometimes. Please try again.');
 		throw Error('OpenAI returned wrong format (not side_1/side_2). Please try again.');
 	}
 	return cardsArray;

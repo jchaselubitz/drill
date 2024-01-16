@@ -42,7 +42,7 @@
 </script>
 
 <div
-	class="absolute md:relative top-0 bottom-0 bg-gray-300 w-64 border-b-2 p-2"
+	class="absolute md:relative top-0 bottom-0 bg-gray-300 w-64 border-b-2 p-2 z-50 shadow-xl"
 	bind:this={sidebarRef}
 >
 	<div class="flex justify-between">

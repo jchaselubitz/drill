@@ -10,6 +10,9 @@
 		requestCardSuggestions,
 		cardResponseChecks
 	} from '$src/utils/promptGenerators';
+	import { Languages, Levels, ContentSuggestions } from '$src/utils/lists';
+	import LightSuggestionList from './LightSuggestionList.svelte';
+
 	export let studyLanguage: string;
 	export let userLanguage: string;
 	export let level: string;
@@ -17,22 +20,6 @@
 	export let optionListObject: any;
 
 	$: isLoading = false;
-
-	let languages = [
-		{ name: 'German', value: 'German' },
-		{ name: 'English', value: 'English' },
-		{ name: 'French', value: 'French' },
-		{ name: 'Spanish', value: 'Spanish' }
-	];
-
-	let levels = [
-		{ name: 'A1', value: 'A1' },
-		{ name: 'A2', value: 'A2' },
-		{ name: 'B1', value: 'B1' },
-		{ name: 'B2', value: 'B2' },
-		{ name: 'C1', value: 'C1' },
-		{ name: 'C2', value: 'C2' }
-	];
 
 	const handleGenerateCustomLesson = async () => {
 		isLoading = true;
@@ -62,6 +49,10 @@
 	};
 
 	const handleGenerateLessonSuggestions = async () => {
+		if (level === '' || studyLanguage === '') {
+			alert('Please select a language and level');
+			return;
+		}
 		isLoading = true;
 		const { prompt, format } = requestLessonSuggestions({ level, language: studyLanguage });
 
@@ -82,37 +73,24 @@
 
 		isLoading = false;
 	};
+
+	function setMaterialSuggestion(suggestion: string) {
+		request = suggestion;
+	}
 </script>
 
 <form method="GET">
 	<Select className="mb-3" label="Language" name="language" bind:value={studyLanguage}>
-		{#each languages as language}
+		{#each Languages as language}
 			<option value={language.value}>{language.name}</option>
 		{/each}
 	</Select>
 
 	<Select className="mb-3" label="Level" name="level" bind:value={level}>
-		{#each levels as level}
+		{#each Levels as level}
 			<option value={level.value}>{level.name}</option>
 		{/each}
 	</Select>
-
-	{#if request === ''}
-		<LoadingButton
-			class="bg-blue-600 rounded-lg text-white p-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
-			{isLoading}
-			text="Generate Lesson Suggestions"
-			loadingText="Generating..."
-			onClick={handleGenerateLessonSuggestions}
-			type="submit"
-		/>
-
-		<div class="flex gap-12 items-center my-4">
-			<hr class="flex-1 border-gray-300" />
-			OR
-			<hr class="flex-1 border-gray-300" />
-		</div>
-	{/if}
 
 	<Input
 		label="Describe the material you would like to drill"
@@ -121,12 +99,20 @@
 		placeholder="e.g. verb-adjective agreement, or business and political topics"
 		bind:value={request}
 	/>
+	{#if request === ''}
+		<LightSuggestionList
+			suggestions={ContentSuggestions}
+			{setMaterialSuggestion}
+			{handleGenerateLessonSuggestions}
+			{isLoading}
+		/>
+	{/if}
 
 	{#if request !== ''}
 		<LoadingButton
 			class="bg-blue-600 rounded-lg text-white p-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
 			{isLoading}
-			text="Generate Custom Lesson"
+			text="Generate Lesson"
 			loadingText="Generating..."
 			onClick={handleGenerateCustomLesson}
 		/>
