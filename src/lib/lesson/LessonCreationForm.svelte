@@ -22,6 +22,10 @@
 	$: isLoading = false;
 
 	const handleGenerateCustomLesson = async () => {
+		if (level === '' || studyLanguage === '') {
+			alert('Please select a language and level');
+			return;
+		}
 		isLoading = true;
 		const { prompt, format } = requestCardSuggestions({
 			userLanguage: userLanguage,
