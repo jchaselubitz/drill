@@ -29,7 +29,7 @@
 	$: frontSide = showSide2First ? card.side_2 : card.side_1;
 	$: backSide = showSide2First ? card.side_1 : card.side_2;
 	let isStartSide = true;
-	let isLoading = false;
+	$: isLoading = false;
 
 	function toggleSide() {
 		isStartSide = !isStartSide;
@@ -88,8 +88,6 @@
 					{frontSide}
 					<TextPlayButton {isLoading} handleClick={() => handlePlaySpeech(frontSide)} />
 				{:else}
-					<div>{frontSide}</div>
-					<TextPlayButton {isLoading} handleClick={() => handlePlaySpeech(frontSide)} />
 					<hr class="my-20" />
 					<div>{backSide}</div>
 					<TextPlayButton {isLoading} handleClick={() => handlePlaySpeech(backSide)} />
