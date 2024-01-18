@@ -7,7 +7,7 @@
 	import CardBackButton from '$lib/buttons/CardBackButton.svelte';
 	import type { Card } from '$src/types/primaryTypes';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import { cleanFileName } from '$src/utils/helpersDB';
+	import { cleanFileName, hashString } from '$src/utils/helpersDB';
 	import { getAudioFile, playSpeech } from '$src/utils/helpersAudio';
 	import TextPlayButton from '$lib/buttons/TextPlayButton.svelte';
 
@@ -28,7 +28,7 @@
 
 	$: frontSide = showSide2First ? card.side_2 : card.side_1;
 	$: backSide = showSide2First ? card.side_1 : card.side_2;
-	let isStartSide = true;
+	$: isStartSide = true;
 	$: isLoading = false;
 
 	function toggleSide() {
@@ -38,6 +38,7 @@
 	// remove card from review if it doesn't show again
 
 	const bucket = 'text_to_speech';
+
 	function updateCard(response: UserResponse) {
 		const now = new Date();
 		reviewHistory.push(card);
@@ -54,8 +55,8 @@
 			intervalHistory.concat(nextInterval),
 			repetitionHistory.concat(nextRepetition)
 		);
+		isStartSide = true;
 		setNextCard();
-		isStartSide = false;
 	}
 
 	async function handlePlaySpeech(text: string) {
@@ -63,7 +64,9 @@
 		function setIsloadingFalse() {
 			isLoading = false;
 		}
-		const fileName = cleanFileName(text) + '.mp3';
+
+		const fileName = (await hashString(text)) + '.mp3'; // we take the hash of the text as the file name to make sure we don't generate audio for the same text twice.
+
 		const playedExistingFile = await playSpeech({ fileName, supabase, bucket, setIsloadingFalse });
 		if (playedExistingFile) {
 			return;
@@ -88,7 +91,6 @@
 					{frontSide}
 					<TextPlayButton {isLoading} handleClick={() => handlePlaySpeech(frontSide)} />
 				{:else}
-					<hr class="my-20" />
 					<div>{backSide}</div>
 					<TextPlayButton {isLoading} handleClick={() => handlePlaySpeech(backSide)} />
 				{/if}
