@@ -20,6 +20,12 @@ export async function getAudioFile({
 	setIsloadingFalse
 }: GetAudioFileProps) {
 	const apiKey = getOpenAiKey();
+	if (!apiKey) {
+		alert('OpenAI Key not found. Sign up for one at https://platform.openai.com/api-keys');
+		setIsloadingFalse();
+		return;
+	}
+
 	fetch(`/api/AI`, {
 		method: 'POST',
 		headers: {
@@ -46,9 +52,13 @@ export async function playSpeech({
 		.download(fileName);
 
 	if (existingFile) {
-		const url = URL.createObjectURL(existingFile);
+		const blobWithCorrectType = new Blob([existingFile], { type: 'audio/mpeg' });
+		const url = URL.createObjectURL(blobWithCorrectType);
 		const audio = new Audio(url);
-		audio.play();
+		audio.play().catch((e) => {
+			console.error('Error playing audio:', e);
+		});
+
 		audio.onended = () => {
 			URL.revokeObjectURL(url);
 			setIsloadingFalse();

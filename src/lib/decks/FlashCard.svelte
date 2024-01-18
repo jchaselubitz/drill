@@ -7,7 +7,7 @@
 	import CardBackButton from '$lib/buttons/CardBackButton.svelte';
 	import type { Card } from '$src/types/primaryTypes';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import { cleanFileName, hashString } from '$src/utils/helpersDB';
+	import { hashString } from '$src/utils/helpersDB';
 	import { getAudioFile, playSpeech } from '$src/utils/helpersAudio';
 	import TextPlayButton from '$lib/buttons/TextPlayButton.svelte';
 
