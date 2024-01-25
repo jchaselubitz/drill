@@ -61,12 +61,18 @@
 
 	const saveRecording = async () => {
 		const fileName = `${Date.now()}-recording`;
+		const bucketName = 'user_recordings';
 		await savePrivateAudioFile({
 			fileName,
 			path: userId as string,
 			supabase: supabase,
-			bucketName: 'user_recordings',
+			bucketName,
 			audioFile: audioResponse.blob
+		});
+		const { data, error } = await supabase.from('recordings').insert({
+			user_id: userId,
+			transcript: transcript,
+			recording_url: `${userId}/${fileName}`
 		});
 	};
 
