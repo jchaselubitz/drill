@@ -31,7 +31,7 @@
 		screenSize.height = window.innerHeight;
 	}
 
-	function handleClickOutside(event) {
+	function handleClickOutside(event: any) {
 		if (isMobile) {
 			// Example breakpoint for mobile devices
 			if (sidebarIsOpen && sidebarRef && !sidebarRef.contains(event.target)) {
@@ -42,7 +42,7 @@
 </script>
 
 <div
-	class="absolute md:relative top-0 bottom-0 bg-gray-300 w-64 border-b-2 p-2 z-50 shadow-xl"
+	class="absolute md:fixed top-0 bottom-0 bg-gray-300 w-64 border-b-2 p-2 z-50 shadow-xl"
 	bind:this={sidebarRef}
 >
 	<div class="flex justify-between">
@@ -54,6 +54,7 @@
 	<div class="flex flex-col gap-3 mt-6">
 		<SideBarItem text="My Subjects" path="/" {toggleSidebar} {isMobile} />
 		<SideBarItem text="Create Lesson" path="/create-lesson" {toggleSidebar} {isMobile} />
+		<SideBarItem text="Assimilate Content" path="/assimilate" {toggleSidebar} {isMobile} />
 	</div>
 
 	<div class="absolute bottom-4 left-4 right-4"><ApiKeyForm /></div>

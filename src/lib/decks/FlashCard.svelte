@@ -8,7 +8,7 @@
 	import type { Card } from '$src/types/primaryTypes';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { hashString } from '$src/utils/helpersDB';
-	import { getAudioFile, playSpeech } from '$src/utils/helpersAudio';
+	import { getAudioFile, playSavedAudio } from '$src/utils/helpersAudio';
 	import TextPlayButton from '$lib/buttons/TextPlayButton.svelte';
 
 	export let supabase: SupabaseClient<any, 'public', any>;
@@ -67,7 +67,12 @@
 
 		const fileName = (await hashString(text)) + '.mp3'; // we take the hash of the text as the file name to make sure we don't generate audio for the same text twice.
 
-		const playedExistingFile = await playSpeech({ fileName, supabase, bucket, setIsloadingFalse });
+		const playedExistingFile = await playSavedAudio({
+			fileName,
+			supabase,
+			bucket,
+			setIsloadingFalse
+		});
 		if (playedExistingFile) {
 			return;
 		}

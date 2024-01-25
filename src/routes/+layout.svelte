@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.css';
+	import cn from 'classnames';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import NavBar from '$lib/navigation/NavBar.svelte';
@@ -60,7 +61,7 @@
 		{#if sidebarIsOpen}
 			<SideBar {sidebarIsOpen} {toggleSidebar} />
 		{/if}
-		<div class="flex flex-col w-full">
+		<div class={cn(sidebarIsOpen && 'ml-64', 'flex flex-col w-full')}>
 			<NavBar {session} {sidebarIsOpen} {toggleSidebar} {submitLogout} />
 			<div class="p-1 md:p-4 w-full h-full">
 				<slot />
