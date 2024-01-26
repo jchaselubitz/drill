@@ -54,7 +54,7 @@
 	<div class="flex flex-col gap-3 mt-6">
 		<SideBarItem text="My Subjects" path="/" {toggleSidebar} {isMobile} />
 		<SideBarItem text="Create Lesson" path="/create-lesson" {toggleSidebar} {isMobile} />
-		<SideBarItem text="Assimilate Content" path="/assimilate" {toggleSidebar} {isMobile} />
+		<SideBarItem text="My Content" path="/my-content" {toggleSidebar} {isMobile} />
 	</div>
 
 	<div class="absolute bottom-4 left-4 right-4"><ApiKeyForm /></div>

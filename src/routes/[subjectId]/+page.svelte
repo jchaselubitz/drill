@@ -7,8 +7,9 @@
 		requestLessonSuggestions
 	} from '$src/utils/promptGenerators.js';
 	import LoadingButton from '$lib/buttons/LoadingButton.svelte';
+	import type { PageData } from './$types';
 
-	export let data;
+	export let data: PageData;
 	$: ({ session, supabase, subject, lessons } = data);
 	$: userId = session?.user?.id;
 

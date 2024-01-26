@@ -1,20 +1,30 @@
 <script lang="ts">
+	import { invalidate } from '$app/navigation';
 	import RecordButton from '$lib/buttons/RecordButton.svelte';
 	import type { RecordButtonStateType } from '$lib/buttons/types';
 	import { getTextFromSpeech, recordAudio, savePrivateAudioFile } from '$src/utils/helpersAudio';
+	import type { SupabaseClient } from '@supabase/supabase-js';
+
+	export let supabase: SupabaseClient;
+	export let userId: string | undefined;
+	export let transcript = '';
 
 	let recordingButtonState = 'idle' as RecordButtonStateType;
 	let showActionButtons = false;
 
-	import type { PageData } from './$types';
-	export let data: PageData;
-	$: ({ supabase, session } = data);
-	$: userId = session?.user.id;
-
 	$: transcriptionLoading = false;
-	$: transcript = '';
 	$: audioState = null as any;
 	$: audioResponse = null as any;
+	$: isSaving = false;
+
+	const resetRecordingButtonState = () => {
+		recordingButtonState = 'idle';
+		showActionButtons = false;
+		transcriptionLoading = false;
+		audioState = null;
+		transcript = '';
+		isSaving = false;
+	};
 
 	const startRecording = async () => {
 		const audio = await recordAudio();
@@ -60,6 +70,7 @@
 	};
 
 	const saveRecording = async () => {
+		isSaving = true;
 		const fileName = `${Date.now()}-recording`;
 		const bucketName = 'user_recordings';
 		await savePrivateAudioFile({
@@ -69,11 +80,17 @@
 			bucketName,
 			audioFile: audioResponse.blob
 		});
-		const { data, error } = await supabase.from('recordings').insert({
+		const { error } = await supabase.from('recordings').insert({
 			user_id: userId,
 			transcript: transcript,
-			recording_url: `${userId}/${fileName}`
+			filename: fileName
 		});
+
+		if (error) {
+			throw Error('Error saving recording:', error);
+		}
+		resetRecordingButtonState();
+		invalidate('app:my-content');
 	};
 
 	const handleClick = () => {
@@ -84,26 +101,35 @@
 		}
 	};
 
-	let actionButtons = [
+	$: actionButtons = [
 		{
+			show: true,
+			isLoading: false,
 			text: 'Play',
 			onClick: () => {
 				playRecording();
 			}
 		},
 		{
+			show: true,
+			isLoading: false,
 			text: 'Reset',
 			onClick: () => {
 				recordingButtonState = 'idle';
+				transcript = '';
 			}
 		},
 		{
+			show: true,
+			isLoading: false,
 			text: 'Transcribe',
 			onClick: () => {
 				transcribeRecording();
 			}
 		},
 		{
+			show: transcript !== '',
+			isLoading: isSaving,
 			text: 'Save Recording',
 			onClick: () => {
 				saveRecording();
@@ -112,14 +138,6 @@
 	];
 </script>
 
-<main>
-	<div class="flex justify-center mt-20">
-		<RecordButton {recordingButtonState} {actionButtons} {showActionButtons} {handleClick} />
-	</div>
-
-	{#if transcript}
-		<div class="flex justify-center m-10 rounded-lg bg-gray-200 p-6">
-			{transcript}
-		</div>
-	{/if}
-</main>
+<div class="flex justify-center mt-20">
+	<RecordButton {recordingButtonState} {actionButtons} {showActionButtons} {handleClick} />
+</div>

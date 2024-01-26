@@ -36,3 +36,12 @@ export function isSameDate(date1: Date, date2: Date): boolean {
 export function minutesToMilliseconds(intervalMinutes: number): number {
 	return intervalMinutes * 60 * 1000;
 }
+
+export function getHumanDate(date: Date): string {
+	const options: Intl.DateTimeFormatOptions = {
+		day: 'numeric',
+		month: 'short',
+		year: 'numeric'
+	};
+	return date.toLocaleDateString('en-US', options);
+}

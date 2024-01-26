@@ -9,7 +9,7 @@
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { hashString } from '$src/utils/helpersDB';
 	import { getAudioFile, playSavedAudio } from '$src/utils/helpersAudio';
-	import TextPlayButton from '$lib/buttons/TextPlayButton.svelte';
+	import TextPlayButton from '$lib/buttons/AudioPlayButton.svelte';
 
 	export let supabase: SupabaseClient<any, 'public', any>;
 	export let showSide2First = false as boolean | null;

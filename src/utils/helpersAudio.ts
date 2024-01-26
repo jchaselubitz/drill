@@ -31,7 +31,9 @@ export async function getAudioFile({
 			playSavedAudio({ fileName: data.data, supabase, bucket, setIsloadingFalse });
 			return data;
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => {
+			throw err;
+		});
 }
 
 export type GetTextFromSpeechProps = {
@@ -63,7 +65,9 @@ export async function getTextFromSpeech({
 			setIsloadingFalse;
 			return data;
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => {
+			throw err;
+		});
 }
 
 export type PlaySavedAudio = {
@@ -82,6 +86,11 @@ export async function playSavedAudio({
 	const { data: existingFile, error: existingError } = await supabase.storage
 		.from(bucket)
 		.download(fileName);
+
+	if (existingError) {
+		setIsloadingFalse();
+		throw existingError;
+	}
 
 	if (existingFile) {
 		const audioBlob = new Blob([existingFile], { type: 'audio/mpeg' });
@@ -122,9 +131,8 @@ export async function savePrivateAudioFile({
 		.upload(`${path}/${fileName}`, audioFile);
 
 	if (error) {
-		console.error(error);
 		setIsloadingFalse && setIsloadingFalse();
-		return;
+		throw error;
 	}
 	return data;
 }

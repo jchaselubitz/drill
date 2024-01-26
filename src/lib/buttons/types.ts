@@ -1,2 +1,7 @@
 export type RecordButtonStateType = 'recording' | 'transcribing' | 'idle';
-export type ActionButtonType = { text: string; onClick: () => void };
+export type ActionButtonType = {
+	show: boolean;
+	isLoading: boolean;
+	text: string;
+	onClick: () => void;
+};

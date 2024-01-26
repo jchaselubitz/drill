@@ -61,7 +61,7 @@
 		{#if sidebarIsOpen}
 			<SideBar {sidebarIsOpen} {toggleSidebar} />
 		{/if}
-		<div class={cn(sidebarIsOpen && 'ml-64', 'flex flex-col w-full')}>
+		<div class={cn(sidebarIsOpen && 'md:ml-64', 'flex flex-col w-full')}>
 			<NavBar {session} {sidebarIsOpen} {toggleSidebar} {submitLogout} />
 			<div class="p-1 md:p-4 w-full h-full">
 				<slot />
