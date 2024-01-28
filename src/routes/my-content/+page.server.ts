@@ -7,7 +7,8 @@ export const load: PageServerLoad = async ({ locals, depends }) => {
 	const { data: recordings } = await locals.supabase
 		.from('recordings')
 		.select('*')
-		.eq('user_id', userId);
+		.eq('user_id', userId)
+		.order('created_at', { ascending: false });
 
 	depends('app:my-content');
 

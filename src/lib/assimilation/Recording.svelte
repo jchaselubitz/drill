@@ -120,8 +120,7 @@
 			isLoading: false,
 			text: 'Reset',
 			onClick: () => {
-				recordingButtonState = 'idle';
-				transcript = '';
+				resetRecordingButtonState();
 			}
 		},
 		{
@@ -143,6 +142,6 @@
 	];
 </script>
 
-<div class="flex justify-center mt-20">
+<div class="flex justify-center mt-6 mb-10">
 	<RecordButton {recordingButtonState} {actionButtons} {showActionButtons} {handleClick} />
 </div>
