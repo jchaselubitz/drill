@@ -13,20 +13,26 @@
 
 	let date = new Date(recording.created_at);
 
-	$: playLoading = false;
+	$: isPlaying = false;
 	$: detailsOpen = false;
+	$: audioObject = null as any;
 
-	const setIsloadingFalse = () => {
-		playLoading = false;
+	const setIsPlayingFalse = () => {
+		isPlaying = false;
 	};
 
-	async function playRecording() {
-		playLoading = true;
-		await playSavedAudio({
+	async function handlePlayClick() {
+		if (isPlaying) {
+			audioObject.pause();
+			isPlaying = false;
+			return;
+		}
+		isPlaying = true;
+		audioObject = await playSavedAudio({
 			supabase,
 			bucket: 'user_recordings',
 			fileName: `${userId}/${recording.filename}`,
-			setIsloadingFalse
+			setIsPlayingFalse
 		});
 	}
 </script>
@@ -48,7 +54,7 @@
 			</div>
 			{#if !detailsOpen}
 				<div class="flex justify-center">
-					<AudioPlayButton handleClick={playRecording} isLoading={playLoading} />
+					<AudioPlayButton handleClick={handlePlayClick} {isPlaying} />
 				</div>
 			{/if}
 		</div>
@@ -58,8 +64,8 @@
 			<RecordingCardDetails
 				{recording}
 				{supabase}
-				{playRecording}
-				{playLoading}
+				{handlePlayClick}
+				{isPlaying}
 				transcript={recording.transcript}
 			/>
 		</div>

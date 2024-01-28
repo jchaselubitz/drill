@@ -1,41 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getOpenAiKey } from './helpersAI';
 
-export type GetAudioFileProps = PlaySavedAudio & {
-	text: string;
-};
-
-export async function getAudioFile({
-	text,
-	fileName,
-	supabase,
-	bucket,
-	setIsloadingFalse
-}: GetAudioFileProps) {
-	const apiKey = getOpenAiKey();
-	if (!apiKey) {
-		alert('OpenAI Key not found. Sign up for one at https://platform.openai.com/api-keys');
-		setIsloadingFalse();
-		return;
-	}
-
-	fetch(`/api/ai/text-to-speech`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ apiKey, text, fileName })
-	})
-		.then((res) => res.json())
-		.then((data) => {
-			playSavedAudio({ fileName: data.data, supabase, bucket, setIsloadingFalse });
-			return data;
-		})
-		.catch((err) => {
-			throw err;
-		});
-}
-
 export type GetTextFromSpeechProps = {
 	audioFile: Blob;
 	setIsloadingFalse: () => void;
@@ -70,26 +35,63 @@ export async function getTextFromSpeech({
 		});
 }
 
+export type GetAudioFileProps = PlaySavedAudio & {
+	text: string;
+	setIsLoadingFalse: () => void;
+};
+
+export async function getAudioFile({
+	text,
+	fileName,
+	supabase,
+	bucket,
+	setIsPlayingFalse,
+	setIsLoadingFalse
+}: GetAudioFileProps) {
+	const apiKey = getOpenAiKey();
+	if (!apiKey) {
+		alert('OpenAI Key not found. Sign up for one at https://platform.openai.com/api-keys');
+		return;
+	}
+
+	fetch(`/api/ai/text-to-speech`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ apiKey, text, fileName })
+	})
+		.then((res) => res.json())
+		.then((data) => {
+			setIsLoadingFalse();
+			playSavedAudio({ fileName: data.data, supabase, bucket, setIsPlayingFalse });
+			return data;
+		})
+		.catch((err) => {
+			throw err;
+		});
+}
+
 export type PlaySavedAudio = {
 	fileName: string;
 	supabase: SupabaseClient<any, 'public', any>;
 	bucket: string;
-	setIsloadingFalse: () => void;
+	setIsPlayingFalse: () => void;
 };
 
 export async function playSavedAudio({
 	fileName,
 	supabase,
 	bucket,
-	setIsloadingFalse
+	setIsPlayingFalse
 }: PlaySavedAudio) {
 	const { data: existingFile, error: existingError } = await supabase.storage
 		.from(bucket)
 		.download(fileName);
 
 	if (existingError) {
-		setIsloadingFalse();
-		throw existingError;
+		setIsPlayingFalse();
+		return;
 	}
 
 	if (existingFile) {
@@ -102,9 +104,10 @@ export async function playSavedAudio({
 
 		audio.onended = () => {
 			URL.revokeObjectURL(url);
-			setIsloadingFalse();
+			setIsPlayingFalse();
 		};
-		return true;
+
+		return audio;
 	}
 	return false;
 }

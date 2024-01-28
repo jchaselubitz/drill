@@ -5,8 +5,10 @@
 <script lang="ts">
 	import Icon from 'svelte-awesome';
 	import { faPlay } from '@fortawesome/free-solid-svg-icons';
+	import { faPause } from '@fortawesome/free-solid-svg-icons';
 	let loadingImage = '/images/loading-circle.png';
-	export let isLoading: boolean;
+	export let isLoading: boolean | undefined = false;
+	export let isPlaying: boolean;
 	export let handleClick: () => void;
 </script>
 
@@ -17,6 +19,8 @@
 >
 	{#if isLoading}
 		<span> <img src={loadingImage} alt="loading" class=" h-8 w-8 animate-spin" /></span>
+	{:else if isPlaying}
+		<Icon data={faPause} />
 	{:else}
 		<Icon data={faPlay} />
 	{/if}

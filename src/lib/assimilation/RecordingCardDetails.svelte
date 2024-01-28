@@ -9,7 +9,7 @@
 	export let supabase: SupabaseClient;
 	export let recording: Recording;
 	export let transcript: string | null = '';
-	export let playLoading = false;
+	export let isPlaying = false;
 	export let playRecording: () => Promise<void>;
 	let deleteLoading = false;
 
@@ -25,7 +25,7 @@
 <div class="flex flex-col gap-2 mt-4">
 	<div class="flex justify-center gap-2">
 		<DeleteButton handleClick={deleteRecording} isLoading={deleteLoading} />
-		<AudioPlayButton handleClick={playRecording} isLoading={playLoading} />
+		<AudioPlayButton handleClick={playRecording} {isPlaying} />
 	</div>
 	<!-- <button class="px-3 py-1 border border-blue-600 text-blue-600 rounded-full text-sm">
   Translate

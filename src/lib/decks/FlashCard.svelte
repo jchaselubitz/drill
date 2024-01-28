@@ -9,7 +9,7 @@
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { hashString } from '$src/utils/helpersDB';
 	import { getAudioFile, playSavedAudio } from '$src/utils/helpersAudio';
-	import TextPlayButton from '$lib/buttons/AudioPlayButton.svelte';
+	import AudioPlayButton from '$lib/buttons/AudioPlayButton.svelte';
 
 	export let supabase: SupabaseClient<any, 'public', any>;
 	export let showSide2First = false as boolean | null;
@@ -29,7 +29,9 @@
 	$: frontSide = showSide2First ? card.side_2 : card.side_1;
 	$: backSide = showSide2First ? card.side_1 : card.side_2;
 	$: isStartSide = true;
+	$: audioObject = null as any;
 	$: isLoading = false;
+	$: isPlaying = false;
 
 	function toggleSide() {
 		isStartSide = !isStartSide;
@@ -59,24 +61,33 @@
 		setNextCard();
 	}
 
-	async function handlePlaySpeech(text: string) {
-		isLoading = true;
-		function setIsloadingFalse() {
+	async function handlePlaySpeech(text: string | null) {
+		if (isPlaying) {
+			audioObject.pause();
+			isPlaying = false;
+			return;
+		}
+		function setIsPlayingFalse() {
+			isPlaying = false;
+		}
+		function setIsLoadingFalse() {
 			isLoading = false;
 		}
-
-		const fileName = (await hashString(text)) + '.mp3'; // we take the hash of the text as the file name to make sure we don't generate audio for the same text twice.
-
+		const fileName = (await hashString(text as string)) + '.mp3'; // we take the hash of the text as the file name to make sure we don't generate audio for the same text twice.
 		const playedExistingFile = await playSavedAudio({
 			fileName,
 			supabase,
 			bucket,
-			setIsloadingFalse
+			setIsPlayingFalse
 		});
 		if (playedExistingFile) {
+			isPlaying = true;
+			audioObject = playedExistingFile;
 			return;
 		}
-		await getAudioFile({ text, fileName, supabase, bucket, setIsloadingFalse });
+		isLoading = true;
+		isPlaying = true;
+		await getAudioFile({ text, fileName, supabase, bucket, setIsPlayingFalse, setIsLoadingFalse });
 	}
 </script>
 
@@ -94,10 +105,14 @@
 			<div class=" h-full flex flex-col mt-20 gap-4 px-1 md:px-4 text-center items-center">
 				{#if isStartSide}
 					{frontSide}
-					<TextPlayButton {isLoading} handleClick={() => handlePlaySpeech(frontSide)} />
+					<AudioPlayButton
+						{isLoading}
+						{isPlaying}
+						handleClick={() => handlePlaySpeech(frontSide)}
+					/>
 				{:else}
 					<div>{backSide}</div>
-					<TextPlayButton {isLoading} handleClick={() => handlePlaySpeech(backSide)} />
+					<AudioPlayButton {isLoading} {isPlaying} handleClick={() => handlePlaySpeech(backSide)} />
 				{/if}
 			</div>
 		</div>
