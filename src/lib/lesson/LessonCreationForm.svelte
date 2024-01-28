@@ -108,6 +108,7 @@
 			suggestions={ContentSuggestions}
 			{setMaterialSuggestion}
 			{handleGenerateLessonSuggestions}
+			includeSuggestionCreator
 			{isLoading}
 		/>
 	{/if}

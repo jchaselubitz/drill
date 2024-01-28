@@ -5,6 +5,7 @@
 
 	export let suggestions = [] as string[];
 	export let isLoading = false;
+	export let includeSuggestionCreator = false;
 	export let handleGenerateLessonSuggestions = (): void => {};
 	export let setMaterialSuggestion = (suggestion: string): void => {};
 
@@ -16,22 +17,26 @@
 	{#each suggestions as suggestion}
 		<LightSuggestion {suggestion} {setMaterialSuggestion} />
 	{/each}
-	<LoadingButton
-		class={cn('hidden md:flex', mainClass)}
-		{isLoading}
-		text="Generate suggestions based on language and level"
-		loadingText="Generating..."
-		onClick={handleGenerateLessonSuggestions}
-		type="submit"
-	/>
+	{#if includeSuggestionCreator}
+		<LoadingButton
+			class={cn('hidden md:flex', mainClass)}
+			{isLoading}
+			text="Generate suggestions based on language and level"
+			loadingText="Generating..."
+			onClick={handleGenerateLessonSuggestions}
+			type="submit"
+		/>
+	{/if}
 </div>
-<div class="flex md:hidden">
-	<LoadingButton
-		class={cn(mainClass)}
-		{isLoading}
-		text="Generate suggestions based on language and level"
-		loadingText="Generating..."
-		onClick={handleGenerateLessonSuggestions}
-		type="submit"
-	/>
-</div>
+{#if includeSuggestionCreator}
+	<div class="flex md:hidden">
+		<LoadingButton
+			class={cn(mainClass)}
+			{isLoading}
+			text="Generate suggestions based on language and level"
+			loadingText="Generating..."
+			onClick={handleGenerateLessonSuggestions}
+			type="submit"
+		/>
+	</div>
+{/if}

@@ -6,3 +6,5 @@ export async function hashString(str: string): Promise<string> {
 	const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 	return hashHex.slice(0, 15);
 }
+
+export type DestinationTable = 'words' | 'phrases';

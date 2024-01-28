@@ -77,6 +77,44 @@ export const genText = async ({ modelParams, messages, dbParams, dbCallback }: A
 	}
 };
 
+export const getLanguage = async (text: string) => {
+	const OpenAiKey = getOpenAiKey();
+	if (!OpenAiKey) {
+		alert('OpenAI Key not found. Sign up for one at https://platform.openai.com/api-keys');
+		return;
+	}
+
+	const snippet = text.slice(0, 20);
+
+	const payload = {
+		model: OpenAiModel.gpt3,
+		messages: [
+			{
+				role: 'system',
+				content: 'ISO 639 code as JSON object: { "lng": "en" }'
+			},
+			{ role: 'user', content: `what is the language of this text: ${snippet}?` }
+		],
+		response_format: { type: 'json_object' },
+		presence_penalty: 0,
+		frequency_penalty: 0,
+		temperature: 1,
+		max_tokens: 20
+	};
+	try {
+		const response = await axios.post(OpenAiUrl, payload, {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${OpenAiKey}`
+			}
+		});
+		const assistantMessage = response.data.choices[0].message.content;
+		return assistantMessage;
+	} catch (error: any) {
+		console.error('OpenAI API Error:', error.response?.data, error.response?.message);
+	}
+};
+
 // const AITESTSTRING = `{"concepts":[
 //   {
 //     "title": "Noun Gender",
@@ -107,3 +145,7 @@ export const genText = async ({ modelParams, messages, dbParams, dbCallback }: A
 //     "description": "Familiarize yourself with common prepositions and their usage in different contexts."
 //   }
 // ]}`;
+
+export const MOCK_ARBITRARY_RESPONSE = `{"samplekey":{"nouns": ["Uhr", "Nachrichten", "Übersicht", "SPD", "FDP", "Treffen", "Berlin", "Spitzenkandidaten", "Europawahl", "Proteste", "Rechtsextremismus", "Vorwürfen", "Mitarbeiter", "UNO-Flüchtlingshilfswerks", "Palästinenser", "Generalsekretär", "Vereinten", "Nationen", "Konsequenzen", "Meldungen"],
+"verbs": ["bestimmen", "geplant", "hat", "angekündigt"],
+"adjectives": ["getrennten", "wieder", "vielerorts", "guterresch", "Einzelnen"]}}`;

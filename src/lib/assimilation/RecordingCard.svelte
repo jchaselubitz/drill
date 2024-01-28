@@ -31,30 +31,37 @@
 	}
 </script>
 
-<button
-	on:click={() => (detailsOpen = !detailsOpen)}
-	tabindex="0"
+<div
 	class={cn(
-		'p-4 rounded-lg w-full',
+		'rounded-lg w-full',
 		' hover:bg-gray-200 hover:shadow-sm focus:bg-slate-300 transition-colors duration-200 ease-in-out',
 		'bg-gray-100'
 	)}
 >
-	<div class="flex justify-between gap-2 text-left items-center">
-		<div>
-			<div class="text-gray-400 text-xs mb-1">{getHumanDate(date)}</div>
-			<div class={cn('text-gray-700 text-sm font-bold', !detailsOpen && 'line-clamp-2')}>
-				{recording.transcript}
+	<button class="p-4 w-full" on:click={() => (detailsOpen = !detailsOpen)} tabindex="0">
+		<div class="flex justify-between gap-2 text-left items-center">
+			<div>
+				<div class="text-gray-400 text-xs mb-1">{getHumanDate(date)}</div>
+				<div class={cn('text-gray-700 text-sm font-bold', !detailsOpen && 'line-clamp-2')}>
+					{recording.transcript}
+				</div>
 			</div>
+			{#if !detailsOpen}
+				<div class="flex justify-center">
+					<AudioPlayButton handleClick={playRecording} isLoading={playLoading} />
+				</div>
+			{/if}
 		</div>
-		{#if !detailsOpen}
-			<div class="flex justify-center">
-				<AudioPlayButton handleClick={playRecording} isLoading={playLoading} />
-			</div>
-		{/if}
-	</div>
-
+	</button>
 	{#if detailsOpen}
-		<RecordingCardDetails {recording} {supabase} {playRecording} {playLoading} />
+		<div class="px-4 pb-4">
+			<RecordingCardDetails
+				{recording}
+				{supabase}
+				{playRecording}
+				{playLoading}
+				transcript={recording.transcript}
+			/>
+		</div>
 	{/if}
-</button>
+</div>

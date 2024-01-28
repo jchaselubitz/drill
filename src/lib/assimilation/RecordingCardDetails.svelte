@@ -4,9 +4,11 @@
 	import DeleteButton from '$lib/buttons/DeleteButton.svelte';
 	import type { Recording } from '$src/types/primaryTypes';
 	import type { SupabaseClient } from '@supabase/supabase-js';
+	import ContentRequest from './ContentRequest.svelte';
 
 	export let supabase: SupabaseClient;
 	export let recording: Recording;
+	export let transcript: string | null = '';
 	export let playLoading = false;
 	export let playRecording: () => Promise<void>;
 	let deleteLoading = false;
@@ -14,7 +16,7 @@
 	async function deleteRecording() {
 		const { error } = await supabase.from('recordings').delete().match({ id: recording.id });
 		if (error) {
-			throw Error('Error deleting recording:', error);
+			throw Error(`Error deleting recording: ${error}`);
 		}
 		invalidate('app:my-content');
 	}
@@ -25,4 +27,15 @@
 		<DeleteButton handleClick={deleteRecording} isLoading={deleteLoading} />
 		<AudioPlayButton handleClick={playRecording} isLoading={playLoading} />
 	</div>
+	<!-- <button class="px-3 py-1 border border-blue-600 text-blue-600 rounded-full text-sm">
+  Translate
+ </button>
+ <button class="px-3 py-1 border border-blue-600 text-blue-600 rounded-full text-sm">
+  list sentences
+ </button>
+ <button class="px-3 py-1 border border-blue-600 text-blue-600 rounded-full text-sm">
+  list verbs
+ </button> -->
+
+	<ContentRequest {transcript} {supabase} source="transcript" />
 </div>
