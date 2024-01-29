@@ -9,7 +9,7 @@
 		"stop": "supabase stop",
 		"fresh": "supabase db reset",
 		"functions-run": "supabase functions serve --env-file ./supabase/.env.local --no-verify-jwt",
-		"functions-deploy": "supabase functions deploy --no-verify-jwt --project-ref fororflyhxeircqexslh",
+		"functions-deploy": "supabase functions deploy --project-ref fororflyhxeircqexslh",
 		"functions-set-secret": "supabase secrets set --env-file ./supabase/.env.prod --project-ref fororflyhxeircqexslh",
 		"pull-supa": "supabase db pull",
 		"push-supa": "supabase db push",

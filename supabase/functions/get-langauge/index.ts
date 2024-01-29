@@ -1,6 +1,6 @@
 import OpenAI from 'https://deno.land/x/openai@v4.24.0/mod.ts';
 import { corsHeaders } from '../_shared/cors.ts';
-import { OpenAiModel } from '../../src/utils/helpersAI.ts';
+import { OpenAiModel } from '../_shared/enums.ts';
 
 Deno.serve(async (req) => {
 	if (req.method === 'OPTIONS') {
