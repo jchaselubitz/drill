@@ -4,6 +4,7 @@
 	import {
 		MOCK_ARBITRARY_RESPONSE,
 		getModelSelection,
+		getOpenAiKey,
 		type gptFormatType
 	} from '$src/utils/helpersAI';
 	import type { DestinationTable } from '$src/utils/helpersDB';
@@ -42,6 +43,7 @@
 
 		const { data } = await supabase.functions.invoke('gen-text', {
 			body: {
+				userApiKey: getOpenAiKey(),
 				modelSelection: getModelSelection(),
 				modelParams: modelParams,
 				messages: messages

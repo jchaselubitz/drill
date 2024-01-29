@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LessonCard from '$lib/lesson/LessonCard.svelte';
-	import { getModelSelection } from '$src/utils/helpersAI.js';
+	import { getModelSelection, getOpenAiKey } from '$src/utils/helpersAI.js';
 	import LessonOptions from '$lib/lesson/LessonOptions.svelte';
 	import {
 		lessonGenerationSystemInstructions,
@@ -37,6 +37,7 @@
 
 		const { data } = await supabase.functions.invoke('gen-text', {
 			body: {
+				userApiKey: getOpenAiKey(),
 				modelSelection: getModelSelection(),
 				modelParams: modelParams,
 				messages: messages

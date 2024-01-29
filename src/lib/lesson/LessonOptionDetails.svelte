@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Option } from './types';
-	import { getModelSelection } from '$src/utils/helpersAI';
+	import { getModelSelection, getOpenAiKey } from '$src/utils/helpersAI';
 	import LoadingButton from '$lib/buttons/LoadingButton.svelte';
 	import {
 		cardGenerationSystemInstructions,
@@ -52,6 +52,7 @@
 
 		const { data } = await supabase.functions.invoke('gen-text', {
 			body: {
+				userApiKey: getOpenAiKey(),
 				modelSelection: getModelSelection(),
 				modelParams: modelParams,
 				messages: messages

@@ -2,7 +2,7 @@
 	import Select from '$lib/inputs/Select.svelte';
 	import Input from '$lib/inputs/Input.svelte';
 	import LoadingButton from '$lib/buttons/LoadingButton.svelte';
-	import { getModelSelection } from '$src/utils/helpersAI';
+	import { getModelSelection, getOpenAiKey } from '$src/utils/helpersAI';
 	import {
 		requestLessonSuggestions,
 		lessonGenerationSystemInstructions,
@@ -47,6 +47,7 @@
 
 		const { data } = await supabase.functions.invoke('gen-text', {
 			body: {
+				userApiKey: getOpenAiKey(),
 				modelSelection: getModelSelection(),
 				modelParams: modelParams,
 				messages: messages
@@ -76,6 +77,7 @@
 
 		const { data } = await supabase.functions.invoke('gen-text', {
 			body: {
+				userApiKey: getOpenAiKey(),
 				modelSelection: getModelSelection(),
 				modelParams: modelParams,
 				messages: messages

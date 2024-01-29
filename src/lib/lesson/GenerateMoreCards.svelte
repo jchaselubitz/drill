@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
 	import type { Card } from '$src/types/primaryTypes';
-	import { getModelSelection } from '$src/utils/helpersAI';
+	import { getModelSelection, getOpenAiKey } from '$src/utils/helpersAI';
 	import {
 		cardGenerationSystemInstructions,
 		cardResponseChecks,
@@ -47,6 +47,7 @@
 		try {
 			const { data } = await supabase.functions.invoke('gen-text', {
 				body: {
+					userApiKey: getOpenAiKey(),
 					modelSelection: getModelSelection(),
 					modelParams: modelParams,
 					messages: messages

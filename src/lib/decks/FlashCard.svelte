@@ -10,6 +10,7 @@
 	import { hashString } from '$src/utils/helpersDB';
 	import { getAudioFile, playSavedAudio } from '$src/utils/helpersAudio';
 	import AudioPlayButton from '$lib/buttons/AudioPlayButton.svelte';
+	import { getOpenAiKey } from '$src/utils/helpersAI';
 
 	export let supabase: SupabaseClient<any, 'public', any>;
 	export let showSide2First = false as boolean | null;
@@ -62,6 +63,7 @@
 	}
 
 	async function handlePlaySpeech(text: string | null) {
+		if (!text) return;
 		if (isPlaying) {
 			audioObject.pause();
 			isPlaying = false;
@@ -87,6 +89,7 @@
 		}
 		isLoading = true;
 		isPlaying = true;
+
 		await getAudioFile({ text, fileName, supabase, bucket, setIsPlayingFalse, setIsLoadingFalse });
 	}
 </script>

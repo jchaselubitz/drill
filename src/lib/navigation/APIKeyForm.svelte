@@ -31,19 +31,18 @@
 </script>
 
 <div class="relative flex flex-col gap-3">
-	<form class={formClasses}>
-		<select
-			class="text-xs"
-			name="model"
-			bind:value={modelSelection}
-			on:change={addModelToLocalStorage}
-		>
-			<option value="gpt4">GPT-4</option>
-			<option value="gpt3">GPT-3</option>
-		</select>
-	</form>
-
 	{#if isSavedKey}
+		<form class={formClasses}>
+			<select
+				class="text-xs"
+				name="model"
+				bind:value={modelSelection}
+				on:change={addModelToLocalStorage}
+			>
+				<option disabled={!openApiKey} value="gpt4">GPT-4</option>
+				<option value="gpt3">GPT-3</option>
+			</select>
+		</form>
 		<form class={formClasses}>
 			<button class={buttonClasses} type="submit" on:click={removeKeyFromLocalStorage}
 				>Remove API Key</button
@@ -51,7 +50,13 @@
 		</form>
 	{:else}
 		<form class={formClasses}>
-			<input class="text-xs" type="text" name="apiKey" bind:value={openApiKey} />
+			<input
+				class="text-xs"
+				type="text"
+				name="apiKey"
+				bind:value={openApiKey}
+				placeholder="Use your own API key to use GPT-4"
+			/>
 			<button class={buttonClasses} type="submit" on:click={addKeyToLocalStorage}
 				>Save API Key</button
 			>

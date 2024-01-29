@@ -1,5 +1,6 @@
 import OpenAI from 'https://deno.land/x/openai@v4.24.0/mod.ts';
 import { corsHeaders } from '../_shared/cors.ts';
+import { OpenAiModel } from '../_shared/enums.ts';
 
 Deno.serve(async (req) => {
 	if (req.method === 'OPTIONS') {
@@ -10,11 +11,11 @@ Deno.serve(async (req) => {
 	const modelSelection = data.modelSelection;
 	const modelParams = data.modelParams;
 	const messages = data.messages;
+	const userApiKey = data.userApiKey;
 
 	try {
-		const apiKey = Deno.env.get('OPENAI_API_KEY');
 		const openai = new OpenAI({
-			apiKey: apiKey
+			apiKey: userApiKey ? userApiKey : Deno.env.get('OPENAI_API_KEY');
 		});
 
 		const {
@@ -27,7 +28,7 @@ Deno.serve(async (req) => {
 		} = modelParams;
 
 		const completion = await openai.chat.completions.create({
-			model: modelSelection,
+			model: userApiKey ? modelSelection : OpenAiModel.gpt3,
 			messages: messages,
 			response_format: { type: format },
 			presence_penalty,

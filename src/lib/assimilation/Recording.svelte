@@ -2,7 +2,8 @@
 	import { invalidate } from '$app/navigation';
 	import RecordButton from '$lib/buttons/RecordButton.svelte';
 	import type { RecordButtonStateType } from '$lib/buttons/types';
-	import { getTextFromSpeech, recordAudio, savePrivateAudioFile } from '$src/utils/helpersAudio';
+	import { getOpenAiKey } from '$src/utils/helpersAI';
+	import { recordAudio, savePrivateAudioFile } from '$src/utils/helpersAudio';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
 	export let supabase: SupabaseClient;
@@ -52,21 +53,19 @@
 		});
 	};
 
-	const setIsloadingFalse = () => {
-		transcriptionLoading = false;
-	};
-
 	const transcribeRecording = async () => {
 		recordingButtonState = 'transcribing';
 		transcriptionLoading = true;
-
-		const transcription = await getTextFromSpeech({
-			audioFile: audioResponse.blob,
-			setIsloadingFalse
+		const formData = new FormData();
+		formData.append('userApiKey', getOpenAiKey() as string);
+		formData.append('audioFile', audioResponse.blob, 'recording.mp4');
+		const { data: transcription } = await supabase.functions.invoke('speech-to-text', {
+			body: formData
 		});
-		transcript = transcription.data;
-		recordingButtonState = 'disabled';
 		transcriptionLoading = false;
+		recordingButtonState = 'disabled';
+
+		transcript = transcription.data;
 	};
 
 	const saveRecording = async () => {
@@ -86,7 +85,7 @@
 				text: transcript
 			}
 		});
-		console.log('data', data);
+
 		const lang = JSON.parse(data).lng;
 		const { error } = await supabase.from('recordings').insert({
 			user_id: userId,

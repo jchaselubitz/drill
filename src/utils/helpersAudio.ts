@@ -6,34 +6,34 @@ export type GetTextFromSpeechProps = {
 	setIsloadingFalse: () => void;
 };
 
-export async function getTextFromSpeech({
-	audioFile,
-	setIsloadingFalse
-}: GetTextFromSpeechProps): Promise<{ data: string }> {
-	const apiKey = getOpenAiKey();
-	if (!apiKey) {
-		alert('OpenAI Key not found. Sign up for one at https://platform.openai.com/api-keys');
-		setIsloadingFalse();
-		return { data: '' };
-	}
+// export async function getTextFromSpeech({
+// 	audioFile,
+// 	setIsloadingFalse
+// }: GetTextFromSpeechProps): Promise<{ data: string }> {
+// 	const apiKey = getOpenAiKey();
+// 	if (!apiKey) {
+// 		alert('OpenAI Key not found. Sign up for one at https://platform.openai.com/api-keys');
+// 		setIsloadingFalse();
+// 		return { data: '' };
+// 	}
 
-	const formData = new FormData();
-	formData.append('apiKey', apiKey);
-	formData.append('audioFile', audioFile, 'recording.mp4');
+// 	const formData = new FormData();
+// 	formData.append('apiKey', apiKey);
+// 	formData.append('audioFile', audioFile, 'recording.mp4');
 
-	return fetch(`/api/ai/speech-to-text`, {
-		method: 'POST',
-		body: formData
-	})
-		.then((res) => res.json())
-		.then((data) => {
-			setIsloadingFalse;
-			return data;
-		})
-		.catch((err) => {
-			throw err;
-		});
-}
+// 	return fetch(`/api/ai/speech-to-text`, {
+// 		method: 'POST',
+// 		body: formData
+// 	})
+// 		.then((res) => res.json())
+// 		.then((data) => {
+// 			setIsloadingFalse;
+// 			return data;
+// 		})
+// 		.catch((err) => {
+// 			throw err;
+// 		});
+// }
 
 export type GetAudioFileProps = PlaySavedAudio & {
 	text: string;
@@ -49,10 +49,6 @@ export async function getAudioFile({
 	setIsLoadingFalse
 }: GetAudioFileProps) {
 	const apiKey = getOpenAiKey();
-	if (!apiKey) {
-		alert('OpenAI Key not found. Sign up for one at https://platform.openai.com/api-keys');
-		return;
-	}
 
 	fetch(`/api/ai/text-to-speech`, {
 		method: 'POST',
