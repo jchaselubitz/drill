@@ -1,6 +1,6 @@
 <script lang="ts">
 	import LessonCard from '$lib/lesson/LessonCard.svelte';
-	import { genText } from '$src/utils/helpersAI.js';
+	import { getModelSelection } from '$src/utils/helpersAI.js';
 	import LessonOptions from '$lib/lesson/LessonOptions.svelte';
 	import {
 		lessonGenerationSystemInstructions,
@@ -35,11 +35,14 @@
 			{ role: 'user', content: prompt }
 		];
 
-		const response = await genText({
-			modelParams,
-			messages
+		const { data } = await supabase.functions.invoke('gen-text', {
+			body: {
+				modelSelection: getModelSelection(),
+				modelParams: modelParams,
+				messages: messages
+			}
 		});
-		aiResponse = response;
+		aiResponse = data;
 		isLoading = false;
 	};
 </script>

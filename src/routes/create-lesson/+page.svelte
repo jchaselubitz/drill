@@ -22,6 +22,7 @@
 		bind:level
 		bind:optionListObject
 		bind:request
+		{supabase}
 	/>
 
 	{#if optionListObject && level && studyLanguage}

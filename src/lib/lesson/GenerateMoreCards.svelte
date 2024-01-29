@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
 	import type { Card } from '$src/types/primaryTypes';
-	import { genText } from '$src/utils/helpersAI';
+	import { getModelSelection } from '$src/utils/helpersAI';
 	import {
 		cardGenerationSystemInstructions,
 		cardResponseChecks,
@@ -45,11 +45,14 @@
 			format
 		};
 		try {
-			const response = await genText({
-				modelParams,
-				messages
+			const { data } = await supabase.functions.invoke('gen-text', {
+				body: {
+					modelSelection: getModelSelection(),
+					modelParams: modelParams,
+					messages: messages
+				}
 			});
-			const cardsArray = cardResponseChecks(response);
+			const cardsArray = cardResponseChecks(data);
 
 			const cardsArrayWithLesson = cardsArray.map((card: Card) => {
 				return { ...card, lesson_id: lessonId, user_id: userId };

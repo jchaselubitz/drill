@@ -2,7 +2,7 @@
 	import Select from '$lib/inputs/Select.svelte';
 	import Input from '$lib/inputs/Input.svelte';
 	import LoadingButton from '$lib/buttons/LoadingButton.svelte';
-	import { genText } from '$src/utils/helpersAI';
+	import { getModelSelection } from '$src/utils/helpersAI';
 	import {
 		requestLessonSuggestions,
 		lessonGenerationSystemInstructions,
@@ -12,7 +12,9 @@
 	} from '$src/utils/promptGenerators';
 	import { Languages, Levels, ContentSuggestions } from '$src/utils/lists';
 	import LightSuggestionList from './LightSuggestionList.svelte';
+	import type { SupabaseClient } from '@supabase/supabase-js';
 
+	export let supabase: SupabaseClient;
 	export let studyLanguage: string;
 	export let userLanguage: string;
 	export let level: string;
@@ -43,11 +45,14 @@
 			{ role: 'user', content: prompt }
 		];
 
-		const response = await genText({
-			modelParams,
-			messages
+		const { data } = await supabase.functions.invoke('gen-text', {
+			body: {
+				modelSelection: getModelSelection(),
+				modelParams: modelParams,
+				messages: messages
+			}
 		});
-		const cardsArray = cardResponseChecks(response);
+		const cardsArray = cardResponseChecks(data);
 		optionListObject = [{ title: request, description: level, cards: cardsArray }];
 		isLoading = false;
 	};
@@ -69,11 +74,14 @@
 			{ role: 'user', content: prompt }
 		];
 
-		const response = await genText({
-			modelParams,
-			messages
+		const { data } = await supabase.functions.invoke('gen-text', {
+			body: {
+				modelSelection: getModelSelection(),
+				modelParams: modelParams,
+				messages: messages
+			}
 		});
-		optionListObject = JSON.parse(response).concepts;
+		optionListObject = JSON.parse(data).concepts;
 
 		isLoading = false;
 	};

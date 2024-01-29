@@ -10,7 +10,7 @@
 	export let recording: Recording;
 	export let transcript: string | null = '';
 	export let isPlaying = false;
-	export let playRecording: () => Promise<void>;
+	export let playRecording: () => void;
 	let deleteLoading = false;
 
 	async function deleteRecording() {

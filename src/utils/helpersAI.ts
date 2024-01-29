@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 export type AiMessage = {
 	role: string;
 	content: string;
@@ -21,7 +19,6 @@ export const getOpenAiKey = () => {
 		return localStorage.getItem('OpenAIKey') ?? '';
 	}
 };
-const OpenAiUrl = import.meta.env.VITE_OPENAI_CHAT_URL;
 
 export type gptFormatType = 'json_object' | 'text';
 export type ModelParamsType = {
@@ -37,82 +34,6 @@ export type AiGenerateProps = {
 	messages: AiMessage[];
 	dbParams?: any;
 	dbCallback?: any;
-};
-
-export const genText = async ({ modelParams, messages, dbParams, dbCallback }: AiGenerateProps) => {
-	const OpenAiKey = getOpenAiKey();
-	if (!OpenAiKey) {
-		alert('OpenAI Key not found. Sign up for one at https://platform.openai.com/api-keys');
-		return;
-	}
-
-	const {
-		format = 'json_object',
-		presence_penalty = 0,
-		frequency_penalty = 0,
-		temperature = 0.5,
-		max_tokens = 3500
-	} = modelParams;
-
-	const payload = {
-		model: getModelSelection(),
-		messages: messages,
-		response_format: { type: format },
-		presence_penalty,
-		frequency_penalty,
-		temperature,
-		max_tokens
-	};
-	try {
-		const response = await axios.post(OpenAiUrl, payload, {
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${OpenAiKey}`
-			}
-		});
-		const assistantMessage = response.data.choices[0].message.content;
-		return assistantMessage;
-	} catch (error: any) {
-		console.error('OpenAI API Error:', error.response?.data, error.response?.message);
-	}
-};
-
-export const getLanguage = async (text: string) => {
-	const OpenAiKey = getOpenAiKey();
-	if (!OpenAiKey) {
-		alert('OpenAI Key not found. Sign up for one at https://platform.openai.com/api-keys');
-		return;
-	}
-
-	const snippet = text.slice(0, 20);
-
-	const payload = {
-		model: OpenAiModel.gpt3,
-		messages: [
-			{
-				role: 'system',
-				content: 'ISO 639 code as JSON object: { "lng": "en" }'
-			},
-			{ role: 'user', content: `what is the language of this text: ${snippet}?` }
-		],
-		response_format: { type: 'json_object' },
-		presence_penalty: 0,
-		frequency_penalty: 0,
-		temperature: 1,
-		max_tokens: 20
-	};
-	try {
-		const response = await axios.post(OpenAiUrl, payload, {
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${OpenAiKey}`
-			}
-		});
-		const assistantMessage = response.data.choices[0].message.content;
-		return assistantMessage;
-	} catch (error: any) {
-		console.error('OpenAI API Error:', error.response?.data, error.response?.message);
-	}
 };
 
 // const AITESTSTRING = `{"concepts":[

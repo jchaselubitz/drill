@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Option } from './types';
-	import { genText } from '$src/utils/helpersAI';
+	import { getModelSelection } from '$src/utils/helpersAI';
 	import LoadingButton from '$lib/buttons/LoadingButton.svelte';
 	import {
 		cardGenerationSystemInstructions,
@@ -50,12 +50,15 @@
 			format
 		};
 
-		const response = await genText({
-			modelParams,
-			messages
+		const { data } = await supabase.functions.invoke('gen-text', {
+			body: {
+				modelSelection: getModelSelection(),
+				modelParams: modelParams,
+				messages: messages
+			}
 		});
 
-		cardsArray = cardResponseChecks(response);
+		cardsArray = cardResponseChecks(data);
 		isLoading = false;
 	};
 

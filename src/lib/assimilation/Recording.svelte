@@ -2,7 +2,6 @@
 	import { invalidate } from '$app/navigation';
 	import RecordButton from '$lib/buttons/RecordButton.svelte';
 	import type { RecordButtonStateType } from '$lib/buttons/types';
-	import { getLanguage } from '$src/utils/helpersAI';
 	import { getTextFromSpeech, recordAudio, savePrivateAudioFile } from '$src/utils/helpersAudio';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -82,8 +81,13 @@
 			audioFile: audioResponse.blob
 		});
 		//save transcript	to database
-		const resp = await getLanguage(transcript);
-		const lang = JSON.parse(resp).lng;
+		const { data } = await supabase.functions.invoke('get-language', {
+			body: {
+				text: transcript
+			}
+		});
+		console.log('data', data);
+		const lang = JSON.parse(data).lng;
 		const { error } = await supabase.from('recordings').insert({
 			user_id: userId,
 			transcript: transcript,

@@ -1,7 +1,11 @@
 <script lang="ts">
 	import NestedObject from './NestedObject.svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import { MOCK_ARBITRARY_RESPONSE, genText, type gptFormatType } from '$src/utils/helpersAI';
+	import {
+		MOCK_ARBITRARY_RESPONSE,
+		getModelSelection,
+		type gptFormatType
+	} from '$src/utils/helpersAI';
 	import type { DestinationTable } from '$src/utils/helpersDB';
 	import LoadingButton from '$lib/buttons/LoadingButton.svelte';
 	import type { ArbitraryObject } from './types';
@@ -36,10 +40,16 @@
 			{ role: 'user', content: `transcript: ${transcript}` }
 		];
 
-		const response = await genText({ modelParams, messages });
-		genResponse = JSON.parse(response);
+		const { data } = await supabase.functions.invoke('gen-text', {
+			body: {
+				modelSelection: getModelSelection(),
+				modelParams: modelParams,
+				messages: messages
+			}
+		});
+
+		genResponse = JSON.parse(data);
 		requestLoading = false;
-		// console.log('response:', response);
 	}
 
 	async function saveContent(dest_table: DestinationTable, content: string): Promise<boolean> {
