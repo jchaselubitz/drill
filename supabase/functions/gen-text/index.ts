@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
 
 	try {
 		const openai = new OpenAI({
-			apiKey: userApiKey ? userApiKey : Deno.env.get('OPENAI_API_KEY');
+			apiKey: userApiKey ? userApiKey : Deno.env.get('OPENAI_API_KEY')
 		});
 
 		const {
