@@ -66,7 +66,7 @@
 			setIsloadingFalse
 		});
 		transcript = transcription.data;
-		recordingButtonState = 'recording';
+		recordingButtonState = 'disabled';
 		transcriptionLoading = false;
 	};
 
@@ -99,6 +99,9 @@
 	};
 
 	const handleClick = () => {
+		if (recordingButtonState === 'disabled') {
+			return;
+		}
 		if (recordingButtonState === 'recording') {
 			stopRecording();
 		} else {

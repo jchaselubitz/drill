@@ -7,7 +7,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	const apiKey = data.get('apiKey') as string;
 	const audioFile = data.get('audioFile');
 
-	async function genText() {
+	async function genTranscript() {
 		const openai = new OpenAI({
 			apiKey
 		});
@@ -23,7 +23,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 	}
 
-	const result = await genText();
+	const result = await genTranscript();
 	return new Response(JSON.stringify(result), {
 		headers: {
 			'Content-Type': 'application/json'

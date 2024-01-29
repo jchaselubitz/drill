@@ -19,7 +19,7 @@ export async function getTextFromSpeech({
 
 	const formData = new FormData();
 	formData.append('apiKey', apiKey);
-	formData.append('audioFile', audioFile, 'recording.webm');
+	formData.append('audioFile', audioFile, 'recording.mp4');
 
 	return fetch(`/api/ai/speech-to-text`, {
 		method: 'POST',
@@ -148,11 +148,12 @@ interface RecordAudioResult {
 export function recordAudio() {
 	return new Promise<RecordAudioResult>((resolve) => {
 		navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-			const options = { mimeType: 'audio/webm' };
-			const mediaRecorder = new MediaRecorder(stream, options);
+			// const options = { mimeType: 'audio/mpeg' };
+			const mediaRecorder = new MediaRecorder(stream);
 			const audioChunks: Blob[] = [];
 			mediaRecorder.addEventListener('dataavailable', (event) => {
 				audioChunks.push(event.data);
+				console.log(mediaRecorder.mimeType);
 			});
 
 			const start = () => {
@@ -162,7 +163,7 @@ export function recordAudio() {
 			const stop = () => {
 				return new Promise<{ blob: Blob; url: string }>((resolve) => {
 					mediaRecorder.addEventListener('stop', () => {
-						const blob = new Blob(audioChunks, { type: 'audio/webm' });
+						const blob = new Blob(audioChunks, { type: 'audio/mp4' });
 						const url = URL.createObjectURL(blob);
 						stream.getTracks().forEach((track) => track.stop());
 						resolve({ blob, url });
