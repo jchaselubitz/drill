@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
 		try {
 			const formData = await req.formData();
 			const userApiKey = formData.get('userApiKey');
-			const audioFile = formData.get('audioFile'); // Assuming 'audioFile' is the field name for the file
+			const audioFile = formData.get('audioFile');
 
 			const openai = new OpenAI({
 				apiKey: userApiKey ? userApiKey : Deno.env.get('OPENAI_API_KEY')

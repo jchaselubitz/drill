@@ -10,16 +10,11 @@ export type GetTextFromSpeechProps = {
 // 	audioFile,
 // 	setIsloadingFalse
 // }: GetTextFromSpeechProps): Promise<{ data: string }> {
-// 	const apiKey = getOpenAiKey();
-// 	if (!apiKey) {
-// 		alert('OpenAI Key not found. Sign up for one at https://platform.openai.com/api-keys');
-// 		setIsloadingFalse();
-// 		return { data: '' };
-// 	}
+// 	const apiKey = getOpenAiKey() as string;
 
 // 	const formData = new FormData();
 // 	formData.append('apiKey', apiKey);
-// 	formData.append('audioFile', audioFile, 'recording.mp4');
+// 	formData.append('audioFile', audioFile, 'audio.mp4');
 
 // 	return fetch(`/api/ai/speech-to-text`, {
 // 		method: 'POST',
@@ -28,6 +23,7 @@ export type GetTextFromSpeechProps = {
 // 		.then((res) => res.json())
 // 		.then((data) => {
 // 			setIsloadingFalse;
+// 			console.log('data:', data);
 // 			return data;
 // 		})
 // 		.catch((err) => {
@@ -153,7 +149,7 @@ export function recordAudio() {
 			});
 
 			const start = () => {
-				mediaRecorder.start();
+				mediaRecorder.start(1000);
 			};
 
 			const stop = () => {

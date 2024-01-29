@@ -68,6 +68,23 @@
 		transcript = transcription.data;
 	};
 
+	// const setIsloadingFalse = () => {
+	// 	transcriptionLoading = false;
+	// };
+
+	// const transcribeRecording = async () => {
+	// 	recordingButtonState = 'transcribing';
+	// 	transcriptionLoading = true;
+
+	// 	const transcription = await getTextFromSpeech({
+	// 		audioFile: audioResponse.blob,
+	// 		setIsloadingFalse
+	// 	});
+	// 	transcript = transcription.data;
+	// 	recordingButtonState = 'disabled';
+	// 	transcriptionLoading = false;
+	// };
+
 	const saveRecording = async () => {
 		isSaving = true;
 		const fileName = `${Date.now()}-recording`;
