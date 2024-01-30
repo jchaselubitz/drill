@@ -6,7 +6,7 @@
 	export let saveContent: (dest_table: DestinationTable, content: string) => Promise<boolean>;
 
 	$: saved = false;
-	console.log('parentKeys:', parentKeys);
+	// console.log('parentKeys:', parentKeys);
 
 	async function handleSave(value: any) {
 		const cleanValue = value.trim();

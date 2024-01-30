@@ -12,12 +12,16 @@
 	import type { ArbitraryObject } from './types';
 	import LightSuggestionList from '$lib/lesson/LightSuggestionList.svelte';
 	import { TranscriptRequestSuggestions } from '$src/utils/lists';
+	import type { Recording } from '$src/types/primaryTypes';
 
-	export let transcript: string | null = '';
+	export let recording: Recording;
 	export let supabase: SupabaseClient;
 	export let source: string;
 	$: genResponse = [] as ArbitraryObject;
 	$: requestLoading = false;
+
+	const transcript = recording.transcript;
+	const lang = recording.lang;
 
 	// let genResponse: any = JSON.parse(MOCK_ARBITRARY_RESPONSE);
 
@@ -59,7 +63,7 @@
 			{
 				source,
 				text: content,
-				lang: 'de'
+				lang: lang
 			}
 		]);
 		if (error) {
@@ -89,12 +93,6 @@
 </div>
 
 <style>
-	.container {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-
 	.input {
 		flex: 1;
 		padding: 0.5rem;

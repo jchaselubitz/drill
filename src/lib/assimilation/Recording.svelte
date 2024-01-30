@@ -12,7 +12,6 @@
 
 	let recordingButtonState = 'idle' as RecordButtonStateType;
 	let showActionButtons = false;
-
 	$: transcriptionLoading = false;
 	$: audioState = null as any;
 	$: audioResponse = null as any;
@@ -97,12 +96,14 @@
 			audioFile: audioResponse.blob
 		});
 		//save transcript	to database
-		const { data } = await supabase.functions.invoke('get-language', {
+		const { data, error: langError } = await supabase.functions.invoke('check-language', {
 			body: {
 				text: transcript
 			}
 		});
-
+		if (langError) {
+			throw Error(`Error checking language: ${langError}`);
+		}
 		const lang = JSON.parse(data).lng;
 		const { error } = await supabase.from('recordings').insert({
 			user_id: userId,

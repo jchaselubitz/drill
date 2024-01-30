@@ -8,7 +8,6 @@
 
 	export let supabase: SupabaseClient;
 	export let recording: Recording;
-	export let transcript: string | null = '';
 	export let isPlaying = false;
 	export let playRecording: () => void;
 	let deleteLoading = false;
@@ -37,5 +36,5 @@
   list verbs
  </button> -->
 
-	<ContentRequest {transcript} {supabase} source="transcript" />
+	<ContentRequest {recording} {supabase} source="transcript" />
 </div>

@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
 		return new Response('ok', { headers: corsHeaders });
 	}
 	const data = await req.json();
-
+	const text = data.text;
 	const snippet = text.slice(0, 20);
 	const messages = [
 		{
