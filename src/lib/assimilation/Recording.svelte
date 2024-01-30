@@ -13,31 +13,34 @@
 	let recordingButtonState = 'idle' as RecordButtonStateType;
 	let showActionButtons = false;
 	$: transcriptionLoading = false;
-	$: audioState = null as any;
+	$: recordingState = null as any;
 	$: audioResponse = null as any;
+	$: audioState = null as any;
 	$: isSaving = false;
+	$: isPlaying = false;
 
 	const resetRecordingButtonState = () => {
 		recordingButtonState = 'idle';
 		showActionButtons = false;
 		transcriptionLoading = false;
+		recordingState = null;
 		audioState = null;
 		transcript = '';
 		isSaving = false;
 	};
 
 	const startRecording = async () => {
-		const audio = await recordAudio();
+		const recording = await recordAudio();
 		if (recordingButtonState === 'idle') {
 			recordingButtonState = 'recording';
 			showActionButtons = false;
-			audio.start();
+			recording.start();
 		}
-		audioState = audio;
+		recordingState = recording;
 	};
 
 	const stopRecording = async () => {
-		const response = await audioState.stop();
+		const response = await recordingState.stop();
 		audioResponse = response;
 		recordingButtonState = 'idle';
 		showActionButtons = true;
@@ -45,11 +48,22 @@
 		// show transcribe option
 	};
 
-	const playRecording = () => {
-		const audio = new Audio(audioResponse.url);
-		audio.play().catch((e) => {
-			throw Error('Error playing audio:', e);
-		});
+	const playPauseRecording = () => {
+		if (isPlaying) {
+			audioState.pause();
+			isPlaying = false;
+		} else {
+			if (!audioState) {
+				audioState = new Audio(audioResponse.url);
+			}
+			isPlaying = true;
+			audioState.play().catch((e) => {
+				throw Error('Error playing audio:', e);
+			});
+			audioState.onended = () => {
+				isPlaying = false;
+			};
+		}
 	};
 
 	const transcribeRecording = async () => {
@@ -134,9 +148,9 @@
 		{
 			show: true,
 			isLoading: false,
-			text: 'Play',
+			text: isPlaying ? 'Pause' : 'Play',
 			onClick: () => {
-				playRecording();
+				playPauseRecording();
 			}
 		},
 		{
