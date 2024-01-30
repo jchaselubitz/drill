@@ -8,12 +8,13 @@
 	import { type SubmitFunction } from '@sveltejs/kit';
 	import AuthModal from '$lib/authForm/AuthModal.svelte';
 	import SideBar from '$lib/navigation/SideBar.svelte';
+	import AuthForm from '$lib/authForm/AuthForm.svelte';
 
 	export let data: PageData;
 
-	$: ({ supabase, session, url } = data);
-
+	$: ({ supabase, session, pathname } = data);
 	$: sidebarIsOpen = undefined as boolean | undefined;
+	$: isPublic = pathname.includes('password-reset');
 
 	onMount(() => {
 		sidebarIsOpen = localStorage.getItem('sidebarIsOpen') === 'true';
@@ -55,14 +56,16 @@
 
 {#if sidebarIsOpen !== undefined}
 	<div class="flex absolute top-0 bottom-0 w-full">
-		{#if !session}
-			<AuthModal {supabase} {url} />
-		{/if}
-		{#if sidebarIsOpen}
+		{#if sidebarIsOpen && session}
 			<SideBar {sidebarIsOpen} {toggleSidebar} />
 		{/if}
-		<div class={cn(sidebarIsOpen && 'md:ml-64', 'flex flex-col w-full')}>
-			<NavBar {session} {sidebarIsOpen} {toggleSidebar} {submitLogout} />
+		{#if !session && !isPublic}
+			<AuthModal {supabase} />
+		{/if}
+		<div class={cn(sidebarIsOpen && !isPublic && 'md:ml-64', 'flex flex-col w-full')}>
+			{#if !isPublic}
+				<NavBar {session} {sidebarIsOpen} {toggleSidebar} {submitLogout} />
+			{/if}
 			<div class="p-1 md:p-4 w-full h-full">
 				<slot />
 			</div>
