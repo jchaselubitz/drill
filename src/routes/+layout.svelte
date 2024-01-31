@@ -5,19 +5,21 @@
 	import { onMount } from 'svelte';
 	import NavBar from '$lib/navigation/NavBar.svelte';
 	import type { PageData } from './$types';
-	import { type SubmitFunction } from '@sveltejs/kit';
+	import { redirect, type SubmitFunction } from '@sveltejs/kit';
 	import AuthModal from '$lib/authForm/AuthModal.svelte';
 	import SideBar from '$lib/navigation/SideBar.svelte';
-	import AuthForm from '$lib/authForm/AuthForm.svelte';
+	import type { ViewType } from '@supabase/auth-ui-shared';
+	import AuthUpdate from '$lib/authForm/AuthUpdate.svelte';
 
 	export let data: PageData;
 
-	$: ({ supabase, session, pathname } = data);
+	$: ({ supabase, session, pathname, code } = data);
 	$: sidebarIsOpen = undefined as boolean | undefined;
 	$: isPublic = pathname.includes('password-reset');
 
 	onMount(() => {
 		sidebarIsOpen = localStorage.getItem('sidebarIsOpen') === 'true';
+
 		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
 			if (_session?.expires_at !== session?.expires_at) {
 				invalidate('supabase:auth');
@@ -48,6 +50,10 @@
 		localStorage.setItem('sidebarIsOpen', (!sidebarIsOpen).toString());
 		sidebarIsOpen = !sidebarIsOpen;
 	};
+
+	const passwordUpdateComplete = () => {
+		code = null;
+	};
 </script>
 
 <svelte:head>
@@ -58,6 +64,9 @@
 	<div class="flex absolute top-0 bottom-0 w-full">
 		{#if sidebarIsOpen && session}
 			<SideBar {sidebarIsOpen} {toggleSidebar} />
+		{/if}
+		{#if code}
+			<AuthUpdate {supabase} onCompletion={passwordUpdateComplete} />
 		{/if}
 		{#if !session && !isPublic}
 			<AuthModal {supabase} />
