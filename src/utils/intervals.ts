@@ -1,9 +1,9 @@
-import type { Card } from '$src/types/primaryTypes';
+import type { Translation } from '$src/types/primaryTypes';
 import { getDateDay, toJsDateType, toDbDate, minutesToMilliseconds } from './helpersDate';
 
 export type UserResponse = 'BAD' | 'HARD' | 'GOOD' | 'EASY';
 
-const isNewCard = (card: Card) => {
+const isNewCard = (card: Translation) => {
 	return !card.repetition_history || card.repetition_history.length === 0;
 };
 
@@ -13,22 +13,22 @@ export function createReviewDeck({
 	max_new_cards,
 	max_cards
 }: {
-	latestReview: Card[] | null;
-	cards: Card[];
+	latestReview: Translation[] | null;
+	cards: Translation[];
 	max_new_cards: number;
 	max_cards: number;
-}): Card[] {
+}): Translation[] {
 	const maxReviews = max_cards - max_new_cards;
 	const now = new Date();
 	const nowDay = getDateDay(now);
 
 	if (!cards) return [];
-	let newList: Card[] = [];
-	let nextReview: Card[] = [];
+	let newList: Translation[] = [];
+	let nextReview: Translation[] = [];
 
 	const recentReview = !latestReview || latestReview.length === 0 ? [] : latestReview;
 
-	recentReview.map((card: Card) => {
+	recentReview.map((card: Translation) => {
 		if (isNewCard(card)) {
 			newList.push(card);
 		}
@@ -59,11 +59,11 @@ export function createReviewDeck({
 }
 
 export function calculateNextInterval(
-	intervals_minutes: number[],
+	interval_historyutes: number[],
 	repetition_history: string[],
 	response: UserResponse
 ): number {
-	const latest_interval = intervals_minutes[intervals_minutes?.length - 1] ?? 0;
+	const latest_interval = interval_historyutes[interval_historyutes?.length - 1] ?? 0;
 	const HARD_MULITPLIER = 1;
 	const GOOD_MULTIPLIER = 2.5;
 	const EASY_MULTIPLIER = 4;

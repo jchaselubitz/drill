@@ -5,10 +5,9 @@
 	import { onMount } from 'svelte';
 	import NavBar from '$lib/navigation/NavBar.svelte';
 	import type { PageData } from './$types';
-	import { redirect, type SubmitFunction } from '@sveltejs/kit';
+	import { type SubmitFunction } from '@sveltejs/kit';
 	import AuthModal from '$lib/authForm/AuthModal.svelte';
 	import SideBar from '$lib/navigation/SideBar.svelte';
-	import type { ViewType } from '@supabase/auth-ui-shared';
 	import AuthUpdate from '$lib/authForm/AuthUpdate.svelte';
 
 	export let data: PageData;

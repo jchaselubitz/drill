@@ -3,6 +3,7 @@
 	import type { Lesson } from '$src/types/primaryTypes';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import GenerateMoreCards from './GenerateMoreCards.svelte';
+	import { LanguagesISO639 } from '$src/utils/lists';
 
 	export let lesson: Lesson;
 	export let userId: string | undefined;
@@ -17,12 +18,12 @@
 			lessonId={lesson.id}
 			lessonTitle={lesson.title}
 			subjectLanguage={lesson.subjects.name}
-			userLanguage={'English'}
+			userLanguage={LanguagesISO639.English}
 			currentLevel={lesson.subjects.current_level}
 			{supabase}
 		/>
 	</div>
 	<hr class="border-gray-300 my-5" />
 
-	<DeckList cards={lesson.cards} {supabase} />
+	<DeckList cards={lesson.translations} {supabase} />
 </div>

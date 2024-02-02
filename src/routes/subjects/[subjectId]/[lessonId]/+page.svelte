@@ -2,7 +2,7 @@
 	import FlashCard from '$lib/decks/FlashCard.svelte';
 	import LessonControlBar from '$lib/lesson/LessonControlBar.svelte';
 	import LessonSettings from '$lib/lesson/LessonSettings.svelte';
-	import type { Card, CardRef } from '$src/types/primaryTypes';
+	import type { Translation, CardRef } from '$src/types/primaryTypes';
 
 	import type { PageData } from './$types';
 	export let data: PageData;
@@ -11,7 +11,7 @@
 	$: userId = session?.user?.id;
 	$: currentCard = reviewDeckCards[currentCardIndex];
 	$: uncompletedCardRefs = reviewDeckDict.filter((cardRef: CardRef) => cardRef.completed === false);
-	$: reviewHistory = [] as Card[];
+	$: reviewHistory = [] as Translation[];
 	$: showLessonSettings = false;
 	$: showSide2First = lesson.show_side_2_first;
 
@@ -42,7 +42,7 @@
 		const { data, error } = await supabase
 			.from('cards')
 			.update({
-				intervals_min: updatedIntervals,
+				interval_history: updatedIntervals,
 				repetition_history: updatedRepHistory
 			})
 			.eq('id', cardId);
@@ -64,7 +64,7 @@
 		}
 		const previousCard = reviewHistory[reviewHistory.length - 1];
 		const repetitionHistory = previousCard.repetition_history;
-		const intervalsMin = previousCard.intervals_min;
+		const intervalsMin = previousCard.interval_history;
 		const updatedRepHistory =
 			repetitionHistory && repetitionHistory?.length > 0 ? repetitionHistory.slice(0, -1) : [];
 		const updatedIntervals =

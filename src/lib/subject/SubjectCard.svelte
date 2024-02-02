@@ -8,7 +8,7 @@
 	};
 </script>
 
-<a href={`${subject.id}`}>
+<a href={`subjects/${subject.id}`}>
 	<div
 		role="button"
 		tabindex="0"

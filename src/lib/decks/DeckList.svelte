@@ -1,34 +1,33 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
-	import type { Database, Tables } from '$src/types/database.types';
-	import type { Card } from '$src/types/primaryTypes';
+	import type { Translation } from '$src/types/primaryTypes';
+	import { getLangName } from '$src/utils/lists';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
 	export let supabase: SupabaseClient<any, 'public', any>;
-	export let cards: Card[];
+	export let cards: Translation[];
 	const labelClass = 'text-sm md:text-base font-bold text-gray-500 whitespace-nowrap';
 	const rowInputClass = 'w-64 md:w-full';
 
-	async function updateCard(cardId: number, side_1: string | null, side_2: string | null) {
+	async function updatePhrase(phraseId: number, text: string | null) {
 		const { data, error } = await supabase
-			.from('cards')
+			.from('phrases')
 			.update({
-				side_1,
-				side_2
+				text
 			})
-			.eq('id', cardId);
+			.eq('id', phraseId);
 
 		if (error) {
-			throw Error(`${'Failed to update card status:'} ${error.message}`);
+			throw Error(`${'Failed to update phrase:'} ${error.message}`);
 		}
 		invalidate('app:lesson');
 	}
 
-	const lastInterval = (card: Card) => {
-		return card.intervals_min ? card.intervals_min[card.intervals_min?.length - 1] : '-';
+	const lastInterval = (card: Translation) => {
+		return card.interval_history ? card.interval_history[card.interval_history?.length - 1] : '-';
 	};
 
-	const nextRepetition = (card: Card) => {
+	const nextRepetition = (card: Translation) => {
 		return card.repetition_history
 			? card.repetition_history[card.repetition_history?.length - 1]
 			: '-';
@@ -40,8 +39,8 @@
 		<thead>
 			<tr>
 				<!-- <th>Id</th> -->
-				<th class={labelClass}>Side 1</th>
-				<th class={labelClass}>Side 2</th>
+				<th class={labelClass}>{getLangName(cards[0].phrase_primary_id.lang)}</th>
+				<th class={labelClass}>{getLangName(cards[0].phrase_secondary_id.lang)}</th>
 				<th class={labelClass}>Last interval</th>
 				<th class={labelClass}>Next repetition</th>
 			</tr>
@@ -53,22 +52,22 @@
 					<td
 						><input
 							class={rowInputClass}
-							value={card.side_1}
+							value={card.phrase_primary_id.text}
 							on:blur={(event) => {
 								//@ts-ignore
 								const side_1 = event.target.value;
-								updateCard(card.id, side_1, card.side_2);
+								updatePhrase(card.phrase_primary_id.id, side_1);
 							}}
 						/></td
 					>
 					<td
 						><input
 							class={rowInputClass}
-							value={card.side_2}
+							value={card.phrase_secondary_id.text}
 							on:blur={(event) => {
 								//@ts-ignore
 								const side_2 = event.target.value;
-								updateCard(card.id, card.side_1, side_2);
+								updatePhrase(card.phrase_secondary_id.id, side_2);
 							}}
 						/></td
 					>

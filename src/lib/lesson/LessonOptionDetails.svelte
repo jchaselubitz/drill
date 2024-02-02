@@ -9,26 +9,32 @@
 	} from '$src/utils/promptGenerators';
 	import { invalidate } from '$app/navigation';
 	import type { SupabaseClient } from '@supabase/supabase-js';
+	import { LanguagesISO639, getLangName } from '$src/utils/lists';
 
 	export let option: Option;
 
 	export let userId: string | undefined;
 	export let subjectId: string | null;
-	export let subjectLanguage: string;
-	export let userLanguage: string;
+	export let studyLanguage: LanguagesISO639;
+	export let userLanguage: LanguagesISO639;
 	export let currentLevel: string;
 	export let supabase: SupabaseClient<any, 'public', any>;
 
 	$: isLoading = false;
 	$: cardsArray = option.cards ?? [];
 	$: lessonLink = null as string | null;
+	$: console.log('cardsArray', cardsArray);
 
 	const fetchSuggestedCards = async () => {
 		isLoading = true;
+		if (!studyLanguage || !userLanguage) {
+			throw new Error('Language not selected');
+		}
+
 		const { prompt, format } = requestCardSuggestions({
 			concept: option.title,
-			studyLanguage: subjectLanguage,
-			userLanguage: userLanguage,
+			studyLanguage,
+			userLanguage,
 			level: currentLevel
 		});
 
@@ -36,8 +42,8 @@
 			{
 				role: 'system',
 				content: cardGenerationSystemInstructions({
-					key1: 'side_1',
-					key2: 'side_2'
+					lang1: userLanguage,
+					lang2: studyLanguage
 				})
 			},
 			{
@@ -50,7 +56,7 @@
 			format
 		};
 
-		const { data } = await supabase.functions.invoke('gen-text', {
+		const { data, error } = await supabase.functions.invoke('gen-text', {
 			body: {
 				userApiKey: getOpenAiKey(),
 				modelSelection: getModelSelection(),
@@ -59,24 +65,28 @@
 			}
 		});
 
-		cardsArray = cardResponseChecks(data);
+		cardsArray = cardResponseChecks({
+			response: data,
+			lang1: userLanguage,
+			lang2: studyLanguage
+		});
 		isLoading = false;
 	};
 
 	const handleSave = async (option: Option) => {
 		isLoading = true;
 		try {
-			const { data: dbData, error } = await supabase.rpc('create_subject_lesson_cards', {
-				_subject_id: subjectId ?? null,
-				_user_id: userId,
-				_subject_name: subjectLanguage,
+			const { data: dbData, error } = await supabase.rpc('create_subject_lesson_translations', {
 				_current_level: currentLevel,
-				_lesson_title: option.title,
 				_lesson_description: option.description,
-				_cards: cardsArray
+				_lesson_title: option.title,
+				_subject_id: subjectId ?? null,
+				_subject_name: getLangName(studyLanguage),
+				_translations: cardsArray,
+				_user_id: userId
 			});
 			if (dbData) {
-				lessonLink = `/${dbData.subject_id}/${dbData.lesson_id}`;
+				lessonLink = `/subjects/${dbData.subject_id}/${dbData.lesson_id}`;
 				invalidate('app:generated-lesson');
 				isLoading = false;
 			}
@@ -116,12 +126,12 @@
 		{#each cardsArray as card}
 			<div class="flex flex-col odd:bg-white even:bg-gray-100 p-2">
 				<span class="flex leading-tight">
-					<span class="font-bold whitespace-nowrap mr-1">Side 1:</span>
-					<span>{card.side_1}</span>
+					<span class="font-bold whitespace-nowrap mr-1">{getLangName(userLanguage)}:</span>
+					<span>{card.phrase_primary.text}</span>
 				</span>
 				<span class="flex leading-tight">
-					<span class="font-bold whitespace-nowrap mr-1">Side 2:</span>
-					<span>{card.side_2}</span>
+					<span class="font-bold whitespace-nowrap mr-1">{getLangName(studyLanguage)}:</span>
+					<span>{card.phrase_secondary.text}</span>
 				</span>
 			</div>
 		{/each}

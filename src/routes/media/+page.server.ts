@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ locals, depends }) => {
 		.eq('user_id', userId)
 		.order('created_at', { ascending: false });
 
-	depends('app:my-content');
+	depends('app:my-media');
 
 	return {
 		recordings: recordings ?? []

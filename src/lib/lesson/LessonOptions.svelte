@@ -2,10 +2,11 @@
 	import type { Option } from './types';
 	import LessonOption from './LessonOption.svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
+	import type { LanguagesISO639 } from '$src/utils/lists';
 
 	export let options: Option[];
-	export let userLanguage: string;
-	export let subjectLanguage: string;
+	export let userLanguage: LanguagesISO639;
+	export let studyLanguage: LanguagesISO639;
 	export let currentLevel: string;
 	export let supabase: SupabaseClient<any, 'public', any>;
 	export let userId: string | undefined;
@@ -16,7 +17,7 @@
 	{#each options as option}
 		<LessonOption
 			{option}
-			{subjectLanguage}
+			{studyLanguage}
 			{userLanguage}
 			{currentLevel}
 			{userId}

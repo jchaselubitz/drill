@@ -3,10 +3,11 @@
 	import type { Option } from './types';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import LessonOptionDetails from './LessonOptionDetails.svelte';
+	import type { LanguagesISO639 } from '$src/utils/lists';
 
 	export let option: Option;
-	export let userLanguage: string;
-	export let subjectLanguage: string;
+	export let userLanguage: LanguagesISO639;
+	export let studyLanguage: LanguagesISO639;
 	export let currentLevel: string;
 	export let supabase: SupabaseClient<any, 'public', any>;
 	export let userId: string | undefined;
@@ -39,7 +40,7 @@
 			type="submit"
 			class="flex px-4 pt-4 w-full items-start"
 			tabindex="0"
-			on:click={() => handleSelected(option)}
+			on:click={() => handleSelected()}
 			on:keydown={(e) => handleKeyDown(e, option)}
 		>
 			<div class="col-span-11 flex flex-col items-start">
@@ -53,7 +54,7 @@
 				{option}
 				{userId}
 				{subjectId}
-				{subjectLanguage}
+				{studyLanguage}
 				{userLanguage}
 				{currentLevel}
 				{supabase}

@@ -1,14 +1,15 @@
 <script lang="ts">
 	import LessonOptions from '$lib/lesson/LessonOptions.svelte';
 	import LessonCreationForm from '$lib/lesson/LessonCreationForm.svelte';
+	import { LanguagesISO639 } from '$src/utils/lists.js';
 
 	export let data;
 	$: ({ session, supabase } = data);
 	$: userId = session?.user?.id;
 
-	let userLanguage = 'English';
+	let userLanguage = LanguagesISO639.English;
 	$: level = '';
-	$: studyLanguage = '';
+	$: studyLanguage = '' as LanguagesISO639 | '';
 	$: request = '';
 
 	$: optionListObject = null;
@@ -25,11 +26,11 @@
 		{supabase}
 	/>
 
-	{#if optionListObject && level && studyLanguage}
+	{#if optionListObject && level && studyLanguage !== ''}
 		<LessonOptions
 			options={optionListObject}
-			subjectLanguage={studyLanguage}
-			userLanguage={'English'}
+			{studyLanguage}
+			{userLanguage}
 			currentLevel={level}
 			subjectId={null}
 			{supabase}

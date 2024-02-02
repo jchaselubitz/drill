@@ -1,6 +1,7 @@
 // ==== Lesson Suggestions ====
 
 import type { gptFormatType } from './helpersAI';
+import { LanguagesISO639, getLangName } from './lists';
 
 export const lessonGenerationSystemInstructions =
 	'Return a JSON that is a list of objects, each including the "title" of the concept and a very short "description". Your response will be parsed as follows: JSON.parse(<your-response>)';
@@ -19,25 +20,43 @@ export const requestLessonSuggestions = ({
 
 // ==== Card Content Generation ====
 
-export const cardGenerationSystemInstructions = ({ key1, key2 }: { key1: string; key2: string }) =>
-	`The student will ask you for a list of examples, which will be added to flashcards. The Your response will be parsed as follows: JSON.parse(<your-response>). Return a "cards" JSON that is a list of objects, each with the following keys: ${key1}, ${key2}`;
+export const cardGenerationSystemInstructions = ({
+	lang1,
+	lang2
+}: {
+	lang1: LanguagesISO639;
+	lang2: LanguagesISO639;
+}) =>
+	`The student will ask you for a list of examples, which will be added to flashcards. The Your response will be parsed as follows: JSON.parse(<your-response>). Return a "cards" JSON that is a list of objects, each with the following keys: phrase_primary, phrase_secondary. The phrase_primary is the ${lang1} phrase, and the phrase_secondary is the ${lang2} phrase. The format should therefore be: [{phrase_primary: {text: "phrase1", lang:${lang1}}, phrase_secondary: {text: "phrase2", lang:${lang2}}}, ...]`;
 
-export const cardResponseChecks = (response: string) => {
+export const cardResponseChecks = ({
+	response,
+	lang1,
+	lang2
+}: {
+	response: string;
+	lang1: string;
+	lang2: string;
+}) => {
 	if (response === '') {
 		throw Error('No cards generated. Try again.');
 	}
 	const cardsObject = JSON.parse(response);
+
 	if (!cardsObject.cards) {
 		alert('OpenAI returned wrong format. This happens sometimes. Please try again.');
 		throw Error('OpenAI returned wrong format (not .cards). Please try again.');
 	}
-	const cardsArray = JSON.parse(response).cards;
+	const cardsArray = cardsObject.cards;
 	if (cardsArray.length === 0) {
 		throw Error('No cards generated. Try again.');
 	}
-	if (!cardsArray[0].side_1 || !cardsArray[0].side_2) {
+	if (!cardsArray[0].phrase_primary.lang || !cardsArray[0].phrase_secondary.text) {
 		alert('OpenAI returned wrong format. This happens sometimes. Please try again.');
-		throw Error('OpenAI returned wrong format (not side_1/side_2). Please try again.');
+		console.log(cardsArray);
+		throw Error(
+			'OpenAI returned wrong format (not phrase_primary/phrase_secondary). Please try again.'
+		);
 	}
 	return cardsArray;
 };
@@ -49,14 +68,23 @@ export const requestCardSuggestions = ({
 	level
 }: {
 	concept: string;
-	studyLanguage: string;
-	userLanguage: string;
+	studyLanguage: LanguagesISO639 | '';
+	userLanguage: LanguagesISO639 | '';
 	level: string;
 }): { prompt: string; format: gptFormatType } => {
 	if (studyLanguage === '' || concept === '' || level === '' || userLanguage === '') {
 		throw new Error('studyLanguage, concept, or level is empty');
 	}
-	const prompt = `You are helping a student study ${studyLanguage} at a level that matches ${level} (according to the Common European Framework of Reference for Languages). You are creating flashcards, with ${userLanguage} on one side and ${studyLanguage} on the other. Generate twenty long sentences that demonstrate the concept of ${concept} in ${studyLanguage}. `;
+
+	const prompt = `You are helping a student study ${getLangName(
+		studyLanguage
+	)} at a level that matches ${level} (according to the Common European Framework of Reference for Languages). You are creating flashcards, with ${getLangName(
+		userLanguage
+	)} on one side and ${getLangName(
+		studyLanguage
+	)} on the other. Generate twenty long sentences that demonstrate the concept of ${concept} in ${getLangName(
+		studyLanguage
+	)}. `;
 	const format = 'json_object';
 	return { prompt, format };
 };

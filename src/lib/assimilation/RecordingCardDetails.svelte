@@ -9,7 +9,7 @@
 	export let supabase: SupabaseClient;
 	export let recording: Recording;
 	export let isPlaying = false;
-	export let playRecording: () => void;
+	export let handlePlayClick: () => void;
 	let deleteLoading = false;
 
 	async function deleteRecording() {
@@ -17,14 +17,14 @@
 		if (error) {
 			throw Error(`Error deleting recording: ${error}`);
 		}
-		invalidate('app:my-content');
+		invalidate('app:my-media');
 	}
 </script>
 
 <div class="flex flex-col gap-2 mt-4">
 	<div class="flex justify-center gap-2">
 		<DeleteButton handleClick={deleteRecording} isLoading={deleteLoading} />
-		<AudioPlayButton handleClick={playRecording} {isPlaying} />
+		<AudioPlayButton handleClick={handlePlayClick} {isPlaying} />
 	</div>
 	<!-- <button class="px-3 py-1 border border-blue-600 text-blue-600 rounded-full text-sm">
   Translate

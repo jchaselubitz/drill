@@ -5,19 +5,18 @@
 	import type { UserResponse } from '../../utils/intervals';
 
 	import CardBackButton from '$lib/buttons/CardBackButton.svelte';
-	import type { Card } from '$src/types/primaryTypes';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { hashString } from '$src/utils/helpersDB';
 	import { getAudioFile, playSavedAudio } from '$src/utils/helpersAudio';
 	import AudioPlayButton from '$lib/buttons/AudioPlayButton.svelte';
-	import { getOpenAiKey } from '$src/utils/helpersAI';
+	import type { Translation } from '$src/types/primaryTypes';
 
 	export let supabase: SupabaseClient<any, 'public', any>;
 	export let showSide2First = false as boolean | null;
-	export let card: Card;
+	export let card: Translation;
 	export let totalCards: number;
 	export let cardsRemaining: number;
-	export let reviewHistory: Card[];
+	export let reviewHistory: Translation[];
 	export let setNextCard = (): void => {};
 	export let undo = (): void => {};
 	export let setCardCompletion = (cardId: number, completed: boolean): void => {};
@@ -27,8 +26,8 @@
 		updatedRepHistory: string[]
 	): void => {};
 
-	$: frontSide = showSide2First ? card.side_2 : card.side_1;
-	$: backSide = showSide2First ? card.side_1 : card.side_2;
+	$: frontSide = showSide2First ? card.phrase_secondary_id.text : card.phrase_primary_id.text;
+	$: backSide = showSide2First ? card.phrase_primary_id.text : card.phrase_secondary_id.text;
 	$: isStartSide = true;
 	$: audioObject = null as any;
 	$: isLoading = false;
@@ -45,7 +44,7 @@
 	function updateCard(response: UserResponse) {
 		const now = new Date();
 		reviewHistory.push(card);
-		const intervalHistory = card.intervals_min ?? [];
+		const intervalHistory = card.interval_history ?? [];
 		const repetitionHistory = card.repetition_history ?? [];
 		const nextInterval = calculateNextInterval(intervalHistory, repetitionHistory, response);
 		const nextRepetition = setNextRepetition(nextInterval);

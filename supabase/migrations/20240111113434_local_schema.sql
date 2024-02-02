@@ -4,7 +4,7 @@ alter table "public"."cards" drop column "next_repetition";
 
 alter table "public"."cards" drop column "num_repetitions";
 
-alter table "public"."cards" add column "intervals_min" integer[];
+alter table "public"."cards" add column "interval_history" integer[];
 
 alter table "public"."cards" add column "repetition_history" timestamp with time zone[];
 

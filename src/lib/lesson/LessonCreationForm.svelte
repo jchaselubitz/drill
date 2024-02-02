@@ -10,13 +10,13 @@
 		requestCardSuggestions,
 		cardResponseChecks
 	} from '$src/utils/promptGenerators';
-	import { Languages, Levels, ContentSuggestions } from '$src/utils/lists';
+	import { Languages, Levels, ContentSuggestions, LanguagesISO639 } from '$src/utils/lists';
 	import LightSuggestionList from './LightSuggestionList.svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
 	export let supabase: SupabaseClient;
-	export let studyLanguage: string;
-	export let userLanguage: string;
+	export let studyLanguage: LanguagesISO639 | '';
+	export let userLanguage: LanguagesISO639 | '';
 	export let level: string;
 	export let request: string;
 	export let optionListObject: any;
@@ -24,7 +24,7 @@
 	$: isLoading = false;
 
 	const handleGenerateCustomLesson = async () => {
-		if (level === '' || studyLanguage === '') {
+		if (level === '' || studyLanguage === '' || userLanguage === '' || request === '') {
 			alert('Please select a language and level');
 			return;
 		}
@@ -40,12 +40,12 @@
 		const messages = [
 			{
 				role: 'system',
-				content: cardGenerationSystemInstructions({ key1: 'side_1', key2: 'side_2' })
+				content: cardGenerationSystemInstructions({ lang1: userLanguage, lang2: studyLanguage })
 			},
 			{ role: 'user', content: prompt }
 		];
 
-		const { data } = await supabase.functions.invoke('gen-text', {
+		const { data, error } = await supabase.functions.invoke('gen-text', {
 			body: {
 				userApiKey: getOpenAiKey(),
 				modelSelection: getModelSelection(),
@@ -53,7 +53,12 @@
 				messages: messages
 			}
 		});
-		const cardsArray = cardResponseChecks(data);
+
+		const cardsArray = cardResponseChecks({
+			response: data,
+			lang1: userLanguage,
+			lang2: studyLanguage
+		});
 		optionListObject = [{ title: request, description: level, cards: cardsArray }];
 		isLoading = false;
 	};
@@ -83,6 +88,7 @@
 				messages: messages
 			}
 		});
+
 		optionListObject = JSON.parse(data).concepts;
 
 		isLoading = false;

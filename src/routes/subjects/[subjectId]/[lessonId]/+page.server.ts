@@ -10,13 +10,15 @@ export async function load({ locals, params, depends }) {
 	const { data: lessons, error: errorLessons } = await locals.supabase
 		.from('lessons')
 		.select(
-			'id, review_deck, review_date, show_side_2_first, subjects(id, name, current_level), title, short_description, cards (*)'
+			'id, review_deck, review_date, show_side_2_first, subjects(id, name, current_level), title, short_description, translations (id, user_id, phrase_primary_id (text, lang, id), phrase_secondary_id (text, lang, id), interval_history, repetition_history)'
 		)
 		.eq('id', lessonId); // Filter the query by lessonId
 
 	const lesson = lessons ? (lessons[0] as Lesson) : ({} as Lesson);
+
 	const reviewDeckDict = (lesson.review_deck as CardRef[]) ?? [];
-	const cards = lesson.cards ?? [];
+
+	const cards = lesson.translations ?? [];
 
 	// if the the latest review date is today, pull in the whole current review deck and match it to the cards
 	depends('app:lesson');
@@ -26,9 +28,13 @@ export async function load({ locals, params, depends }) {
 		});
 		// GET REVIEW DECK
 		const { data: reviewDeckAll, error: errorDeck } = await locals.supabase
-			.from('cards')
-			.select('*')
+			.from('translations')
+			.select(
+				'id, user_id, phrase_primary_id (text, lang, id), phrase_secondary_id (text, lang, id), interval_history, repetition_history'
+			)
 			.in('id', incomingDeck ?? []); // this needs to include just the ids
+
+		console.log(reviewDeckAll);
 
 		return {
 			lesson: lesson,
@@ -47,7 +53,7 @@ export async function load({ locals, params, depends }) {
 		});
 
 	const { data: reviewDeckUncompleted, error: errorDeck } = await locals.supabase
-		.from('cards')
+		.from('translations')
 		.select('*')
 		.in('id', incomingDeckUncompleted ?? []); // this needs to include just the ids
 
@@ -59,6 +65,7 @@ export async function load({ locals, params, depends }) {
 	});
 
 	const newReviewDeckDict = deck.map((card) => {
+		console.log('card', card);
 		return { id: card.id, completed: false };
 	});
 

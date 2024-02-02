@@ -52,9 +52,11 @@
 		</button>
 	</div>
 	<div class="flex flex-col gap-3 mt-6">
-		<SideBarItem text="My Subjects" path="/" {toggleSidebar} {isMobile} />
-		<SideBarItem text="Create Lesson" path="/create-lesson" {toggleSidebar} {isMobile} />
-		<SideBarItem text="My Content" path="/my-content" {toggleSidebar} {isMobile} />
+		<SideBarItem text="Home" path="/" {toggleSidebar} {isMobile} />
+		<SideBarItem text="Subjects" path="/subjects" {toggleSidebar} {isMobile} />
+		<SideBarItem text="Create" path="/create-lesson" {toggleSidebar} {isMobile} />
+		<SideBarItem text="Media" path="/media" {toggleSidebar} {isMobile} />
+		<SideBarItem text="Library" path="/library" {toggleSidebar} {isMobile} />
 	</div>
 
 	<div class="absolute bottom-4 left-4 right-4"><ApiKeyForm /></div>

@@ -130,7 +130,7 @@
 			throw Error(`Error saving recording: ${error}`);
 		}
 		resetRecordingButtonState();
-		invalidate('app:my-content');
+		invalidate('app:my-media');
 	};
 
 	const handleClick = () => {

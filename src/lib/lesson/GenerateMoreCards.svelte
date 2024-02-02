@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
-	import type { Card } from '$src/types/primaryTypes';
+	import type { Translation } from '$src/types/primaryTypes';
 	import { getModelSelection, getOpenAiKey } from '$src/utils/helpersAI';
+	import type { LanguagesISO639 } from '$src/utils/lists';
 	import {
 		cardGenerationSystemInstructions,
 		cardResponseChecks,
@@ -12,8 +13,8 @@
 	export let userId: string | undefined;
 	export let lessonId: number;
 	export let lessonTitle: string;
-	export let subjectLanguage: string;
-	export let userLanguage: string;
+	export let subjectLanguage: LanguagesISO639;
+	export let userLanguage: LanguagesISO639;
 	export let currentLevel: string;
 	export let supabase: SupabaseClient<any, 'public', any>;
 	let isLoading = false;
@@ -31,8 +32,8 @@
 			{
 				role: 'system',
 				content: cardGenerationSystemInstructions({
-					key1: 'side_1',
-					key2: 'side_2'
+					lang1: userLanguage,
+					lang2: subjectLanguage
 				})
 			},
 			{
@@ -53,12 +54,18 @@
 					messages: messages
 				}
 			});
-			const cardsArray = cardResponseChecks(data);
-
-			const cardsArrayWithLesson = cardsArray.map((card: Card) => {
-				return { ...card, lesson_id: lessonId, user_id: userId };
+			const cardsArray = cardResponseChecks({
+				response: data,
+				lang1: userLanguage,
+				lang2: subjectLanguage
 			});
-			const { error } = await supabase.from('cards').insert(cardsArrayWithLesson);
+
+			const { error } = await supabase.rpc('add_translations_to_lesson', {
+				_lesson_id: lessonId,
+				_translations: cardsArray,
+				_user_id: userId
+			});
+
 			if (error) {
 				throw Error(`${'Failed to insert cards:'} ${error.message}`);
 			}
