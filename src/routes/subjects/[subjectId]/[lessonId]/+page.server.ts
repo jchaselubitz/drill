@@ -34,8 +34,6 @@ export async function load({ locals, params, depends }) {
 			)
 			.in('id', incomingDeck ?? []); // this needs to include just the ids
 
-		console.log(reviewDeckAll);
-
 		return {
 			lesson: lesson,
 			reviewDeckDict: reviewDeckDict ?? [],
@@ -65,7 +63,6 @@ export async function load({ locals, params, depends }) {
 	});
 
 	const newReviewDeckDict = deck.map((card) => {
-		console.log('card', card);
 		return { id: card.id, completed: false };
 	});
 
