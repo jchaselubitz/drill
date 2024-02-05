@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
 	import RecordButton from '$lib/buttons/RecordButton.svelte';
+	import UploadButton from '$lib/buttons/UploadButton.svelte';
 	import type { RecordButtonStateType } from '$lib/buttons/types';
 	import { getOpenAiKey } from '$src/utils/helpersAI';
 	import { recordAudio, savePrivateAudioFile } from '$src/utils/helpersAudio';
@@ -37,6 +38,14 @@
 			recording.start();
 		}
 		recordingState = recording;
+	};
+
+	const handleUpload = async (file: File) => {
+		recordingButtonState = 'disabled';
+		const audioBlob = new Blob([file], { type: 'audio/mp4' });
+		const url = URL.createObjectURL(audioBlob);
+		audioResponse = { blob: audioBlob, url: url };
+		showActionButtons = true;
 	};
 
 	const stopRecording = async () => {
@@ -80,24 +89,6 @@
 
 		transcript = transcription.data;
 	};
-
-	// const setIsloadingFalse = () => {
-	// 	transcriptionLoading = false;
-	// };
-
-	// const transcribeRecording = async () => {
-	// 	recordingButtonState = 'transcribing';
-	// 	transcriptionLoading = true;
-
-	// 	const transcription = await getTextFromSpeech({
-	// 		audioFile: audioResponse.blob,
-	// 		setIsloadingFalse
-	// 	});
-	// 	transcript = transcription.data;
-	// 	recordingButtonState = 'disabled';
-	// 	transcriptionLoading = false;
-	// };
-
 	const saveRecording = async () => {
 		isSaving = true;
 		const fileName = `${Date.now()}-recording`;
@@ -180,6 +171,7 @@
 	];
 </script>
 
-<div class="flex justify-center mt-6 mb-10">
+<div class="flex justify-center items-center mt-6 mb-10 gap-3">
+	<UploadButton {handleUpload} />
 	<RecordButton {recordingButtonState} {actionButtons} {showActionButtons} {handleClick} />
 </div>

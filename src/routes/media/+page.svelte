@@ -27,6 +27,3 @@
 		</div>
 	{/if}
 </main>
-
-<!-- <div>List of expandible cards for each recording</div>
-	<div>deleting should delete recording and transcript</div> -->
