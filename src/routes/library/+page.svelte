@@ -9,40 +9,34 @@
 	$: ({ session, supabase, phrases, languages } = data);
 
 	$: selectedLanguage = 'en';
+	$: asce = true;
 
 	$: phrasesByLanguage = phrases.filter((phrase) => phrase.lang === selectedLanguage);
-
-	$: createPhraseObjects = (phraseArray: Phrase[]): PreparedPhrase[] => {
-		return phrasesByLanguage.map((phrase) => {
-			const translations = phrase.correspondingTranslations.map((translation) => {
-				const correspondingPhrase = phrases.filter(
-					(phrase) => phrase.id === translation.correspondingPhraseId
-				)[0];
-				const lessonTitle = translation.lessons.title;
-				const lessonLink = `subjects/${translation.lessons.subject_id}/${translation.lessons.id}`;
-				return { ...correspondingPhrase, lessonTitle, lessonLink };
-			});
-			return { ...phrase, translations };
+	$: createPhraseObjects = phrasesByLanguage.map((phrase) => {
+		const translations = phrase.correspondingTranslations.map((translation) => {
+			const correspondingPhrase = phrases.filter(
+				(phrase) => phrase.id === translation.correspondingPhraseId
+			)[0];
+			const lessonTitle = translation.lessons.title;
+			const lessonLink = `subjects/${translation.lessons.subject_id}/${translation.lessons.id}`;
+			return { ...correspondingPhrase, lessonTitle, lessonLink };
 		});
-	};
+		return { ...phrase, translations };
+	});
 
-	$: sortPhrases = (phrases: PreparedPhrase[]): PreparedPhrase[] => {
-		return phrases.sort((a, b) => {
-			if (a.text < b.text) {
-				return -1;
-			}
-			if (a.text > b.text) {
-				return 1;
-			}
-			return 0;
-		});
-	};
+	$: sortPhrases = createPhraseObjects.sort((a, b) => {
+		if (a.text < b.text) {
+			return asce ? -1 : 1;
+		}
+		if (a.text > b.text) {
+			return asce ? 1 : -1;
+		}
+		return 0;
+	});
 
-	$: preparePhrasesForPresentation = (phrases: Phrase[]): PreparedPhrase[] => {
-		return sortPhrases(createPhraseObjects(phrases));
-	};
+	$: justPhrases = sortPhrases.filter((phrase) => phrase.text.trim().includes(' '));
+	$: justWords = sortPhrases.filter((phrase) => !phrase.text.trim().includes(' '));
 
-	$: phrasesForPresentation = preparePhrasesForPresentation(phrases);
 	$: userId = session?.user?.id;
 
 	const setLanguage = (event: Event & { detail: Event }) => {
@@ -67,13 +61,31 @@
 		</Select>
 	{/if}
 
-	{#if phrasesForPresentation}
-		<div class="flex flex-col gap-4">
-			{#each phrasesForPresentation as phrase}
-				<PhraseCard {phrase} {supabase} />
-			{/each}
-		</div>
-	{/if}
+	<div class="flex">
+		{#if justPhrases}
+			<div class="flex flex-col gap-4 justify-between">
+				<h2 class="text-xl font-bold">Phrases</h2>
+				<button class="text-blue-600" on:click={() => (asce = !asce)}>
+					{asce ? 'A-Z' : 'Z-A'}
+				</button>
+				{#each justPhrases as phrase}
+					<PhraseCard {phrase} {supabase} />
+				{/each}
+			</div>
+		{/if}
+
+		{#if justWords}
+			<div class="flex flex-col gap-4 justify-between">
+				<h2 class="text-xl font-bold">Words</h2>
+				<button class="text-blue-600" on:click={() => (asce = !asce)}>
+					{asce ? 'A-Z' : 'Z-A'}
+				</button>
+				{#each justWords as phrase}
+					<PhraseCard {phrase} {supabase} />
+				{/each}
+			</div>
+		{/if}
+	</div>
 </div>
 
 <style lang="postcss">
