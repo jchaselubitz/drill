@@ -36,5 +36,10 @@
   list verbs
  </button> -->
 
-	<ContentRequest {recording} {supabase} source="transcript" />
+	<ContentRequest
+		text={recording.transcript}
+		lang={recording.lang}
+		{supabase}
+		source="transcript"
+	/>
 </div>

@@ -11,17 +11,15 @@
 	import LoadingButton from '$lib/buttons/LoadingButton.svelte';
 	import type { ArbitraryObject } from './types';
 	import LightSuggestionList from '$lib/lesson/LightSuggestionList.svelte';
-	import { TranscriptRequestSuggestions } from '$src/utils/lists';
+	import { LanguagesISO639, TranscriptRequestSuggestions } from '$src/utils/lists';
 	import type { Recording } from '$src/types/primaryTypes';
 
-	export let recording: Recording;
+	export let text: string | null;
+	export let lang: LanguagesISO639;
 	export let supabase: SupabaseClient;
 	export let source: string;
 	$: genResponse = [] as ArbitraryObject;
 	$: requestLoading = false;
-
-	const transcript = recording.transcript;
-	const lang = recording.lang;
 
 	// let genResponse: any = JSON.parse(MOCK_ARBITRARY_RESPONSE);
 
@@ -38,11 +36,11 @@
 			{
 				role: 'system',
 				content:
-					'the user will send you a transcript and a request for how to handle that content. Return as a JSON where possible'
+					'the user will send you a text and a request for how to handle that content. Return as a JSON where possible'
 			},
 
 			{ role: 'user', content: `request: ${requestText}` },
-			{ role: 'user', content: `transcript: ${transcript}` }
+			{ role: 'user', content: `text: ${text}` }
 		];
 
 		const { data } = await supabase.functions.invoke('gen-text', {
