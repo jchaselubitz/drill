@@ -1,7 +1,3 @@
-<!-- <script context="module">
-	let current;
-</script> -->
-
 <script lang="ts">
 	import Icon from 'svelte-awesome';
 	import { faPlay } from '@fortawesome/free-solid-svg-icons';

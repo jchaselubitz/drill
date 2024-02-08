@@ -6,10 +6,8 @@
 
 	import CardBackButton from '$lib/buttons/CardBackButton.svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import { hashString } from '$src/utils/helpersDB';
-	import { getAudioFile, playSavedAudio } from '$src/utils/helpersAudio';
-	import AudioPlayButton from '$lib/buttons/AudioPlayButton.svelte';
 	import type { Translation } from '$src/types/primaryTypes';
+	import TtsButton from '$lib/buttons/TtsButton.svelte';
 
 	export let supabase: SupabaseClient<any, 'public', any>;
 	export let showSide2First = false as boolean | null;
@@ -29,9 +27,6 @@
 	$: frontSide = showSide2First ? card.phrase_secondary_id.text : card.phrase_primary_id.text;
 	$: backSide = showSide2First ? card.phrase_primary_id.text : card.phrase_secondary_id.text;
 	$: isStartSide = true;
-	$: audioObject = null as any;
-	$: isLoading = false;
-	$: isPlaying = false;
 
 	function toggleSide() {
 		isStartSide = !isStartSide;
@@ -60,37 +55,6 @@
 		isStartSide = true;
 		setNextCard();
 	}
-
-	async function handlePlaySpeech(text: string | null) {
-		if (!text) return;
-		if (isPlaying) {
-			audioObject.pause();
-			isPlaying = false;
-			return;
-		}
-		function setIsPlayingFalse() {
-			isPlaying = false;
-		}
-		function setIsLoadingFalse() {
-			isLoading = false;
-		}
-		const fileName = (await hashString(text as string)) + '.mp3'; // we take the hash of the text as the file name to make sure we don't generate audio for the same text twice.
-		const playedExistingFile = await playSavedAudio({
-			fileName,
-			supabase,
-			bucket,
-			setIsPlayingFalse
-		});
-		if (playedExistingFile) {
-			isPlaying = true;
-			audioObject = playedExistingFile;
-			return;
-		}
-		isLoading = true;
-		isPlaying = true;
-
-		await getAudioFile({ text, fileName, supabase, bucket, setIsPlayingFalse, setIsLoadingFalse });
-	}
 </script>
 
 <div class="flex md:border-2 md:rounded-lg w-full h-full">
@@ -107,14 +71,10 @@
 			<div class=" h-full flex flex-col mt-20 gap-4 px-1 md:px-4 text-center items-center">
 				{#if isStartSide}
 					{frontSide}
-					<AudioPlayButton
-						{isLoading}
-						{isPlaying}
-						handleClick={() => handlePlaySpeech(frontSide)}
-					/>
+					<TtsButton {supabase} text={frontSide} {bucket} />
 				{:else}
 					<div>{backSide}</div>
-					<AudioPlayButton {isLoading} {isPlaying} handleClick={() => handlePlaySpeech(backSide)} />
+					<TtsButton {supabase} text={backSide} {bucket} />
 				{/if}
 			</div>
 		</div>

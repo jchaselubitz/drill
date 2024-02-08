@@ -65,6 +65,7 @@
 			}
 		]);
 		if (error) {
+			console.log('Error saving content:', error);
 			throw Error(`Error saving content: ${error}`);
 		}
 		return true;

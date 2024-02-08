@@ -10,7 +10,7 @@
 
 	async function handleSave(value: any) {
 		const cleanValue = value.trim();
-		const dest_table = cleanValue.includes(' ') ? 'phrases' : 'words';
+		const dest_table = 'phrases';
 		saved = await saveContent(dest_table, value);
 	}
 </script>

@@ -1,9 +1,10 @@
 <script lang="ts">
+	import SortButton from '../../lib/buttons/SortButton.svelte';
+
 	import type { PageData } from './$types';
 	import Select from '$lib/inputs/Select.svelte';
 	import { getLangName } from '$src/utils/lists';
 	import PhraseCard from '$lib/library/PhraseCard.svelte';
-	import type { Phrase, PreparedPhrase } from '$src/types/primaryTypes';
 
 	export let data: PageData;
 	$: ({ session, supabase, phrases, languages } = data);
@@ -52,35 +53,33 @@
 
 <div class="m-4rounded-lg">
 	<h1 class="text-2xl font-bold">Words & Phrases</h1>
+	<div class="flex gap-3 items-center p-2 border rounded-lg my-4">
+		{#if languages}
+			<Select name="language" value={selectedLanguage} className="" on:change={setLanguage}>
+				{#each languages as language}
+					<option value={language}>{getLangName(language)}</option>
+				{/each}
+			</Select>
+		{/if}
+		<SortButton bind:asce>Sort {asce ? 'A -> Z' : 'Z ->A'}</SortButton>
+	</div>
 
-	{#if languages}
-		<Select name="language" value={selectedLanguage} className="my-4" on:change={setLanguage}>
-			{#each languages as language}
-				<option value={language}>{getLangName(language)}</option>
-			{/each}
-		</Select>
-	{/if}
-
-	<div class="flex">
+	<div class="flex flex-col md:flex-row gap-3 w-full">
 		{#if justPhrases}
-			<div class="flex flex-col gap-4 justify-between">
+			<div class="flex flex-col gap-4 w-full">
 				<h2 class="text-xl font-bold">Phrases</h2>
-				<button class="text-blue-600" on:click={() => (asce = !asce)}>
-					{asce ? 'A-Z' : 'Z-A'}
-				</button>
-				{#each justPhrases as phrase}
+
+				{#each justPhrases as phrase (phrase.id)}
 					<PhraseCard {phrase} {supabase} />
 				{/each}
 			</div>
 		{/if}
 
 		{#if justWords}
-			<div class="flex flex-col gap-4 justify-between">
+			<div class="flex flex-col gap-4 w-full">
 				<h2 class="text-xl font-bold">Words</h2>
-				<button class="text-blue-600" on:click={() => (asce = !asce)}>
-					{asce ? 'A-Z' : 'Z-A'}
-				</button>
-				{#each justWords as phrase}
+
+				{#each justWords as phrase (phrase.id)}
 					<PhraseCard {phrase} {supabase} />
 				{/each}
 			</div>
