@@ -1,11 +1,11 @@
 <script lang="ts">
 	import cn from 'classnames';
-	import type { Phrase } from '$src/types/primaryTypes';
+	import type { Phrase, PreparedPhrase } from '$src/types/primaryTypes';
 	import PhraseCardDetails from './PhraseCardDetails.svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import TtsButton from '$lib/buttons/TtsButton.svelte';
 
-	export let phrase: Phrase;
+	export let phrase: PreparedPhrase;
 	export let supabase: SupabaseClient;
 
 	const bucket = 'text_to_speech';

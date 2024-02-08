@@ -16,7 +16,7 @@
 
 <div class={cn(className, 'flex flex-col')}>
 	{#if label} <label class="text-gray-700 text-sm font-bold mb-2" for={name}>{label}</label> {/if}
-	<select bind:value {name} on:change={handleChange}>
+	<select bind:value {name} on:change={handleChange} class="rounded-md">
 		{#if placeholder}
 			<option disabled selected>{placeholder}</option>
 		{/if}

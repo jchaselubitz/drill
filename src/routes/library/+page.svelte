@@ -5,6 +5,7 @@
 	import Select from '$lib/inputs/Select.svelte';
 	import { getLangName } from '$src/utils/lists';
 	import PhraseCard from '$lib/library/PhraseCard.svelte';
+	import AddPhrase from '$lib/library/AddPhrase.svelte';
 
 	export let data: PageData;
 	$: ({ session, supabase, phrases, languages } = data);
@@ -62,6 +63,7 @@
 			</Select>
 		{/if}
 		<SortButton bind:asce>Sort {asce ? 'A -> Z' : 'Z ->A'}</SortButton>
+		<AddPhrase {supabase} />
 	</div>
 
 	<div class="flex flex-col md:flex-row gap-3 w-full">
