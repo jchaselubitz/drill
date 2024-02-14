@@ -19,8 +19,10 @@
 			const correspondingPhrase = phrases.filter(
 				(phrase) => phrase.id === translation.correspondingPhraseId
 			)[0];
-			const lessonTitle = translation.lessons.title;
-			const lessonLink = `subjects/${translation.lessons.subject_id}/${translation.lessons.id}`;
+			const lessonTitle = translation?.lessons?.title ?? 'No Lesson Title';
+			const lessonLink = translation.lessons
+				? `subjects/${translation.lessons?.subject_id}/${translation.lessons.id}`
+				: '';
 			return { ...correspondingPhrase, lessonTitle, lessonLink };
 		});
 		return { ...phrase, translations };
@@ -72,7 +74,7 @@
 				<h2 class="text-xl font-bold">Phrases</h2>
 
 				{#each justPhrases as phrase (phrase.id)}
-					<PhraseCard {phrase} {supabase} />
+					<PhraseCard {phrase} {supabase} {userId} />
 				{/each}
 			</div>
 		{/if}
@@ -82,7 +84,7 @@
 				<h2 class="text-xl font-bold">Words</h2>
 
 				{#each justWords as phrase (phrase.id)}
-					<PhraseCard {phrase} {supabase} />
+					<PhraseCard {phrase} {supabase} {userId} />
 				{/each}
 			</div>
 		{/if}

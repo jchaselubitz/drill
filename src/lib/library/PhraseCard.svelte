@@ -7,6 +7,7 @@
 
 	export let phrase: PreparedPhrase;
 	export let supabase: SupabaseClient;
+	export let userId: string;
 
 	const bucket = 'text_to_speech';
 
@@ -30,7 +31,7 @@
 	</button>
 	{#if detailsOpen}
 		<div class="p-4">
-			<PhraseCardDetails {phrase} {supabase} />
+			<PhraseCardDetails {phrase} {userId} {supabase} />
 		</div>
 	{/if}
 </div>

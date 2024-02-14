@@ -9,10 +9,19 @@
 
 	export let phrase;
 	export let supabase: SupabaseClient;
+	export let userId: string;
 
 	let text = phrase.text;
 	let lang = phrase.lang as LanguagesISO639;
 	let translationsPhrases = phrase.translations;
+
+	let primaryPhraseIds = [
+		...translationsPhrases.map((phrase) => {
+			return phrase.id;
+		}),
+		phrase.id
+	];
+
 	const bucket = 'text_to_speech';
 </script>
 
@@ -47,5 +56,5 @@
 			{/each}
 		</ul>
 	{/if}
-	<ContentRequest {text} {lang} {supabase} source="phrase" />
+	<ContentRequest {text} {lang} {supabase} {userId} {primaryPhraseIds} source="phrase" />
 </div>

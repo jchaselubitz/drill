@@ -12,38 +12,101 @@
 	import type { ArbitraryObject } from './types';
 	import LightSuggestionList from '$lib/lesson/LightSuggestionList.svelte';
 	import { LanguagesISO639, TranscriptRequestSuggestions } from '$src/utils/lists';
-	import type { Recording } from '$src/types/primaryTypes';
+	import CommandTextArea from './CommandTextArea.svelte';
+	import SaveTranslationItem from './SaveTranslationItem.svelte';
+	import { invalidate } from '$app/navigation';
 
 	export let text: string | null;
 	export let lang: LanguagesISO639;
 	export let supabase: SupabaseClient;
+	export let userId: string;
+	export let primaryPhraseIds: string[] = [];
 	export let source: string;
+
 	$: genResponse = [] as ArbitraryObject;
 	$: requestLoading = false;
 
+	$: console.log('genResponse:', genResponse);
+
 	// let genResponse: any = JSON.parse(MOCK_ARBITRARY_RESPONSE);
 
-	let requestText = '';
+	$: requestText = '';
+	$: firstWord = requestText.split(' ')[0];
+
+	function setCommand(firstWord: string) {
+		const word = firstWord.toLowerCase();
+		if (
+			word === 'explain' ||
+			word === 'extract' ||
+			word === 'translate' ||
+			word === 'list' ||
+			word === 'generate'
+		) {
+			return firstWord[0].toUpperCase() + firstWord.slice(1);
+		}
+	}
+
+	function captureSlashCommand() {
+		const slashCommand = '/';
+		if (requestText && requestText.startsWith(slashCommand)) {
+			const command = requestText.split(' ')[0].slice(slashCommand.length);
+			return { request: requestText.slice(slashCommand.length), command };
+		}
+		if (setCommand(firstWord)) {
+			return { request: requestText, command: setCommand(firstWord) };
+		}
+		return { request: requestText, command: '' };
+	}
+
+	function selectSystemMessage(command: string) {
+		let message =
+			'The user will send you a text and a request for how to handle that content. Return as a JSON.';
+		if (command === 'explain') {
+			return (
+				message + `Return a JSON with key: "explanation" and value: <a string of the explanation>.`
+			);
+		}
+
+		if (command === 'translate') {
+			return (
+				message +
+				`If the user asks for a translation, the return value should include { "input_lang": <the ISO 639-1 code of the text>, "text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation> }.`
+			);
+		}
+
+		if (command === 'list' || command === 'extract') {
+			return (
+				message +
+				`The user will request a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user. The goal is to organize the data. `
+			);
+		}
+
+		if (command === 'generate') {
+			return message + `The user wants you to generate new content based on the text`;
+		}
+
+		return `The user will send you a text and a request for how to handle that content. Return as a JSON. The user will often be requesting a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user. The goal is to organize the data. If the user asks for an explanation, return a JSON with key: "explanation" and value: <a string of the explanation>. If the user asks for a translation, the return value should include {"text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation>, "input_lang": <the ISO 639-1 code of the original>}.`;
+	}
 
 	async function handleRequest() {
 		requestLoading = true;
+		const { request, command } = captureSlashCommand();
 		const modelParams = {
 			format: 'json_object' as gptFormatType,
 			max_tokens: 1000,
 			temperature: 0.9
 		};
+
 		const messages = [
 			{
 				role: 'system',
-				content:
-					'the user will send you a text and a request for how to handle that content. Return as a JSON where possible'
+				content: selectSystemMessage(command)
 			},
-
-			{ role: 'user', content: `request: ${requestText}` },
-			{ role: 'user', content: `text: ${text}` }
+			{ role: 'user', content: `text: ${text}` },
+			{ role: 'user', content: `request: ${request}` }
 		];
 
-		const { data } = await supabase.functions.invoke('gen-text', {
+		const { data, error } = await supabase.functions.invoke('gen-text', {
 			body: {
 				userApiKey: getOpenAiKey(),
 				modelSelection: getModelSelection(),
@@ -51,16 +114,26 @@
 				messages: messages
 			}
 		});
-
-		genResponse = JSON.parse(data);
+		if (error) {
+			console.log('Error:', error);
+			requestLoading = false;
+			return;
+		}
+		try {
+			genResponse = JSON.parse(data);
+		} catch (error) {
+			alert('Sorry, it looks like the model returned the wrong format. Please try again.');
+			console.log('Error parsing JSON:', data);
+			requestLoading = false;
+		}
 		requestLoading = false;
 	}
 
-	async function saveContent(dest_table: DestinationTable, content: string): Promise<boolean> {
-		const { error } = await supabase.from(dest_table).insert([
+	async function saveContent(content: string): Promise<boolean> {
+		const { error } = await supabase.from('phrases').insert([
 			{
 				source,
-				text: content,
+				text: content.trim(),
 				lang: lang
 			}
 		]);
@@ -71,23 +144,67 @@
 		return true;
 	}
 
+	async function saveTranslation() {
+		if (!userId || primaryPhraseIds.length === 0) {
+			console.error('No user ID or primary phrase ID');
+			return;
+		}
+		const { data: translationId, error } = await supabase.rpc('add_translation_to_phrase', {
+			_phrase_primary_ids: primaryPhraseIds,
+			_translation: {
+				phrase_secondary: {
+					text: genResponse.text,
+					lang: genResponse.output_lang,
+					source: source
+				}
+			},
+			_user_id: userId
+		});
+		if (translationId) {
+			invalidate('app:library');
+		}
+
+		if (error) {
+			console.error('Error adding translation:', error.message);
+		} else {
+			console.log('Added translation with ID:', translationId);
+		}
+
+		if (error) {
+			console.log('Error saving translation:', error);
+			throw Error(`Error saving translation: ${error}`);
+		}
+		return true;
+	}
+
 	function setMaterialSuggestion(suggestion: string) {
 		requestText = suggestion;
 	}
 </script>
 
 <div class="flex flex-col">
-	<textarea class="input" bind:value={requestText} />
+	<textarea class="input" bind:value={requestText} placeholder="Type your request here" rows="4" />
 	<LoadingButton
 		class="bg-blue-600 rounded-lg text-white p-2 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
 		onClick={handleRequest}
-		text="Request"
+		text={setCommand(firstWord) ?? 'Request'}
 		loadingText="Requesting"
 		isLoading={requestLoading}
 	/>
 	<LightSuggestionList suggestions={TranscriptRequestSuggestions} {setMaterialSuggestion} />
 	<div class="">
-		<NestedObject data={genResponse} {saveContent} />
+		{#if setCommand(firstWord) === 'Translate'}
+			{#if genResponse}
+				<SaveTranslationItem
+					text={genResponse.text}
+					input_lang={genResponse.lang}
+					output_lang={genResponse.output_lang}
+					{saveTranslation}
+				/>
+			{/if}
+		{:else}
+			<NestedObject data={genResponse} {saveContent} command={setCommand(firstWord)} />
+		{/if}
 	</div>
 </div>
 
