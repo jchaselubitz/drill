@@ -1,12 +1,18 @@
 <script lang="ts">
 	import SaveButton from '$lib/buttons/SaveButton.svelte';
-	import type { DestinationTable } from '$src/utils/helpersDB';
 	export let value: any;
 	export let parentKeys: string[] = [];
 	export let command = '';
 	export let saveContent: (content: string) => Promise<boolean>;
 
 	$: saved = false;
+
+	async function handleSave(content: string) {
+		const success = await saveContent(content);
+		if (success) {
+			saved = true;
+		}
+	}
 	// console.log('parentKeys:', parentKeys);
 </script>
 
@@ -14,8 +20,11 @@
 	<span>{value}</span>
 	<!-- svelte-ignore missing-declaration -->
 	{#if command !== 'Explain'}
-		<SaveButton disabled={saved} onClick={() => saveContent(value)}
-			>{saved ? 'Saved' : 'Save'}</SaveButton
+		<SaveButton
+			disabled={saved}
+			onClick={() => {
+				handleSave(value);
+			}}>{saved ? 'Saved' : 'Save'}</SaveButton
 		>
 	{/if}
 </div>
