@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
+	import ImportPodcast from '$lib/buttons/ImportPodcast.svelte';
 	import RecordButton from '$lib/buttons/RecordButton.svelte';
 	import UploadButton from '$lib/buttons/UploadButton.svelte';
 	import type { RecordButtonStateType } from '$lib/buttons/types';
@@ -42,6 +43,13 @@
 
 	const handleUpload = async (file: File) => {
 		recordingButtonState = 'disabled';
+		const audioBlob = new Blob([file], { type: 'audio/mp4' });
+		const url = URL.createObjectURL(audioBlob);
+		audioResponse = { blob: audioBlob, url: url };
+		showActionButtons = true;
+	};
+
+	const importPodcast = async (file: File) => {
 		const audioBlob = new Blob([file], { type: 'audio/mp4' });
 		const url = URL.createObjectURL(audioBlob);
 		audioResponse = { blob: audioBlob, url: url };
@@ -172,6 +180,7 @@
 </script>
 
 <div class="flex justify-center items-center mt-6 mb-10 gap-3">
+	<ImportPodcast {handleUpload} />
 	<UploadButton {handleUpload} />
 	<RecordButton {recordingButtonState} {actionButtons} {showActionButtons} {handleClick} />
 </div>
