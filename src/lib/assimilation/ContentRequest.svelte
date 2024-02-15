@@ -20,6 +20,7 @@
 	export let supabase: SupabaseClient;
 	export let userId: string | undefined;
 	export let primaryPhraseIds: string[] = [];
+	export let suggestions: string[] = [];
 	export let source: string;
 
 	$: genResponse = [] as ArbitraryObject;
@@ -214,7 +215,9 @@
 		loadingText="Requesting"
 		isLoading={requestLoading}
 	/>
-	<LightSuggestionList suggestions={TranscriptRequestSuggestions} {setMaterialSuggestion} />
+	{#if suggestions.length > 0}
+		<LightSuggestionList {suggestions} {setMaterialSuggestion} />
+	{/if}
 	<div class="">
 		{#if setCommand(firstWord) === 'Translate'}
 			{#if genResponse.output_text || genResponse.length > 0}

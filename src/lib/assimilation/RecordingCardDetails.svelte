@@ -5,6 +5,7 @@
 	import type { Recording } from '$src/types/primaryTypes';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import ContentRequest from './ContentRequest.svelte';
+	import { TranscriptRequestSuggestions } from '$src/utils/lists';
 
 	export let supabase: SupabaseClient;
 	export let userId: string | undefined;
@@ -27,18 +28,9 @@
 		<DeleteButton handleClick={deleteRecording} isLoading={deleteLoading} />
 		<AudioPlayButton handleClick={handlePlayClick} {isPlaying} />
 	</div>
-	<!-- <button class="px-3 py-1 border border-blue-600 text-blue-600 rounded-full text-sm">
-  Translate
- </button>
- <button class="px-3 py-1 border border-blue-600 text-blue-600 rounded-full text-sm">
-  list sentences
- </button>
- <button class="px-3 py-1 border border-blue-600 text-blue-600 rounded-full text-sm">
-  list verbs
- </button> -->
-
 	<ContentRequest
 		text={recording.transcript}
+		suggestions={TranscriptRequestSuggestions}
 		lang={recording.lang}
 		{userId}
 		{supabase}

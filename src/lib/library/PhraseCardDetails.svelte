@@ -30,15 +30,15 @@
 		<h3>Translations:</h3>
 		<ul class="flex flex-col gap-2">
 			{#each translationsPhrases as translationsPhrase}
-				<div class="md:flex justify-between border border-gray-400 p-2 mb-2 w-full rounded-md">
+				<div class=" justify-between border border-gray-400 p-2 mb-2 w-full rounded-md">
 					<div class="flex items-center justify-between md:gap-2">
 						{translationsPhrase.text}
 						<div class="w-12">
 							<TtsButton {supabase} text={translationsPhrase.text} {bucket} />
 						</div>
 					</div>
-					<hr class="md:hidden border border-gray-500 my-1" />
-					<div class="text-xs flex md:flex-col justify-between gap-3 items-center md:items-start">
+					<hr class=" border border-gray-500 my-1" />
+					<div class="text-xs flex justify-between gap-3 items-center">
 						<div class="flex gap-1">
 							<div>{getLangIcon(translationsPhrase.lang)}</div>
 							<div>{getLangName(translationsPhrase.lang)}</div>
