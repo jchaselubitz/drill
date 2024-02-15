@@ -43,14 +43,15 @@
 							<div>{getLangIcon(translationsPhrase.lang)}</div>
 							<div>{getLangName(translationsPhrase.lang)}</div>
 						</div>
-						<a
-							class={cn(
-								'flex p-1 border border-slate-700 hover:bg-slate-700 hover:text-white rounded-lg gap-1'
-							)}
-							href={translationsPhrase.lessonLink}
-						>
-							<Icon data={faBook} /> <span>{translationsPhrase.lessonTitle}</span></a
-						>
+						{#if translationsPhrase.lessonLink}
+							<a
+								class={cn(
+									'flex p-1 border border-slate-700 hover:bg-slate-700 hover:text-white rounded-lg gap-1'
+								)}
+								href={translationsPhrase.lessonLink}
+							>
+								<Icon data={faBook} /> <span>{translationsPhrase.lessonTitle}</span>
+							</a>{/if}
 					</div>
 				</div>
 			{/each}

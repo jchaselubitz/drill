@@ -10,7 +10,7 @@
 	export let data: PageData;
 	$: ({ session, supabase, phrases, languages } = data);
 
-	$: selectedLanguage = 'en';
+	$: selectedLanguage = languages ? languages[0] : 'en';
 	$: asce = true;
 
 	$: phrasesByLanguage = phrases.filter((phrase) => phrase.lang === selectedLanguage);

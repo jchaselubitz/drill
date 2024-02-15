@@ -61,7 +61,7 @@
 	</button>
 	{#if detailsOpen}
 		<div class="px-4 pb-4">
-			<RecordingCardDetails {recording} {supabase} {handlePlayClick} {isPlaying} />
+			<RecordingCardDetails {recording} {userId} {supabase} {handlePlayClick} {isPlaying} />
 		</div>
 	{/if}
 </div>

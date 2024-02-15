@@ -7,6 +7,7 @@
 	import ContentRequest from './ContentRequest.svelte';
 
 	export let supabase: SupabaseClient;
+	export let userId: string | undefined;
 	export let recording: Recording;
 	export let isPlaying = false;
 	export let handlePlayClick: () => void;
@@ -39,6 +40,7 @@
 	<ContentRequest
 		text={recording.transcript}
 		lang={recording.lang}
+		{userId}
 		{supabase}
 		source="transcript"
 	/>

@@ -7,7 +7,6 @@
 		getOpenAiKey,
 		type gptFormatType
 	} from '$src/utils/helpersAI';
-	import type { DestinationTable } from '$src/utils/helpersDB';
 	import LoadingButton from '$lib/buttons/LoadingButton.svelte';
 	import type { ArbitraryObject } from './types';
 	import LightSuggestionList from '$lib/lesson/LightSuggestionList.svelte';
@@ -19,7 +18,7 @@
 	export let text: string | null;
 	export let lang: LanguagesISO639;
 	export let supabase: SupabaseClient;
-	export let userId: string;
+	export let userId: string | undefined;
 	export let primaryPhraseIds: string[] = [];
 	export let source: string;
 
@@ -34,63 +33,58 @@
 	$: firstWord = requestText.split(' ')[0];
 
 	function setCommand(firstWord: string) {
-		const word = firstWord.toLowerCase();
+		const word = firstWord ? firstWord[0].toUpperCase() + firstWord.slice(1) : '';
 		if (
-			word === 'explain' ||
-			word === 'extract' ||
-			word === 'translate' ||
-			word === 'list' ||
-			word === 'generate'
+			word === 'Explain' ||
+			word === 'Extract' ||
+			word === 'Translate' ||
+			word === 'List' ||
+			word === 'Generate'
 		) {
-			return firstWord[0].toUpperCase() + firstWord.slice(1);
+			return word;
 		}
 	}
 
-	function captureSlashCommand() {
-		const slashCommand = '/';
-		if (requestText && requestText.startsWith(slashCommand)) {
-			const command = requestText.split(' ')[0].slice(slashCommand.length);
-			return { request: requestText.slice(slashCommand.length), command };
-		}
+	function captureCommand() {
 		if (setCommand(firstWord)) {
 			return { request: requestText, command: setCommand(firstWord) };
 		}
 		return { request: requestText, command: '' };
 	}
 
-	function selectSystemMessage(command: string) {
+	function selectSystemMessage(command: string | undefined) {
 		let message =
 			'The user will send you a text and a request for how to handle that content. Return as a JSON.';
-		if (command === 'explain') {
+		if (command === 'Explain') {
 			return (
 				message + `Return a JSON with key: "explanation" and value: <a string of the explanation>.`
 			);
 		}
 
-		if (command === 'translate') {
+		if (command === 'Translate') {
 			return (
 				message +
-				`If the user asks for a translation, the return value should include { "input_lang": <the ISO 639-1 code of the text>, "text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation> }.`
+				`If the user asks for a translation, the return value should include { "input_lang": <the ISO 639-1 code of the text>, "input_text": <text of original>, "output_text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation> }.`
 			);
 		}
 
-		if (command === 'list' || command === 'extract') {
+		if (command === 'List' || command === 'Extract') {
 			return (
 				message +
 				`The user will request a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user. The goal is to organize the data. `
 			);
 		}
 
-		if (command === 'generate') {
+		if (command === 'Generate') {
 			return message + `The user wants you to generate new content based on the text`;
 		}
 
-		return `The user will send you a text and a request for how to handle that content. Return as a JSON. The user will often be requesting a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user. The goal is to organize the data. If the user asks for an explanation, return a JSON with key: "explanation" and value: <a string of the explanation>. If the user asks for a translation, the return value should include {"text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation>, "input_lang": <the ISO 639-1 code of the original>}.`;
+		return `The user will send you a text and a request for how to handle that content. Return as a JSON. The user will often be requesting a list of values. Each key is presented as the title of an expandable list. If the value is an object, the component calls itself again in a nested fashion. If it is a string, it is presented to the user. The goal is to organize the data. If the user asks for an explanation, return a JSON with key: "explanation" and value: <a string of the explanation>. If the user asks for a translation, the return value should include { "input_lang": <the ISO 639-1 code of the text>, "input_text": <text of original>, "output_text": <text of translation>, "output_lang": <the ISO 639-1 code of the translation>}.`;
 	}
 
 	async function handleRequest() {
 		requestLoading = true;
-		const { request, command } = captureSlashCommand();
+		const { request, command } = captureCommand();
 		const modelParams = {
 			format: 'json_object' as gptFormatType,
 			max_tokens: 1000,
@@ -145,21 +139,54 @@
 	}
 
 	async function saveTranslation() {
-		if (!userId || primaryPhraseIds.length === 0) {
-			console.error('No user ID or primary phrase ID');
+		if (!userId) {
+			console.error('No user ID');
 			return;
 		}
-		const { data: translationId, error } = await supabase.rpc('add_translation_to_phrase', {
-			_phrase_primary_ids: primaryPhraseIds,
+
+		if (primaryPhraseIds.length > 0) {
+			const { data: translationId, error } = await supabase
+				.rpc('add_translation_to_phrase', {
+					_phrase_primary_ids: primaryPhraseIds,
+					_translation: {
+						phrase_secondary: {
+							text: genResponse.output_text,
+							lang: genResponse.output_lang,
+							source: source
+						}
+					},
+					_user_id: userId
+				})
+				.select();
+
+			if (translationId) {
+				invalidate('app:library');
+				return translationId;
+			}
+
+			if (error) {
+				console.error('Error adding translation:', error.message);
+			} else {
+				console.log('Added translation with ID:', translationId);
+			}
+		}
+
+		const { data: translationId, error } = await supabase.rpc('add_translation', {
 			_translation: {
+				phrase_primary: {
+					text: genResponse.input_text,
+					lang: genResponse.input_lang,
+					source: source
+				},
 				phrase_secondary: {
-					text: genResponse.text,
+					text: genResponse.output_text,
 					lang: genResponse.output_lang,
 					source: source
 				}
 			},
 			_user_id: userId
 		});
+
 		if (translationId) {
 			invalidate('app:library');
 		}
@@ -170,10 +197,6 @@
 			console.log('Added translation with ID:', translationId);
 		}
 
-		if (error) {
-			console.log('Error saving translation:', error);
-			throw Error(`Error saving translation: ${error}`);
-		}
 		return true;
 	}
 
@@ -194,10 +217,11 @@
 	<LightSuggestionList suggestions={TranscriptRequestSuggestions} {setMaterialSuggestion} />
 	<div class="">
 		{#if setCommand(firstWord) === 'Translate'}
-			{#if genResponse}
+			{#if genResponse.output_text || genResponse.length > 0}
 				<SaveTranslationItem
-					text={genResponse.text}
-					input_lang={genResponse.lang}
+					input_text={genResponse.input_text}
+					input_lang={genResponse.input_lang}
+					output_text={genResponse.output_text}
 					output_lang={genResponse.output_lang}
 					{saveTranslation}
 				/>
