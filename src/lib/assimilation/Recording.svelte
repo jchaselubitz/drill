@@ -7,6 +7,7 @@
 	import { getOpenAiKey } from '$src/utils/helpersAI';
 	import { recordAudio, savePrivateAudioFile } from '$src/utils/helpersAudio';
 	import type { SupabaseClient } from '@supabase/supabase-js';
+	import MediaEditor from './MediaEditor.svelte';
 
 	export let supabase: SupabaseClient;
 	export let userId: string | undefined;
@@ -20,6 +21,7 @@
 	$: audioState = null as any;
 	$: isSaving = false;
 	$: isPlaying = false;
+	$: importingPodcast = false;
 
 	const resetRecordingButtonState = () => {
 		recordingButtonState = 'idle';
@@ -29,6 +31,8 @@
 		audioState = null;
 		transcript = '';
 		isSaving = false;
+		isPlaying = false;
+		importingPodcast = false;
 	};
 
 	const startRecording = async () => {
@@ -49,11 +53,26 @@
 		showActionButtons = true;
 	};
 
-	const importPodcast = async (file: File) => {
-		const audioBlob = new Blob([file], { type: 'audio/mp4' });
-		const url = URL.createObjectURL(audioBlob);
-		audioResponse = { blob: audioBlob, url: url };
-		showActionButtons = true;
+	const importPodcast = async (url: string) => {
+		importingPodcast = true;
+		try {
+			recordingButtonState = 'disabled';
+			const response = await fetch(url);
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			const arrayBuffer = await response.arrayBuffer();
+			const audioBlob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
+			const audioURL = URL.createObjectURL(audioBlob);
+			audioResponse = { blob: audioBlob, url: audioURL };
+			showActionButtons = true;
+		} catch (error) {
+			console.error('Error fetching podcast:', error);
+			// Handle the error, e.g., show a notification to the user
+		} finally {
+			recordingButtonState = 'idle';
+			importingPodcast = false;
+		}
 	};
 
 	const stopRecording = async () => {
@@ -61,8 +80,6 @@
 		audioResponse = response;
 		recordingButtonState = 'idle';
 		showActionButtons = true;
-		// show refresh option
-		// show transcribe option
 	};
 
 	const playPauseRecording = () => {
@@ -180,7 +197,12 @@
 </script>
 
 <div class="flex justify-center items-center mt-6 mb-10 gap-3">
-	<ImportPodcast {handleUpload} />
+	<ImportPodcast {importPodcast} />
 	<UploadButton {handleUpload} />
 	<RecordButton {recordingButtonState} {actionButtons} {showActionButtons} {handleClick} />
 </div>
+{#if importingPodcast}
+	<p>Importing podcast...</p>
+{:else if audioResponse}
+	<MediaEditor bind:audioResponse />
+{/if}

@@ -6,31 +6,6 @@ export type GetTextFromSpeechProps = {
 	setIsloadingFalse: () => void;
 };
 
-// export async function getTextFromSpeech({
-// 	audioFile,
-// 	setIsloadingFalse
-// }: GetTextFromSpeechProps): Promise<{ data: string }> {
-// 	const apiKey = getOpenAiKey() as string;
-
-// 	const formData = new FormData();
-// 	formData.append('apiKey', apiKey);
-// 	formData.append('audioFile', audioFile, 'audio.mp4');
-
-// 	return fetch(`/api/ai/speech-to-text`, {
-// 		method: 'POST',
-// 		body: formData
-// 	})
-// 		.then((res) => res.json())
-// 		.then((data) => {
-// 			setIsloadingFalse;
-// 			console.log('data:', data);
-// 			return data;
-// 		})
-// 		.catch((err) => {
-// 			throw err;
-// 		});
-// }
-
 export type GetAudioFileProps = PlaySavedAudio & {
 	text: string;
 	setIsLoadingFalse: () => void;
