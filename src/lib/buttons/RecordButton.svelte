@@ -3,14 +3,11 @@
 	import type { ActionButtonType, RecordButtonStateType } from './types';
 	export let recordingButtonState: RecordButtonStateType;
 	export let handleClick: () => void;
-	export let actionButtons = [] as ActionButtonType[];
-	export let showActionButtons = false;
 	let loadingImage = '/images/loading-circle.png';
 
 	$: isRecording = recordingButtonState === 'recording';
 	$: isTranscribing = recordingButtonState === 'transcribing';
 	$: isDisabled = recordingButtonState === 'disabled';
-	$: liveActionButtons = actionButtons.filter((button) => button.show === true);
 </script>
 
 <div class="flex items-center justify-center gap-4">
@@ -32,16 +29,4 @@
 			<div class="h-14 w-14 bg-red-500 rounded-full" />
 		{/if}
 	</button>
-	{#if showActionButtons && liveActionButtons.length > 0}
-		<div class="flex flex-col gap-2">
-			{#each liveActionButtons as button}
-				<button
-					class="px-3 py-1 border border-blue-600 text-blue-600 rounded-full text-sm"
-					on:click={button.onClick}
-				>
-					{button.isLoading ? 'Loading...' : button.text}
-				</button>
-			{/each}
-		</div>
-	{/if}
 </div>

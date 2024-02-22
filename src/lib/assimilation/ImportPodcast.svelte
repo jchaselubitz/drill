@@ -61,7 +61,7 @@
 {#if isOpen}
 	<div class="fixed top-0 bottom-0 left-0 right-0 p-3 bg-gray-800 bg-opacity-40 z-20">
 		<div
-			class="rounded-lg p-4 mt-10 mx-auto bg-white w-96 flex flex-col gap-2"
+			class="rounded-lg p-4 mt-10 mx-auto bg-white w-full md:w-96 flex flex-col gap-2"
 			bind:this={modalRef}
 		>
 			<Input name="link" bind:value={inputValue} placeholder="Enter file url" />

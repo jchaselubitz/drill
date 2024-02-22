@@ -8,26 +8,26 @@ export const POST: RequestHandler = async ({ request }) => {
 	const OpenAiKey = import.meta.env.VITE_OPENAI_API_KEY;
 	const audioFile = data.get('audioFile');
 
-	async function genText() {
-		const openai = new OpenAI({
-			apiKey: apiKey ? apiKey : OpenAiKey
-		});
-		try {
-			const transcription = await openai.audio.transcriptions.create({
-				file: audioFile as Uploadable,
-				model: 'whisper-1'
-			});
-
-			return { data: transcription.text };
-		} catch (error) {
-			console.log('error saving transcript:', error);
-		}
-	}
-
-	const result = await genText();
-	return new Response(JSON.stringify(result), {
-		headers: {
-			'Content-Type': 'application/json'
-		}
+	const openai = new OpenAI({
+		apiKey: apiKey ? apiKey : OpenAiKey
 	});
+
+	try {
+		const transcription = await openai.audio.transcriptions.create({
+			file: audioFile as Uploadable,
+			model: 'whisper-1'
+		});
+		return new Response(JSON.stringify({ data: transcription.text }), {
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+	} catch (error) {
+		return new Response(JSON.stringify({ error: 'Error processing your request' }), {
+			status: 500, // Internal Server Error
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+	}
 };

@@ -6,6 +6,7 @@ interface PodcastEpisode {
 	description: string;
 	imageURL: string;
 	audioURL: string;
+	date: string;
 }
 
 interface Podcast {

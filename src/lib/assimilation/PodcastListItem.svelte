@@ -1,6 +1,5 @@
 <script lang="ts">
 	export let episode;
-	export let episodeURL: string;
 	export let setEpisodeURL = (url: string) => {};
 
 	const { title, description, imageURL, date, audioURL } = episode;
