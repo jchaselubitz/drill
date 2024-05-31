@@ -26,6 +26,13 @@
 			throw Error(`${'Failed to update card status:'} ${error.message}`);
 		}
 	}
+	$: loadingCSV = false;
+	$: loadingAPKG = false;
+
+	function setLoadingFalse() {
+		loadingCSV = false;
+		loadingAPKG = false;
+	}
 </script>
 
 <div class="md:flex justify-between">
@@ -51,11 +58,15 @@
 
 		<button
 			class={cn(baseButtonClass, ' bg-blue-600 text-white')}
-			on:click={() => downloadCSV(lesson)}>Download CSV</button
+			on:click={() => {
+				(loadingCSV = true), downloadCSV(lesson, setLoadingFalse);
+			}}>{loadingCSV === true ? 'Downloading' : 'Download CSV'}</button
 		>
 		<button
 			class={cn(baseButtonClass, ' bg-blue-600 text-white')}
-			on:click={() => downloadApkg(lesson)}>Download APKG</button
+			on:click={() => {
+				(loadingAPKG = true), downloadApkg(lesson, setLoadingFalse);
+			}}>{loadingAPKG === true ? 'Downloading' : 'Download APKG'}</button
 		>
 	</div>
 </div>

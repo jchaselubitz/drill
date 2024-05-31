@@ -1,5 +1,8 @@
-export function downloadCSV(lesson: { id: number; title: string }) {
-	fetch(`/api/downloads/csv/${lesson.id}`, {
+export async function downloadCSV(
+	lesson: { id: number; title: string },
+	setLoadingFalse: () => void
+) {
+	await fetch(`/api/downloads/csv/${lesson.id}`, {
 		method: 'POST'
 	})
 		.then((response) => {
@@ -22,10 +25,14 @@ export function downloadCSV(lesson: { id: number; title: string }) {
 		.catch((error) => {
 			console.error('There was a problem with the fetch operation:', error);
 		});
+	setLoadingFalse();
 }
 
-export function downloadApkg(lesson: { id: number; title: string }) {
-	fetch(`/api/downloads/apkg/${lesson.id}`, {
+export async function downloadApkg(
+	lesson: { id: number; title: string },
+	setLoadingFalse: () => void
+) {
+	await fetch(`/api/downloads/apkg/${lesson.id}`, {
 		method: 'POST'
 	})
 		.then((response) => {
@@ -48,4 +55,5 @@ export function downloadApkg(lesson: { id: number; title: string }) {
 		.catch((error) => {
 			console.error('There was a problem with the fetch operation:', error);
 		});
+	setLoadingFalse();
 }
