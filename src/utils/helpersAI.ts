@@ -6,7 +6,7 @@ export type AiMessage = {
 //this is mirrored in supabase/functions/_shared.ts
 export enum OpenAiModel {
 	'gpt3' = 'gpt-3.5-turbo-1106',
-	'gpt4' = 'gpt-4-1106-preview'
+	'gpt4' = 'gpt-4o'
 }
 
 export const getModelSelection = () => {
