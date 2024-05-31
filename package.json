@@ -40,6 +40,7 @@
 		"@supabase/auth-ui-svelte": "^0.2.8",
 		"@supabase/supabase-js": "^2.39.1",
 		"@sveltejs/vite-plugin-svelte": "^3.0.1",
+		"anki-apkg-export": "^4.0.3",
 		"audiobuffer-to-wav": "^1.0.0",
 		"axios": "^1.5.0",
 		"classnames": "^2.3.2",

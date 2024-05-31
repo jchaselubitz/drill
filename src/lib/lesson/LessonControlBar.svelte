@@ -2,7 +2,7 @@
 	import cn from 'classnames';
 	import { invalidate } from '$app/navigation';
 	import type { Lesson } from '$src/types/primaryTypes';
-	import { downloadCSV } from '$src/utils/helpersExport';
+	import { downloadApkg, downloadCSV } from '$src/utils/helpersExport';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
 	export let lesson: Lesson;
@@ -52,6 +52,10 @@
 		<button
 			class={cn(baseButtonClass, ' bg-blue-600 text-white')}
 			on:click={() => downloadCSV(lesson)}>Download CSV</button
+		>
+		<button
+			class={cn(baseButtonClass, ' bg-blue-600 text-white')}
+			on:click={() => downloadApkg(lesson)}>Download APKG</button
 		>
 	</div>
 </div>
