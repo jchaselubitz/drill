@@ -23,7 +23,6 @@
 	$: isLoading = false;
 	$: cardsArray = option.cards ?? [];
 	$: lessonLink = null as string | null;
-	$: console.log('cardsArray', cardsArray);
 
 	const fetchSuggestedCards = async () => {
 		isLoading = true;

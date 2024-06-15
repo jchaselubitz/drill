@@ -8,6 +8,8 @@
 	export let lesson: Lesson;
 	export let userId: string | undefined;
 	export let supabase: SupabaseClient<any, 'public', any>;
+	const userLanguage = LanguagesISO639.English;
+	const studyLanguage = lesson.translations[0].phrase_secondary_id.lang;
 </script>
 
 <div class="flex flex-col">
@@ -17,8 +19,8 @@
 			{userId}
 			lessonId={lesson.id}
 			lessonTitle={lesson.title}
-			subjectLanguage={lesson.subjects.name}
-			userLanguage={LanguagesISO639.English}
+			{studyLanguage}
+			{userLanguage}
 			currentLevel={lesson.subjects.current_level}
 			{supabase}
 		/>

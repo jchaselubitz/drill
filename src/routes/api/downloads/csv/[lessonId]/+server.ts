@@ -25,6 +25,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			[secondary.lang as any]: secondary.text
 		};
 	});
+
 	const headers = Object.keys(exportArray[0]);
 
 	const csvContent = exportArray.map((row: any) => {

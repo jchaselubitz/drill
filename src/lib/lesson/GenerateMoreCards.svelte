@@ -13,7 +13,7 @@
 	export let userId: string | undefined;
 	export let lessonId: number;
 	export let lessonTitle: string;
-	export let subjectLanguage: LanguagesISO639;
+	export let studyLanguage: LanguagesISO639;
 	export let userLanguage: LanguagesISO639;
 	export let currentLevel: string;
 	export let supabase: SupabaseClient<any, 'public', any>;
@@ -23,7 +23,7 @@
 		isLoading = true;
 		const { prompt, format } = requestCardSuggestions({
 			concept: lessonTitle,
-			studyLanguage: subjectLanguage,
+			studyLanguage: studyLanguage,
 			userLanguage: userLanguage,
 			level: currentLevel
 		});
@@ -33,7 +33,7 @@
 				role: 'system',
 				content: cardGenerationSystemInstructions({
 					lang1: userLanguage,
-					lang2: subjectLanguage
+					lang2: studyLanguage
 				})
 			},
 			{
@@ -54,10 +54,11 @@
 					messages: messages
 				}
 			});
+
 			const cardsArray = cardResponseChecks({
 				response: data,
 				lang1: userLanguage,
-				lang2: subjectLanguage
+				lang2: studyLanguage
 			});
 
 			const { error } = await supabase.rpc('add_translations_to_lesson', {

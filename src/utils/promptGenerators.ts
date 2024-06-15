@@ -27,7 +27,7 @@ export const cardGenerationSystemInstructions = ({
 	lang1: LanguagesISO639;
 	lang2: LanguagesISO639;
 }) =>
-	`The student will ask you for a list of examples, which will be added to flashcards. The Your response will be parsed as follows: JSON.parse(<your-response>). Return a "cards" JSON that is a list of objects, each with the following keys: phrase_primary, phrase_secondary. The phrase_primary is the ${lang1} phrase, and the phrase_secondary is the ${lang2} phrase. The format should therefore be: [{phrase_primary: {text: "phrase1", lang:${lang1}}, phrase_secondary: {text: "phrase2", lang:${lang2}}}, ...]`;
+	`The student will ask you for a list of examples, which will be added to flashcards. Your response will be parsed as follows: JSON.parse(<your-response>). Return a "cards" JSON that is a list of objects, each with the following keys: phrase_primary, phrase_secondary. The phrase_primary is the ${lang1} phrase, and the phrase_secondary is the ${lang2} phrase. The format should therefore be: [{phrase_primary: {text: "phrase1", lang:${lang1}}, phrase_secondary: {text: "phrase2", lang:${lang2}}}, ...]`;
 
 export const cardResponseChecks = ({
 	response,
@@ -41,6 +41,7 @@ export const cardResponseChecks = ({
 	if (response === '') {
 		throw Error('No cards generated. Try again.');
 	}
+
 	const cardsObject = JSON.parse(response);
 
 	if (!cardsObject.cards) {
@@ -53,7 +54,6 @@ export const cardResponseChecks = ({
 	}
 	if (!cardsArray[0].phrase_primary.lang || !cardsArray[0].phrase_secondary.text) {
 		alert('OpenAI returned wrong format. This happens sometimes. Please try again.');
-		console.log(cardsArray);
 		throw Error(
 			'OpenAI returned wrong format (not phrase_primary/phrase_secondary). Please try again.'
 		);
@@ -84,7 +84,7 @@ export const requestCardSuggestions = ({
 		studyLanguage
 	)} on the other. Generate twenty long sentences that demonstrate the concept of ${concept} in ${getLangName(
 		studyLanguage
-	)}. `;
+	)}. The format of the JSON should be as follows: {${userLanguage}: "sentence", ${studyLanguage}: "sentence"}.`;
 	const format = 'json_object';
 	return { prompt, format };
 };
