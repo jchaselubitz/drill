@@ -1,5 +1,4 @@
 <script lang="ts">
-	import FlashCard from '$lib/decks/FlashCard.svelte';
 	import LessonControlBar from '$lib/lesson/LessonControlBar.svelte';
 	import LessonSettings from '$lib/lesson/LessonSettings.svelte';
 	import type { Translation, CardRef } from '$src/types/primaryTypes';
@@ -82,9 +81,9 @@
 
 <div class="m-4rounded-lg flex flex-col h-full">
 	<LessonControlBar {lesson} {supabase} bind:showLessonSettings />
-	{#if showLessonSettings}
-		<LessonSettings {lesson} {userId} {supabase} />
-	{:else if currentCard}
+	<!-- {#if showLessonSettings} -->
+	<LessonSettings {lesson} {userId} {supabase} />
+	<!-- {:else if currentCard}
 		<div class="flex justify-center w-full h-full mt-4">
 			<FlashCard
 				card={currentCard}
@@ -104,8 +103,8 @@
 			<div class="flex flex-col justify-center items-center">
 				<h1 class="text-2xl font-bold">No cards to review</h1>
 			</div>
-		</div>
-	{/if}
+		</div> -->
+	<!-- {/if} -->
 </div>
 
 <!-- <style lang="postcss">

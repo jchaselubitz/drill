@@ -76,6 +76,10 @@ export const getLangName = (langCode: string | null) => {
 	return Languages.find((lang) => lang.value === langCode)?.name ?? '';
 };
 
+export const getLangValue = (langName: LanguagesISO639) => {
+	return Languages.find((lang) => lang.name === langName)?.value ?? null;
+};
+
 export const getLangIcon = (langCode: string | null) => {
 	return Languages.find((lang) => lang.value === langCode)?.icon ?? '';
 };

@@ -41,8 +41,8 @@
 				<!-- <th>Id</th> -->
 				<th class={labelClass}>{getLangName(cards[0].phrase_primary_id.lang)}</th>
 				<th class={labelClass}>{getLangName(cards[0].phrase_secondary_id.lang)}</th>
-				<th class={labelClass}>Last interval</th>
-				<th class={labelClass}>Next repetition</th>
+				<!-- <th class={labelClass}>Last interval</th>
+				<th class={labelClass}>Next repetition</th> -->
 			</tr>
 		</thead>
 		<tbody>
@@ -71,8 +71,8 @@
 							}}
 						/></td
 					>
-					<td>{lastInterval(card)} </td>
-					<td>{nextRepetition(card)}</td>
+					<!-- <td>{lastInterval(card)} </td>
+					<td>{nextRepetition(card)}</td> -->
 				</tr>
 			{/each}
 		</tbody>

@@ -1,4 +1,4 @@
-import type { CardRef, Lesson } from '$src/types/primaryTypes.js';
+import type { CardRef, Lesson, Translation } from '$src/types/primaryTypes.js';
 import { getDateDay, isSameDate, toDbDate, toJsDateType } from '$src/utils/helpersDate';
 import { createReviewDeck } from '$src/utils/intervals';
 
@@ -14,11 +14,11 @@ export async function load({ locals, params, depends }) {
 		)
 		.eq('id', lessonId); // Filter the query by lessonId
 
-	const lesson = lessons ? (lessons[0] as Lesson) : ({} as Lesson);
+	const lesson = lessons ? lessons[0] : ({} as Lesson);
 
 	const reviewDeckDict = (lesson.review_deck as CardRef[]) ?? [];
 
-	const cards = lesson.translations ?? [];
+	const cards = (lesson.translations as Translation[]) ?? ([] as Translation[]);
 
 	// if the the latest review date is today, pull in the whole current review deck and match it to the cards
 	depends('app:lesson');
@@ -35,7 +35,7 @@ export async function load({ locals, params, depends }) {
 			.in('id', incomingDeck ?? []); // this needs to include just the ids
 
 		return {
-			lesson: lesson,
+			lesson: lesson as Lesson,
 			reviewDeckDict: reviewDeckDict ?? [],
 			reviewDeckCards: reviewDeckAll ?? []
 		};
@@ -80,7 +80,7 @@ export async function load({ locals, params, depends }) {
 	}
 
 	return {
-		lesson: lesson,
+		lesson: lesson as Lesson,
 		reviewDeckDict: newReviewDeckDict ?? [],
 		reviewDeckCards: deck ?? []
 	};

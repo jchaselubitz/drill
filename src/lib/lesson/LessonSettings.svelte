@@ -9,7 +9,7 @@
 	export let userId: string | undefined;
 	export let supabase: SupabaseClient<any, 'public', any>;
 	const userLanguage = LanguagesISO639.English;
-	const studyLanguage = lesson.translations[0].phrase_secondary_id.lang;
+	const studyLanguage = lesson.translations[0].phrase_secondary_id.lang as LanguagesISO639;
 </script>
 
 <div class="flex flex-col">

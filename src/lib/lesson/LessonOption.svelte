@@ -13,6 +13,7 @@
 	export let userId: string | undefined;
 	export let subjectId: string | null;
 	let isLoading = false;
+	$: console.log(subjectId);
 
 	$: isOpen = false;
 

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
-	import type { Translation } from '$src/types/primaryTypes';
 	import { getModelSelection, getOpenAiKey } from '$src/utils/helpersAI';
 	import type { LanguagesISO639 } from '$src/utils/lists';
 	import {
@@ -15,7 +14,7 @@
 	export let lessonTitle: string;
 	export let studyLanguage: LanguagesISO639;
 	export let userLanguage: LanguagesISO639;
-	export let currentLevel: string;
+	export let currentLevel: string | null;
 	export let supabase: SupabaseClient<any, 'public', any>;
 	let isLoading = false;
 
@@ -25,7 +24,7 @@
 			concept: lessonTitle,
 			studyLanguage: studyLanguage,
 			userLanguage: userLanguage,
-			level: currentLevel
+			level: currentLevel ?? ''
 		});
 
 		const messages = [

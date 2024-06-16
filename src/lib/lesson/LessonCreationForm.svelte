@@ -15,6 +15,7 @@
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
 	export let supabase: SupabaseClient;
+	export let isAddition: boolean;
 	export let studyLanguage: LanguagesISO639 | '';
 	export let userLanguage: LanguagesISO639 | '';
 	export let level: string;
@@ -100,18 +101,19 @@
 </script>
 
 <form method="GET">
-	<Select className="mb-3" label="Language" name="language" bind:value={studyLanguage}>
-		{#each Languages as language}
-			<option value={language.value}>{language.name}</option>
-		{/each}
-	</Select>
+	{#if !isAddition}
+		<Select className="mb-3" label="Language" name="language" bind:value={studyLanguage}>
+			{#each Languages as language}
+				<option value={language.value}>{language.name}</option>
+			{/each}
+		</Select>
 
-	<Select className="mb-3" label="Level" name="level" bind:value={level}>
-		{#each Levels as level}
-			<option value={level.value}>{level.name}</option>
-		{/each}
-	</Select>
-
+		<Select className="mb-3" label="Level" name="level" bind:value={level}>
+			{#each Levels as level}
+				<option value={level.value}>{level.name}</option>
+			{/each}
+		</Select>
+	{/if}
 	<Input
 		label="Describe the material you would like to drill"
 		name="request"

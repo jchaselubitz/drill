@@ -18,6 +18,7 @@
 
 <div class="flex flex-col m-2 md:m-4 gap-4">
 	<LessonCreationForm
+		isAddition={false}
 		{userLanguage}
 		bind:studyLanguage
 		bind:level

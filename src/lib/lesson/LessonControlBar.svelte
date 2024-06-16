@@ -38,7 +38,7 @@
 <div class="md:flex justify-between">
 	<h1 class="md:text-2xl font-bold">{lesson.title}</h1>
 	<div>
-		<button class={cn(baseButtonClass, ' bg-blue-600 text-white')} on:click={toggleLessonSettings}>
+		<!-- <button class={cn(baseButtonClass, ' bg-blue-600 text-white')} on:click={toggleLessonSettings}>
 			{#if showLessonSettings}
 				Hide Settings
 			{:else}
@@ -54,7 +54,7 @@
 			on:click={updateSideOrder}
 		>
 			Show Back First
-		</button>
+		</button> -->
 
 		<button
 			class={cn(baseButtonClass, ' bg-blue-600 text-white')}

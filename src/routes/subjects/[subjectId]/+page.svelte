@@ -6,12 +6,17 @@
 		lessonGenerationSystemInstructions,
 		requestLessonSuggestions
 	} from '$src/utils/promptGenerators.js';
-	import LoadingButton from '$lib/buttons/LoadingButton.svelte';
 	import type { PageData } from './$types';
+	import { LanguagesISO639, getLangValue } from '$src/utils/lists';
+	import LessonCreationForm from '$lib/lesson/LessonCreationForm.svelte';
 
 	export let data: PageData;
 	$: ({ session, supabase, subject, lessons } = data);
 	$: userId = session?.user?.id;
+	const userLanguage = LanguagesISO639.English;
+	$: studyLanguage = getLangValue(subject.name);
+	$: subjectName = subject.name;
+	$: request = '';
 
 	let isLoading = false;
 
@@ -19,12 +24,11 @@
 	$: optionListObject = aiResponse ? JSON.parse(aiResponse).concepts : null;
 	// $: optionListObject = aiResponse ? JSON.parse(aiResponse) : null;
 
-	$: language = subject.name;
 	$: level = subject.current_level;
 
 	const handleGenerate = async () => {
 		isLoading = true;
-		const { prompt, format } = requestLessonSuggestions({ level, language });
+		const { prompt, format } = requestLessonSuggestions({ level, language: subjectName });
 
 		const modelParams = { format };
 		const messages = [
@@ -64,27 +68,28 @@
 	</div>
 {/if}
 
-<div class="flex flex-col gap-4">
-	<div class="flex justify-center mt-4">
-		<form method="GET">
-			<LoadingButton
-				class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded"
-				{isLoading}
-				text="Generate Lesson Suggestions"
-				loadingText="Generating..."
-				onClick={handleGenerate}
-			/>
-		</form>
-	</div>
-	{#if optionListObject}
-		<LessonOptions
-			{userId}
+<div class="flex flex-col m-2 md:m-4 gap-4">
+	{#if studyLanguage}
+		<LessonCreationForm
+			isAddition={true}
+			{userLanguage}
+			{studyLanguage}
+			{level}
+			bind:optionListObject
+			bind:request
 			{supabase}
-			subjectId={subject.id}
+		/>
+	{/if}
+
+	{#if optionListObject && level && studyLanguage}
+		<LessonOptions
 			options={optionListObject}
-			subjectLanguage={subject.name}
-			userLanguage={'English'}
-			currentLevel={subject.current_level}
+			{studyLanguage}
+			{userLanguage}
+			currentLevel={level}
+			subjectId={subject.id}
+			{supabase}
+			{userId}
 		/>
 	{/if}
 </div>
