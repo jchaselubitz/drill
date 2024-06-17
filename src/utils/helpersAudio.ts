@@ -6,19 +6,47 @@ export type GetTextFromSpeechProps = {
 	setIsloadingFalse: () => void;
 };
 
+export type SavedAudio = {
+	fileName: string;
+	supabase: SupabaseClient<any, 'public', any>;
+	bucket: string;
+};
+export type PlaySavedAudio = SavedAudio & {
+	setIsPlayingFalse?: () => void;
+};
+
 export type GetAudioFileProps = PlaySavedAudio & {
 	text: string;
+	playAfterSave?: boolean | undefined;
 	setIsLoadingFalse: () => void;
 };
+
+export async function getFileList({
+	supabase,
+	bucket
+}: {
+	supabase: SupabaseClient<any, 'public', any>;
+	bucket: string;
+}) {
+	const { data: files, error } = await supabase.storage.from(bucket).list();
+	if (error) {
+		throw error;
+	}
+	return files;
+}
 
 export async function getAudioFile({
 	text,
 	fileName,
 	supabase,
 	bucket,
+	playAfterSave,
 	setIsPlayingFalse,
 	setIsLoadingFalse
 }: GetAudioFileProps) {
+	if (playAfterSave && !setIsPlayingFalse) {
+		throw new Error('playAfterSave requires setIsPlayingFalse to be defined.');
+	}
 	const apiKey = getOpenAiKey();
 
 	fetch(`/api/ai/text-to-speech`, {
@@ -31,7 +59,7 @@ export async function getAudioFile({
 		.then((res) => res.json())
 		.then((data) => {
 			setIsLoadingFalse();
-			playSavedAudio({ fileName: data.data, supabase, bucket, setIsPlayingFalse });
+			playAfterSave && playSavedAudio({ fileName: data.data, supabase, bucket, setIsPlayingFalse });
 			return data;
 		})
 		.catch((err) => {
@@ -39,12 +67,20 @@ export async function getAudioFile({
 		});
 }
 
-export type PlaySavedAudio = {
-	fileName: string;
-	supabase: SupabaseClient<any, 'public', any>;
-	bucket: string;
-	setIsPlayingFalse: () => void;
-};
+export async function checkIfAudioExists({ fileName, supabase, bucket }: SavedAudio) {
+	const { data: existingFile, error: existingError } = await supabase.storage
+		.from(bucket)
+		.createSignedUrl(fileName, 1);
+
+	if (existingError) {
+		return false;
+	}
+
+	if (existingFile) {
+		return true;
+	}
+	return false;
+}
 
 export async function playSavedAudio({
 	fileName,
@@ -57,7 +93,7 @@ export async function playSavedAudio({
 		.download(fileName);
 
 	if (existingError) {
-		setIsPlayingFalse();
+		setIsPlayingFalse && setIsPlayingFalse();
 		return;
 	}
 
@@ -71,7 +107,7 @@ export async function playSavedAudio({
 
 		audio.onended = () => {
 			URL.revokeObjectURL(url);
-			setIsPlayingFalse();
+			setIsPlayingFalse && setIsPlayingFalse();
 		};
 
 		return audio;

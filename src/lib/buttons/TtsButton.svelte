@@ -6,11 +6,13 @@
 
 	export let supabase: SupabaseClient<any, 'public', any>;
 	export let bucket: string;
+	export let lacksAudio: boolean;
 	export let audioObject = null as any;
 	export let text: string | null;
 
 	$: isLoading = false;
 	$: isPlaying = false;
+	$: exists = !lacksAudio;
 
 	async function handlePlaySpeech() {
 		if (!text) return;
@@ -25,7 +27,7 @@
 		function setIsLoadingFalse() {
 			isLoading = false;
 		}
-		const fileName = (await hashString(text as string)) + '.mp3'; // we take the hash of the text as the file name to make sure we don't generate audio for the same text twice.
+		const fileName = (await hashString(text as string)) + '.mp3';
 		const playedExistingFile = await playSavedAudio({
 			fileName,
 			supabase,
@@ -39,9 +41,18 @@
 		}
 		isLoading = true;
 		isPlaying = true;
+		exists = true;
 
-		await getAudioFile({ text, fileName, supabase, bucket, setIsPlayingFalse, setIsLoadingFalse });
+		await getAudioFile({
+			text,
+			fileName,
+			supabase,
+			bucket,
+			playAfterSave: true,
+			setIsPlayingFalse,
+			setIsLoadingFalse
+		});
 	}
 </script>
 
-<AudioPlayButton {isLoading} {isPlaying} handleClick={handlePlaySpeech} />
+<AudioPlayButton {exists} {isLoading} {isPlaying} handleClick={handlePlaySpeech} />

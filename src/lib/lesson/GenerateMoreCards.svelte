@@ -79,6 +79,8 @@
 	}
 </script>
 
-<button class="bg-blue-600 rounded-lg text-white p-2" type="submit" on:click={handleGenerate}
-	>{isLoading ? 'Loading...' : 'Generate More Cards'}</button
+<button
+	class="w-full border-2 border-blue-600 rounded-lg text-blue-600 font-medium p-2"
+	type="submit"
+	on:click={handleGenerate}>{isLoading ? 'Loading...' : 'Generate More Cards'}</button
 >

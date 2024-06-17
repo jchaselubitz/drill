@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
+	import TtsButton from '$lib/buttons/TtsButton.svelte';
 	import type { Translation } from '$src/types/primaryTypes';
+	import { hashString } from '$src/utils/helpersDB';
 	import { getLangName } from '$src/utils/lists';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
 	export let supabase: SupabaseClient<any, 'public', any>;
 	export let cards: Translation[];
+	export let translationsWithoutAudio: (Translation | undefined)[];
+	export let bucket: string;
 	const labelClass = 'text-sm md:text-base font-bold text-gray-500 whitespace-nowrap';
 	const rowInputClass = 'w-64 md:w-full';
 
@@ -73,6 +77,16 @@
 					>
 					<!-- <td>{lastInterval(card)} </td>
 					<td>{nextRepetition(card)}</td> -->
+					<td class="px-2"
+						><TtsButton
+							{supabase}
+							text={card.phrase_secondary_id.text}
+							{bucket}
+							lacksAudio={translationsWithoutAudio
+								? translationsWithoutAudio.some((translation) => translation?.id === card.id)
+								: false}
+						/>
+					</td>
 				</tr>
 			{/each}
 		</tbody>

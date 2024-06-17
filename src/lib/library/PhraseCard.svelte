@@ -25,7 +25,7 @@
 		<div class="flex justify-between gap-2 text-left items-center">
 			<h3>{phrase.text}</h3>
 			<div class="w-12">
-				<TtsButton {supabase} text={phrase.text} {bucket} />
+				<TtsButton {supabase} text={phrase.text} {bucket} lacksAudio={false} />
 			</div>
 		</div>
 	</button>
