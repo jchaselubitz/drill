@@ -156,7 +156,6 @@ export function recordAudio() {
 			const audioChunks: Blob[] = [];
 			mediaRecorder.addEventListener('dataavailable', (event) => {
 				audioChunks.push(event.data);
-				console.log(mediaRecorder.mimeType);
 			});
 
 			const start = () => {
