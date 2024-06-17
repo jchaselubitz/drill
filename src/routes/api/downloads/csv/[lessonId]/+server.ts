@@ -17,7 +17,9 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 
 	async function getUrl(text: string, bucket: string) {
 		const fileName = (await hashString(text)) + '.mp3';
-		const { data } = locals.supabase.storage.from(bucket).getPublicUrl(fileName);
+		const { data } = locals.supabase.storage
+			.from(bucket)
+			.getPublicUrl(fileName, { download: true });
 
 		if (data) {
 			return data;
@@ -32,7 +34,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			lesson.translations?.map(async (translation: any) => {
 				const primary = translation.phrase_primary_id as Phrase;
 				const secondary = translation.phrase_secondary_id as Phrase;
-				const fileUrl = await getUrl(primary.text as string, 'text_to_speech');
+				const fileUrl = await getUrl(secondary.text as string, 'text_to_speech');
 
 				return {
 					[primary.lang as any]: primary.text,
