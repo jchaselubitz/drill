@@ -49,7 +49,7 @@
 	bind:this={sidebarRef}
 >
 	<div class="flex justify-between">
-		<img src="/drill-logo.png" alt="Logo" class="w-6 h-6" />
+		<img src="/icons/drill-logo.png" alt="Logo" class="w-6 h-6" />
 		<button on:click={() => toggleSidebar(false)}>
 			<Icon data={faBars} />
 		</button>
