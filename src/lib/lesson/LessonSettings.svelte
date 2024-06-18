@@ -13,8 +13,8 @@
 	export let lesson: Lesson;
 	export let userId: string | undefined;
 	export let supabase: SupabaseClient<any, 'public', any>;
+	export let userLanguage: LanguagesISO639;
 	const translations = lesson.translations;
-	const userLanguage = LanguagesISO639.English;
 	const studyLanguage = lesson.translations[0].phrase_secondary_id.lang as LanguagesISO639;
 	const bucket = 'text_to_speech';
 

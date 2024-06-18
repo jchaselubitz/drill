@@ -6,7 +6,7 @@
 	import type { PageData } from './$types';
 	export let data: PageData;
 	let currentCardIndex = 0;
-	$: ({ supabase, session, lesson, reviewDeckDict, reviewDeckCards } = data);
+	$: ({ supabase, session, lesson, reviewDeckDict, reviewDeckCards, userLanguage } = data);
 	$: userId = session?.user?.id;
 	$: currentCard = reviewDeckCards[currentCardIndex];
 	$: uncompletedCardRefs = reviewDeckDict.filter((cardRef: CardRef) => cardRef.completed === false);
@@ -82,7 +82,7 @@
 <div class="m-4rounded-lg flex flex-col h-full">
 	<LessonControlBar {lesson} {supabase} bind:showLessonSettings />
 	<!-- {#if showLessonSettings} -->
-	<LessonSettings {lesson} {userId} {supabase} />
+	<LessonSettings {lesson} {userId} {supabase} {userLanguage} />
 	<!-- {:else if currentCard}
 		<div class="flex justify-center w-full h-full mt-4">
 			<FlashCard

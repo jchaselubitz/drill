@@ -4,10 +4,9 @@
 	import { LanguagesISO639 } from '$src/utils/lists.js';
 
 	export let data;
-	$: ({ session, supabase } = data);
+	$: ({ session, supabase, userLanguage } = data);
 	$: userId = session?.user?.id;
 
-	let userLanguage = LanguagesISO639.English;
 	$: level = '';
 	$: studyLanguage = '' as LanguagesISO639 | '';
 	$: request = '';

@@ -1,20 +1,31 @@
 <script lang="ts">
 	import '../app.css';
 	import cn from 'classnames';
-	import { invalidate } from '$app/navigation';
+	import { invalidate, invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import NavBar from '$lib/navigation/NavBar.svelte';
 	import type { PageData } from './$types';
-	import { type SubmitFunction } from '@sveltejs/kit';
+	import { error, type SubmitFunction } from '@sveltejs/kit';
 	import AuthModal from '$lib/authForm/AuthModal.svelte';
 	import SideBar from '$lib/navigation/SideBar.svelte';
 	import AuthUpdate from '$lib/authForm/AuthUpdate.svelte';
 
 	export let data: PageData;
 
-	$: ({ supabase, session, pathname, code } = data);
+	$: ({ supabase, session, pathname, code, userLanguage } = data);
 	$: sidebarIsOpen = undefined as boolean | undefined;
 	$: isPublic = pathname.includes('password-reset');
+	$: userId = undefined as string | undefined;
+
+	const insertUserLanguage = async (lang: string, userId: string) => {
+		const { error } = await supabase.from('profiles').insert({ user_id: userId, language: lang });
+
+		if (error) {
+			console.error('Error: ', error);
+		} else {
+			invalidateAll();
+		}
+	};
 
 	onMount(() => {
 		sidebarIsOpen = localStorage.getItem('sidebarIsOpen') === 'true';
@@ -23,10 +34,23 @@
 			if (_session?.expires_at !== session?.expires_at) {
 				invalidate('supabase:auth');
 			}
+
+			if (_session?.user && userLanguage === 'none') {
+				const userId = _session.user.id;
+				const userLanguages = navigator.languages;
+				const primaryLanguage = userLanguages[0].split('-')[0];
+				insertUserLanguage(primaryLanguage, userId);
+			}
 		});
 
 		async function getUser() {
-			const { error } = await supabase.auth.getUser(session?.access_token);
+			const {
+				data: { user },
+				error
+			} = await supabase.auth.getUser(session?.access_token);
+			if (user) {
+				userId = user.id;
+			}
 			if (error) {
 				console.error('Error: ', error.message);
 				supabase.auth.signOut();
@@ -53,6 +77,18 @@
 	const passwordUpdateComplete = () => {
 		code = null;
 	};
+
+	const setUserLanguage = async (lang: string) => {
+		const { error } = await supabase
+			.from('profiles')
+			.update({ language: lang })
+			.eq('user_id', userId);
+		if (error) {
+			console.error('Error: ', error);
+		} else {
+			invalidateAll();
+		}
+	};
 </script>
 
 <svelte:head>
@@ -62,7 +98,7 @@
 {#if sidebarIsOpen !== undefined}
 	<div class="flex absolute top-0 bottom-0 w-full">
 		{#if sidebarIsOpen && session}
-			<SideBar {sidebarIsOpen} {toggleSidebar} />
+			<SideBar {sidebarIsOpen} {toggleSidebar} {userLanguage} {setUserLanguage} />
 		{/if}
 		{#if code}
 			<AuthUpdate {supabase} onCompletion={passwordUpdateComplete} />

@@ -11,9 +11,9 @@
 	import LessonCreationForm from '$lib/lesson/LessonCreationForm.svelte';
 
 	export let data: PageData;
-	$: ({ session, supabase, subject, lessons } = data);
+	$: ({ session, supabase, subject, lessons, userLanguage } = data);
 	$: userId = session?.user?.id;
-	const userLanguage = LanguagesISO639.English;
+
 	$: studyLanguage = getLangValue(subject.name);
 	$: subjectName = subject.name;
 	$: request = '';

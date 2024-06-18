@@ -12,9 +12,20 @@ export const load = async ({ fetch, data, depends }) => {
 		serverSession: data.session
 	});
 
+	const { data: userData } = await supabase.from('profiles').select('*');
+
+	const language = userData && userData[0] && userData[0].language ? userData[0].language : 'none';
+
 	const {
 		data: { session }
 	} = await supabase.auth.getSession();
 
-	return { supabase, session, url: data.url, pathname: data.pathname, code: data.code };
+	return {
+		supabase,
+		session,
+		url: data.url,
+		pathname: data.pathname,
+		code: data.code,
+		userLanguage: language
+	};
 };

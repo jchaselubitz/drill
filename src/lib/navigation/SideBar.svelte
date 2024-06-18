@@ -4,9 +4,12 @@
 	import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 	import ApiKeyForm from './APIKeyForm.svelte';
 	import SideBarItem from './SideBarItem.svelte';
+	import BaseLanguageForm from './BaseLanguageForm.svelte';
 	export let sidebarIsOpen: boolean;
 
 	export let toggleSidebar: (open: boolean) => void;
+	export let userLanguage: string;
+	export let setUserLanguage: (language: string) => void;
 
 	let sidebarRef: HTMLDivElement;
 
@@ -59,5 +62,10 @@
 		<SideBarItem text="Library" path="/library" {toggleSidebar} {isMobile} />
 	</div>
 
-	<div class="absolute bottom-4 left-4 right-4"><ApiKeyForm /></div>
+	<div class="absolute bottom-4 left-4 right-4">
+		<div class="flex flex-col gap-6">
+			<BaseLanguageForm {userLanguage} {setUserLanguage} />
+			<ApiKeyForm />
+		</div>
+	</div>
 </div>
