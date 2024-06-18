@@ -100,9 +100,9 @@
 		{#if sidebarIsOpen && session}
 			<SideBar {sidebarIsOpen} {toggleSidebar} {userLanguage} {setUserLanguage} />
 		{/if}
-		{#if code}
+		<!-- {#if code}
 			<AuthUpdate {supabase} onCompletion={passwordUpdateComplete} />
-		{/if}
+		{/if} -->
 		{#if !session && !isPublic}
 			<AuthModal {supabase} />
 		{/if}
