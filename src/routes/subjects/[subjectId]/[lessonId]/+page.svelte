@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidate } from '$app/navigation';
 	import LessonControlBar from '$lib/lesson/LessonControlBar.svelte';
 	import LessonSettings from '$lib/lesson/LessonSettings.svelte';
 	import type { Translation, CardRef } from '$src/types/primaryTypes';
@@ -14,65 +15,65 @@
 	$: showLessonSettings = false;
 	$: showSide2First = lesson.show_side_2_first;
 
-	async function setCardCompletion(cardId: number, completed: boolean) {
-		const updatedReviewDeckDict = reviewDeckDict.map((cardRef: CardRef) => {
-			return cardRef.id === cardId ? { ...cardRef, completed: completed } : cardRef;
-		});
-		const { error } = await supabase
-			.from('lessons')
-			.update({ review_deck: updatedReviewDeckDict })
-			.eq('id', lesson.id);
-		if (error) {
-			throw Error(`${'Failed to remove card from review:'} ${error.message}`);
-		}
-		if (completed) {
-			const indexOfCard = uncompletedCardRefs.findIndex(
-				(cardRef: CardRef) => cardRef.id === cardId
-			);
-			uncompletedCardRefs = uncompletedCardRefs.toSpliced(indexOfCard, 1);
-		}
-	}
+	// async function setCardCompletion(cardId: number, completed: boolean) {
+	// 	const updatedReviewDeckDict = reviewDeckDict.map((cardRef: CardRef) => {
+	// 		return cardRef.id === cardId ? { ...cardRef, completed: completed } : cardRef;
+	// 	});
+	// 	const { error } = await supabase
+	// 		.from('lessons')
+	// 		.update({ review_deck: updatedReviewDeckDict })
+	// 		.eq('id', lesson.id);
+	// 	if (error) {
+	// 		throw Error(`${'Failed to remove card from review:'} ${error.message}`);
+	// 	}
+	// 	if (completed) {
+	// 		const indexOfCard = uncompletedCardRefs.findIndex(
+	// 			(cardRef: CardRef) => cardRef.id === cardId
+	// 		);
+	// 		uncompletedCardRefs = uncompletedCardRefs.toSpliced(indexOfCard, 1);
+	// 	}
+	// }
 
-	async function updateCardInDatabase(
-		cardId: number,
-		updatedIntervals: number[],
-		updatedRepHistory: string[]
-	) {
-		const { data, error } = await supabase
-			.from('cards')
-			.update({
-				interval_history: updatedIntervals,
-				repetition_history: updatedRepHistory
-			})
-			.eq('id', cardId);
+	// async function updateCardInDatabase(
+	// 	cardId: number,
+	// 	updatedIntervals: number[],
+	// 	updatedRepHistory: string[]
+	// ) {
+	// 	const { data, error } = await supabase
+	// 		.from('cards')
+	// 		.update({
+	// 			interval_history: updatedIntervals,
+	// 			repetition_history: updatedRepHistory
+	// 		})
+	// 		.eq('id', cardId);
 
-		if (error) {
-			throw Error(`${'Failed to update card status:'} ${error.message}`);
-		}
-	}
+	// 	if (error) {
+	// 		throw Error(`${'Failed to update card status:'} ${error.message}`);
+	// 	}
+	// }
 
-	function setNextCard() {
-		currentCardIndex =
-			currentCardIndex + 1 === uncompletedCardRefs.length ? 0 : currentCardIndex + 1;
-	}
+	// function setNextCard() {
+	// 	currentCardIndex =
+	// 		currentCardIndex + 1 === uncompletedCardRefs.length ? 0 : currentCardIndex + 1;
+	// }
 
-	function undo() {
-		if (reviewHistory.length === 0) {
-			alert('No cards to undo');
-			return;
-		}
-		const previousCard = reviewHistory[reviewHistory.length - 1];
-		const repetitionHistory = previousCard.repetition_history;
-		const intervalsMin = previousCard.interval_history;
-		const updatedRepHistory =
-			repetitionHistory && repetitionHistory?.length > 0 ? repetitionHistory.slice(0, -1) : [];
-		const updatedIntervals =
-			intervalsMin && intervalsMin?.length > 0 ? intervalsMin.slice(0, -1) : [];
-		setCardCompletion(previousCard.id, false);
-		updateCardInDatabase(previousCard.id, updatedIntervals, updatedRepHistory);
-		reviewHistory.pop();
-		currentCardIndex = reviewDeckCards.findIndex((cardRef) => cardRef.id === previousCard.id);
-	}
+	// function undo() {
+	// 	if (reviewHistory.length === 0) {
+	// 		alert('No cards to undo');
+	// 		return;
+	// 	}
+	// 	const previousCard = reviewHistory[reviewHistory.length - 1];
+	// 	const repetitionHistory = previousCard.repetition_history;
+	// 	const intervalsMin = previousCard.interval_history;
+	// 	const updatedRepHistory =
+	// 		repetitionHistory && repetitionHistory?.length > 0 ? repetitionHistory.slice(0, -1) : [];
+	// 	const updatedIntervals =
+	// 		intervalsMin && intervalsMin?.length > 0 ? intervalsMin.slice(0, -1) : [];
+	// 	setCardCompletion(previousCard.id, false);
+	// 	updateCardInDatabase(previousCard.id, updatedIntervals, updatedRepHistory);
+	// 	reviewHistory.pop();
+	// 	currentCardIndex = reviewDeckCards.findIndex((cardRef) => cardRef.id === previousCard.id);
+	// }
 </script>
 
 <svelte:head>
@@ -80,7 +81,7 @@
 </svelte:head>
 
 <div class="m-4rounded-lg flex flex-col h-full">
-	<LessonControlBar {lesson} {supabase} bind:showLessonSettings />
+	<LessonControlBar {lesson} {supabase} />
 	<!-- {#if showLessonSettings} -->
 	<LessonSettings {lesson} {userId} {supabase} {userLanguage} />
 	<!-- {:else if currentCard}

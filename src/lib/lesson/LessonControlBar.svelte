@@ -6,30 +6,62 @@
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
 	export let lesson: Lesson;
-	export let showLessonSettings: boolean;
+	// export let showLessonSettings: boolean;
 	export let supabase: SupabaseClient<any, 'public', any>;
+	$: showTitleEditor = false;
 
-	function toggleLessonSettings() {
-		showLessonSettings = !showLessonSettings;
+	function toggleShowTitleEditor(setting: boolean) {
+		showTitleEditor = setting;
 	}
 
-	const baseButtonClass = 'p-1 px-2 text-xs border border-blue-600 rounded-full';
+	// function toggleLessonSettings() {
+	// 	showLessonSettings = !showLessonSettings;
+	// }
 
-	async function updateSideOrder() {
-		const showSide2First = !lesson.show_side_2_first;
-		const { error } = await supabase
+	// const baseButtonClass = 'p-1 px-2 text-xs border border-blue-600 rounded-full';
+
+	// async function updateSideOrder() {
+	// 	const showSide2First = !lesson.show_side_2_first;
+	// 	const { error } = await supabase
+	// 		.from('lessons')
+	// 		.update({ show_side_2_first: showSide2First })
+	// 		.eq('id', lesson.id);
+	// 	invalidate('app:lesson');
+	// 	if (error) {
+	// 		throw Error(`${'Failed to update card status:'} ${error.message}`);
+	// 	}
+	// }
+
+	async function updateLessonTitle(newTitle: string) {
+		const { data, error } = await supabase
 			.from('lessons')
-			.update({ show_side_2_first: showSide2First })
+			.update({ title: newTitle })
 			.eq('id', lesson.id);
-		invalidate('app:lesson');
 		if (error) {
-			throw Error(`${'Failed to update card status:'} ${error.message}`);
+			throw Error(`${'Failed to update lesson title:'} ${error.message}`);
 		}
+		invalidate('app:lesson');
 	}
 </script>
 
 <div class="md:flex justify-between">
-	<h1 class="md:text-2xl font-bold">{lesson.title}</h1>
+	<button
+		class="md:text-2xl font-bold hover:underline"
+		on:click={() => toggleShowTitleEditor(true)}
+	>
+		{#if showTitleEditor}
+			<input
+				type="text"
+				value={lesson.title}
+				on:blur={(e) => {
+					updateLessonTitle(e.target.value);
+					toggleShowTitleEditor(false);
+				}}
+			/>
+		{:else}
+			{lesson.title}
+		{/if}
+	</button>
 	<div>
 		<!-- <button class={cn(baseButtonClass, ' bg-blue-600 text-white')} on:click={toggleLessonSettings}>
 			{#if showLessonSettings}
