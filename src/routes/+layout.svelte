@@ -10,29 +10,45 @@
 	import SideBar from '$lib/navigation/SideBar.svelte';
 	import AuthUpdate from '$lib/authForm/AuthUpdate.svelte';
 
-	if ('serviceWorker' in navigator) {
-		window.addEventListener('load', () => {
-			navigator.serviceWorker.register('/service-worker.js').then(
-				(registration) => {
-					console.log('ServiceWorker registration successful with scope: ', registration.scope);
-				},
-				(error) => {
-					console.log('ServiceWorker registration failed: ', error);
-				}
-			);
-		});
-	}
+	const registerServiceWorker = () => {
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', () => {
+				navigator.serviceWorker.register('/service-worker.js').then(
+					(registration) => {
+						console.log('ServiceWorker registration successful with scope: ', registration.scope);
+					},
+					(error) => {
+						console.log('ServiceWorker registration failed: ', error);
+					}
+				);
+			});
+		}
+	};
 
 	export let data: PageData;
 
 	$: ({ supabase, session, pathname, code, userLanguage } = data);
 	$: sidebarIsOpen = undefined as boolean | undefined;
 	$: isPublic = pathname.includes('password-reset');
-	$: userId = undefined as string | undefined;
 
-	const insertUserLanguage = async (lang: string, userId: string) => {
-		const { error } = await supabase.from('profiles').insert({ user_id: userId, language: lang });
+	const insertUserLanguage = async () => {
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
 
+		if (user && userLanguage === 'none') {
+			const userId = user.id;
+			const userLanguages = navigator.languages;
+			const primaryLanguage = userLanguages[0].split('-')[0];
+
+			const { error } = await supabase
+				.from('profiles')
+				.insert({ user_id: userId, language: primaryLanguage });
+
+			if (error) {
+				console.error('Error: ', error);
+			}
+		}
 		if (error) {
 			console.error('Error: ', error);
 		} else {
@@ -41,18 +57,12 @@
 	};
 
 	onMount(() => {
+		registerServiceWorker();
+		insertUserLanguage();
 		sidebarIsOpen = localStorage.getItem('sidebarIsOpen') === 'true';
-
 		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
 			if (_session?.expires_at !== session?.expires_at) {
 				invalidate('supabase:auth');
-			}
-
-			if (_session?.user && userLanguage === 'none') {
-				const userId = _session.user.id;
-				const userLanguages = navigator.languages;
-				const primaryLanguage = userLanguages[0].split('-')[0];
-				insertUserLanguage(primaryLanguage, userId);
 			}
 		});
 
@@ -62,7 +72,7 @@
 				error
 			} = await supabase.auth.getUser(session?.access_token);
 			if (user) {
-				userId = user.id;
+				return;
 			}
 			if (error) {
 				console.error('Error: ', error.message);
@@ -92,10 +102,16 @@
 	};
 
 	const setUserLanguage = async (lang: string) => {
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
+		if (!user) {
+			return;
+		}
 		const { error } = await supabase
 			.from('profiles')
 			.update({ language: lang })
-			.eq('user_id', userId);
+			.eq('user_id', user.id);
 		if (error) {
 			console.error('Error: ', error);
 		} else {
