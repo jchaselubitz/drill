@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev  --host 0.0.0.0",
-		"start": "supabase start",
+		"start": "vite start  --host http://192.168.0.103:3000",
 		"stop": "supabase stop",
 		"fresh": "supabase db reset",
 		"functions-run": "supabase functions serve --env-file ./supabase/.env.local --no-verify-jwt",

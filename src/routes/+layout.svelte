@@ -10,9 +10,9 @@
 	import SideBar from '$lib/navigation/SideBar.svelte';
 	import AuthUpdate from '$lib/authForm/AuthUpdate.svelte';
 
-	if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+	if ('serviceWorker' in navigator) {
 		window.addEventListener('load', () => {
-			navigator.serviceWorker.register('/sw.js').then(
+			navigator.serviceWorker.register('/service-worker.js').then(
 				(registration) => {
 					console.log('ServiceWorker registration successful with scope: ', registration.scope);
 				},
