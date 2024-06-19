@@ -16,7 +16,7 @@ export async function downloadCSV(
 			const a = document.createElement('a');
 			a.style.display = 'none';
 			a.href = url;
-			a.download = `lesson-${lesson.title}.csv`;
+			a.download = `${lesson.title}.csv`;
 			document.body.appendChild(a);
 			a.click();
 			window.URL.revokeObjectURL(url);
@@ -46,7 +46,7 @@ export async function downloadApkg(
 			const a = document.createElement('a');
 			a.style.display = 'none';
 			a.href = url;
-			a.download = `Lesson-${lesson.title}.apkg`;
+			a.download = `${lesson.title}.apkg`;
 			document.body.appendChild(a);
 			a.click();
 			window.URL.revokeObjectURL(url);
