@@ -10,7 +10,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const openai = new OpenAI({
 			apiKey: apiKey ? apiKey : OpenAiKey
 		});
-
+		console.time('openai-tts');
 		const mp3 = await openai.audio.speech.create({
 			model: 'tts-1',
 			voice: 'alloy',
@@ -18,9 +18,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 		const buffer = Buffer.from(await mp3.arrayBuffer());
-
+		console.timeEnd('openai-tts');
+		console.time('upload-speech');
 		const { data, error } = await locals.supabase.storage.from(bucketName).upload(fileName, buffer);
 
+		console.timeEnd('upload-speech');
 		if (error) {
 			return { error };
 		}
