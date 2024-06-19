@@ -9,7 +9,7 @@
 	};
 </script>
 
-<a href={`${lesson.subject_id}/${lesson.id}`} class="my-2">
+<a href={`subjects/${lesson.subject_id}/${lesson.id}`} class="my-2">
 	<div
 		role="button"
 		tabindex="0"
