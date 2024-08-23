@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
 		} = modelParams;
 
 		const completion = await openai.chat.completions.create({
-			model: userApiKey ? modelSelection : OpenAiModel.gpt3,
+			model: userApiKey ? modelSelection : OpenAiModel.gpt4o,
 			messages: messages,
 			response_format: { type: format },
 			presence_penalty,

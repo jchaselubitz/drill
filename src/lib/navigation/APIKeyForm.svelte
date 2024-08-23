@@ -13,7 +13,7 @@
 		if (openApiKey) {
 			isSavedKey = true;
 		}
-		modelSelection = localStorage.getItem('OpenAIModel') ?? 'gpt3';
+		modelSelection = localStorage.getItem('OpenAIModel') ?? 'gpt4o';
 	});
 
 	const addModelToLocalStorage = () => {
@@ -40,7 +40,7 @@
 				on:change={addModelToLocalStorage}
 			>
 				<option disabled={!openApiKey} value="gpt4">GPT-4</option>
-				<option value="gpt3">GPT-3</option>
+				<option value="gpt4o">GPT4o</option>
 			</select>
 		</form>
 		<form class={formClasses}>

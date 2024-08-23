@@ -1,4 +1,4 @@
 export enum OpenAiModel {
-	'gpt3' = 'gpt-3.5-turbo-1106',
+	'gpt4o' = 'gpt-4o-mini',
 	'gpt4' = 'gpt-4-1106-preview'
 }

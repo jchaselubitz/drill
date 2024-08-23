@@ -5,14 +5,14 @@ export type AiMessage = {
 
 //this is mirrored in supabase/functions/_shared.ts
 export enum OpenAiModel {
-	'gpt3' = 'gpt-3.5-turbo-1106',
+	'gpt4o' = 'gpt-4o-mini',
 	'gpt4' = 'gpt-4o'
 }
 
 export const getModelSelection = () => {
 	if (typeof window !== 'undefined') {
-		const selection = localStorage.getItem('OpenAIModel') ?? 'gpt3';
-		return selection === 'gpt4' ? OpenAiModel.gpt4 : OpenAiModel.gpt3;
+		const selection = localStorage.getItem('OpenAIModel') ?? 'gpt4o';
+		return selection === 'gpt4' ? OpenAiModel.gpt4 : OpenAiModel.gpt4o;
 	}
 };
 export const getOpenAiKey = () => {
