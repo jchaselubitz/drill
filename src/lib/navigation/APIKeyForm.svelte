@@ -39,8 +39,8 @@
 				bind:value={modelSelection}
 				on:change={addModelToLocalStorage}
 			>
-				<option disabled={!openApiKey} value="gpt4">GPT-4</option>
-				<option value="gpt4o">GPT4o</option>
+				<option disabled={!openApiKey} value="gpt4">GPT-4o</option>
+				<option value="gpt4oMini">GPT4o - mini</option>
 			</select>
 		</form>
 		<form class={formClasses}>

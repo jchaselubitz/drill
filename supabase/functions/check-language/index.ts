@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
 		});
 
 		const completion = await openai.chat.completions.create({
-			model: OpenAiModel.gpt4o,
+			model: OpenAiModel.gpt4oMini,
 			messages: messages,
 			response_format: { type: 'json_object' },
 			presence_penalty: 0,
