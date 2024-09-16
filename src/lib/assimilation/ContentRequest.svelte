@@ -26,8 +26,6 @@
 	$: genResponse = [] as ArbitraryObject;
 	$: requestLoading = false;
 
-	$: console.log('genResponse:', genResponse);
-
 	// let genResponse: any = JSON.parse(MOCK_ARBITRARY_RESPONSE);
 
 	$: requestText = '';

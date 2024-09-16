@@ -10,10 +10,14 @@
 	export let phrase;
 	export let supabase: SupabaseClient;
 	export let userId: string;
+	export let primaryLang: LanguagesISO639;
+	export let userLang: LanguagesISO639;
 
 	let text = phrase.text;
 	let lang = phrase.lang as LanguagesISO639;
 	let translationsPhrases = phrase.translations;
+
+	const suggestedTranslationLang = lang === userLang ? primaryLang : userLang;
 
 	let primaryPhraseIds = [
 		...translationsPhrases.map((phrase) => {
@@ -57,5 +61,16 @@
 			{/each}
 		</ul>
 	{/if}
-	<ContentRequest {text} {lang} {supabase} {userId} {primaryPhraseIds} source="phrase" />
+	<ContentRequest
+		{text}
+		{lang}
+		{supabase}
+		{userId}
+		{primaryPhraseIds}
+		source="phrase"
+		suggestions={[
+			`Translate to ${getLangName(suggestedTranslationLang)}`,
+			`Create a sentence using`
+		]}
+	/>
 </div>

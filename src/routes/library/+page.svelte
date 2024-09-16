@@ -8,7 +8,7 @@
 	import AddPhrase from '$lib/library/AddPhrase.svelte';
 
 	export let data: PageData;
-	$: ({ session, supabase, phrases, languages } = data);
+	$: ({ session, supabase, phrases, languages, userLanguage, primaryLanguage } = data);
 
 	$: selectedLanguage = languages ? languages[0] : 'en';
 	$: asce = true;
@@ -38,6 +38,10 @@
 		return 0;
 	});
 
+	$: recent = sortPhrases.filter((phrase) => {
+		const createdAt = new Date(phrase.created_at).getTime();
+		return createdAt > Date.now() - 1000 * 60 * 60 * 24 * 7;
+	});
 	$: justPhrases = sortPhrases.filter((phrase) => phrase.text.trim().includes(' '));
 	$: justWords = sortPhrases.filter((phrase) => !phrase.text.trim().includes(' '));
 
@@ -71,10 +75,31 @@
 	<div class="flex flex-col md:flex-row gap-3 w-full">
 		{#if justPhrases}
 			<div class="flex flex-col gap-4 w-full">
+				<h2 class="text-xl font-bold">Recent</h2>
+
+				{#each recent as phrase (phrase.id)}
+					<PhraseCard
+						{phrase}
+						{supabase}
+						{userId}
+						primaryLang={primaryLanguage}
+						userLang={userLanguage}
+					/>
+				{/each}
+			</div>
+		{/if}
+		{#if justPhrases}
+			<div class="flex flex-col gap-4 w-full">
 				<h2 class="text-xl font-bold">Phrases</h2>
 
 				{#each justPhrases as phrase (phrase.id)}
-					<PhraseCard {phrase} {supabase} {userId} />
+					<PhraseCard
+						{phrase}
+						{supabase}
+						{userId}
+						primaryLang={primaryLanguage}
+						userLang={userLanguage}
+					/>
 				{/each}
 			</div>
 		{/if}
@@ -84,7 +109,13 @@
 				<h2 class="text-xl font-bold">Words</h2>
 
 				{#each justWords as phrase (phrase.id)}
-					<PhraseCard {phrase} {supabase} {userId} />
+					<PhraseCard
+						{phrase}
+						{supabase}
+						{userId}
+						primaryLang={primaryLanguage}
+						userLang={userLanguage}
+					/>
 				{/each}
 			</div>
 		{/if}

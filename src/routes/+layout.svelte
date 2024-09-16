@@ -27,7 +27,7 @@
 
 	export let data: PageData;
 
-	$: ({ supabase, session, pathname, code, userLanguage } = data);
+	$: ({ supabase, session, pathname, code, userLanguage, primaryLanguage } = data);
 	$: sidebarIsOpen = undefined as boolean | undefined;
 	$: isPublic = pathname.includes('password-reset');
 
@@ -39,11 +39,37 @@
 		if (user && userLanguage === 'none') {
 			const userId = user.id;
 			const userLanguages = navigator.languages;
-			const primaryLanguage = userLanguages[0].split('-')[0];
+			const userLang = userLanguages[0].split('-')[0];
 
 			const { error } = await supabase
 				.from('profiles')
-				.insert({ user_id: userId, language: primaryLanguage });
+				.insert({ user_id: userId, language: userLang });
+
+			if (error) {
+				console.error('Error: ', error);
+			}
+		}
+		if (error) {
+			console.error('Error: ', error);
+		} else {
+			invalidateAll();
+		}
+	};
+
+	const insertPrimaryLanguage = async () => {
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
+
+		if (user && primaryLanguage === 'none') {
+			const userId = user.id;
+			const primaryLanguage = navigator.languages;
+			console.log('Primary Language: ', primaryLanguage);
+			const primLang = primaryLanguage[0].split('-')[1];
+
+			const { error } = await supabase
+				.from('profiles')
+				.insert({ user_id: userId, primaryLanguage: primLang });
 
 			if (error) {
 				console.error('Error: ', error);
@@ -59,6 +85,7 @@
 	onMount(() => {
 		registerServiceWorker();
 		insertUserLanguage();
+		insertPrimaryLanguage();
 		sidebarIsOpen = localStorage.getItem('sidebarIsOpen') === 'true';
 		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
 			if (_session?.expires_at !== session?.expires_at) {
@@ -118,6 +145,24 @@
 			invalidateAll();
 		}
 	};
+
+	const setPrimaryLanguage = async (lang: string) => {
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
+		if (!user) {
+			return;
+		}
+		const { error } = await supabase
+			.from('profiles')
+			.update({ primary_language: lang })
+			.eq('user_id', user.id);
+		if (error) {
+			console.error('Error: ', error);
+		} else {
+			invalidateAll();
+		}
+	};
 </script>
 
 <svelte:head>
@@ -127,7 +172,14 @@
 {#if sidebarIsOpen !== undefined}
 	<div class="flex absolute top-0 bottom-0 w-full">
 		{#if sidebarIsOpen && session}
-			<SideBar {sidebarIsOpen} {toggleSidebar} {userLanguage} {setUserLanguage} />
+			<SideBar
+				{sidebarIsOpen}
+				{toggleSidebar}
+				{primaryLanguage}
+				{userLanguage}
+				{setPrimaryLanguage}
+				{setUserLanguage}
+			/>
 		{/if}
 		<!-- {#if code}
 			<AuthUpdate {supabase} onCompletion={passwordUpdateComplete} />

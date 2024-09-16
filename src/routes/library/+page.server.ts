@@ -5,7 +5,7 @@ export const load: PageServerLoad = async ({ locals, depends }) => {
 	const { data: phrases, error } = await locals.supabase
 		.from('phrases')
 		.select(
-			'id, text, lang, translations_phrase_primary_id_fkey(id, phrase_primary_id, phrase_secondary_id, lessons(*)), translations_phrase_secondary_id_fkey(id, phrase_primary_id, phrase_secondary_id, lessons(*))'
+			'id, text, lang, created_at, translations_phrase_primary_id_fkey(id, phrase_primary_id, phrase_secondary_id, lessons(*)), translations_phrase_secondary_id_fkey(id, phrase_primary_id, phrase_secondary_id, lessons(*))'
 		);
 	if (error) {
 		console.log('error', error);

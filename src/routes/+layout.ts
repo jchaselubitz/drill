@@ -15,6 +15,8 @@ export const load = async ({ fetch, data, depends }) => {
 	const { data: userData } = await supabase.from('profiles').select('*');
 
 	const language = userData && userData[0] && userData[0].language ? userData[0].language : 'none';
+	const primaryLanguage =
+		userData && userData[0] && userData[0].primary_language ? userData[0].primary_language : 'none';
 
 	const {
 		data: { session }
@@ -26,6 +28,7 @@ export const load = async ({ fetch, data, depends }) => {
 		url: data.url,
 		pathname: data.pathname,
 		code: data.code,
-		userLanguage: language
+		userLanguage: language,
+		primaryLanguage: primaryLanguage
 	};
 };

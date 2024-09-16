@@ -1,6 +1,6 @@
 <script lang="ts">
 	import cn from 'classnames';
-	import type { Phrase, PreparedPhrase } from '$src/types/primaryTypes';
+	import type { PreparedPhrase } from '$src/types/primaryTypes';
 	import PhraseCardDetails from './PhraseCardDetails.svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import TtsButton from '$lib/buttons/TtsButton.svelte';
@@ -8,6 +8,8 @@
 	export let phrase: PreparedPhrase;
 	export let supabase: SupabaseClient;
 	export let userId: string;
+	export let primaryLang: string;
+	export let userLang: string;
 
 	const bucket = 'text_to_speech';
 
@@ -31,7 +33,7 @@
 	</button>
 	{#if detailsOpen}
 		<div class="p-4">
-			<PhraseCardDetails {phrase} {userId} {supabase} />
+			<PhraseCardDetails {phrase} {userId} {supabase} {primaryLang} {userLang} />
 		</div>
 	{/if}
 </div>

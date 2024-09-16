@@ -9,7 +9,9 @@
 
 	export let toggleSidebar: (open: boolean) => void;
 	export let userLanguage: string;
+	export let primaryLanguage: string;
 	export let setUserLanguage: (language: string) => void;
+	export let setPrimaryLanguage: (language: string) => void;
 
 	let sidebarRef: HTMLDivElement;
 
@@ -64,7 +66,18 @@
 
 	<div class="absolute bottom-4 left-4 right-4">
 		<div class="flex flex-col gap-6">
-			<BaseLanguageForm {userLanguage} {setUserLanguage} />
+			<BaseLanguageForm
+				name="primaryLanguage"
+				language={primaryLanguage}
+				setLanguage={setPrimaryLanguage}
+				label="Learning Language"
+			/>
+			<BaseLanguageForm
+				name="baseLanguage"
+				language={userLanguage}
+				setLanguage={setUserLanguage}
+				label="Base Language"
+			/>
 			<ApiKeyForm />
 		</div>
 	</div>
