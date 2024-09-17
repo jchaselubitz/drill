@@ -47,24 +47,24 @@ export async function getAudioFile({
 	if (playAfterSave && !setIsPlayingFalse) {
 		throw new Error('playAfterSave requires setIsPlayingFalse to be defined.');
 	}
-	const apiKey = getOpenAiKey();
 
-	fetch(`/api/ai/text-to-speech`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ apiKey, text, fileName })
-	})
-		.then((res) => res.json())
-		.then((data) => {
-			setIsLoadingFalse();
-			playAfterSave && playSavedAudio({ fileName: data.data, supabase, bucket, setIsPlayingFalse });
-			return data;
-		})
-		.catch((err) => {
-			throw err;
-		});
+	const { data, error } = await supabase.functions.invoke('text-to-speech', {
+		body: {
+			userApiKey: getOpenAiKey(),
+			text,
+			fileName
+		}
+	});
+	if (error) {
+		console.log('Error:', error);
+		return;
+	}
+
+	if (data) {
+		setIsLoadingFalse();
+		playAfterSave && playSavedAudio({ fileName: data.path, supabase, bucket, setIsPlayingFalse });
+		return data;
+	}
 }
 
 export async function checkIfAudioExists({ fileName, supabase, bucket }: SavedAudio) {

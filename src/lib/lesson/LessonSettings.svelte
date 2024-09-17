@@ -61,7 +61,7 @@
 			<button
 				class={cn(baseButtonClass, ' bg-blue-600 text-white')}
 				on:click={() => {
-					(loadingAPKG = true), downloadApkg(lesson, setLoadingFalse);
+					(loadingAPKG = true), downloadApkg({ lesson, setLoadingFalse, supabase });
 				}}>{loadingAPKG === true ? 'Downloading' : 'Download APKG'}</button
 			>
 		</div>
