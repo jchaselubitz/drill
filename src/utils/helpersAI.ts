@@ -16,9 +16,15 @@ export const getModelSelection = () => {
 	}
 };
 export const getOpenAiKey = () => {
+	let key = import.meta.env.VITE_OPENAI_API_KEY;
+
 	if (typeof window !== 'undefined') {
-		return localStorage.getItem('OpenAIKey') ?? '';
+		const storedKey = localStorage.getItem('OpenAIKey');
+		if (storedKey) {
+			key = storedKey;
+		}
 	}
+	return key;
 };
 
 export type gptFormatType = 'json_object' | 'text';
