@@ -18,9 +18,8 @@ Deno.serve(async (req) => {
 	];
 
 	try {
-		const apiKey = Deno.env.get('OPENAI_API_KEY');
 		const openai = new OpenAI({
-			apiKey: apiKey
+			apiKey: userApiKey ? userApiKey : Deno.env.get('OPENAI_API_KEY')
 		});
 
 		const completion = await openai.chat.completions.create({
