@@ -8,7 +8,6 @@
 	import { error, type SubmitFunction } from '@sveltejs/kit';
 	import AuthModal from '$lib/authForm/AuthModal.svelte';
 	import SideBar from '$lib/navigation/SideBar.svelte';
-	import AuthUpdate from '$lib/authForm/AuthUpdate.svelte';
 
 	const registerServiceWorker = () => {
 		if ('serviceWorker' in navigator) {
@@ -27,17 +26,12 @@
 
 	export let data: PageData;
 
-	$: ({ supabase, session, pathname, code, userLanguage, primaryLanguage } = data);
+	$: ({ supabase, session, pathname, code, userLanguage, primaryLanguage, userId } = data);
 	$: sidebarIsOpen = undefined as boolean | undefined;
 	$: isPublic = pathname.includes('password-reset');
 
 	const insertUserLanguage = async () => {
-		const {
-			data: { user }
-		} = await supabase.auth.getUser();
-
-		if (user && userLanguage === 'none') {
-			const userId = user.id;
+		if (userId && userLanguage === 'none') {
 			const userLanguages = navigator.languages;
 			const userLang = userLanguages[0].split('-')[0];
 
@@ -57,14 +51,8 @@
 	};
 
 	const insertPrimaryLanguage = async () => {
-		const {
-			data: { user }
-		} = await supabase.auth.getUser();
-
-		if (user && primaryLanguage === 'none') {
-			const userId = user.id;
+		if (userId && primaryLanguage === 'none') {
 			const primaryLanguage = navigator.languages;
-			console.log('Primary Language: ', primaryLanguage);
 			const primLang = primaryLanguage[0].split('-')[1];
 
 			const { error } = await supabase
@@ -147,16 +135,14 @@
 	};
 
 	const setPrimaryLanguage = async (lang: string) => {
-		const {
-			data: { user }
-		} = await supabase.auth.getUser();
-		if (!user) {
+		console.log('Setting primary language to: ', lang);
+		if (!userId) {
 			return;
 		}
 		const { error } = await supabase
 			.from('profiles')
 			.update({ primary_language: lang })
-			.eq('user_id', user.id);
+			.eq('user_id', userId);
 		if (error) {
 			console.error('Error: ', error);
 		} else {

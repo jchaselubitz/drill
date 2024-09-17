@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Select from '$lib/inputs/Select.svelte';
 	import { Languages } from '$src/utils/lists';
 
 	export let language: string;

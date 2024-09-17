@@ -12,8 +12,11 @@ export const load = async ({ fetch, data, depends }) => {
 		serverSession: data.session
 	});
 
-	const { data: userData } = await supabase.from('profiles').select('*');
+	const {
+		data: { user }
+	} = await supabase.auth.getUser();
 
+	const { data: userData } = await supabase.from('profiles').select('*');
 	const language = userData && userData[0] && userData[0].language ? userData[0].language : 'none';
 	const primaryLanguage =
 		userData && userData[0] && userData[0].primary_language ? userData[0].primary_language : 'none';
@@ -29,6 +32,7 @@ export const load = async ({ fetch, data, depends }) => {
 		pathname: data.pathname,
 		code: data.code,
 		userLanguage: language,
-		primaryLanguage: primaryLanguage
+		primaryLanguage: primaryLanguage,
+		userId: user?.id
 	};
 };
