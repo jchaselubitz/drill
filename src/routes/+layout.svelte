@@ -57,7 +57,7 @@
 
 			const { error } = await supabase
 				.from('profiles')
-				.insert({ user_id: userId, primaryLanguage: primLang });
+				.insert({ user_id: userId, primary_language: primLang });
 
 			if (error) {
 				console.error('Error: ', error);
