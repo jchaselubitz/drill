@@ -1,10 +1,12 @@
 <script lang="ts">
+	import Recording from '$lib/assimilation/Recording.svelte';
 	import LinkButton from '$lib/buttons/LinkButton.svelte';
 	import SubjectCard from '$lib/subject/SubjectCard.svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
-	$: ({ subjects } = data);
+	$: ({ subjects, supabase, userId } = data);
+	$: transcript = '';
 </script>
 
 <svelte:head>
@@ -12,6 +14,8 @@
 </svelte:head>
 
 <div class="m-4rounded-lg">
+	<Recording {supabase} {userId} bind:transcript />
+
 	<h1 class="text-2xl font-bold mb-4">My Subjects</h1>
 	{#if subjects.length > 0}
 		<div class="flex flex-col gap-4">
