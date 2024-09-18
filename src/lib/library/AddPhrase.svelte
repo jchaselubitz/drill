@@ -7,14 +7,17 @@
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
 	export let supabase: SupabaseClient;
+	export let userLang: string;
+	export let primaryLang: string;
 
 	let modalRef: HTMLDivElement;
 
-	let isOpen = false;
+	$: isOpen = false;
+	$: console.log(isOpen);
 	let inputValue = '';
-	$: lang = 'en';
 
 	function openModal() {
+		console.log('open');
 		isOpen = true;
 		setTimeout(() => {
 			window.addEventListener('click', handleClickOutside);
@@ -26,6 +29,7 @@
 
 	function closeModal() {
 		isOpen = false;
+		window.removeEventListener('click', handleClickOutside);
 	}
 
 	const setLanguage = (event: Event & { detail: Event }) => {
@@ -56,10 +60,10 @@
 </script>
 
 {#if isOpen}
-	<div class="fixed top-0 bottom-0 left-0 right-0 p-3 bg-gray-800 bg-opacity-40">
+	<div class="absolute top-0 bottom-0 left-0 right-0 p-3 bg-gray-800 bg-opacity-40">
 		<div class="rounded-lg p-4 mt-10 bg-white flex flex-col gap-2" bind:this={modalRef}>
 			<Input name="phrase" isTextArea bind:value={inputValue} placeholder="Enter text" />
-			<Select name="language" value={lang} className="" on:change={setLanguage}>
+			<Select name="language" value={primaryLang} className="" on:change={setLanguage}>
 				{#each Languages as language}
 					<option value={language.value}>{language.name}</option>
 				{/each}

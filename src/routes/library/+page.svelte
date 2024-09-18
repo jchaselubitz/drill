@@ -10,7 +10,7 @@
 	export let data: PageData;
 	$: ({ session, supabase, phrases, languages, userLanguage, primaryLanguage } = data);
 
-	$: selectedLanguage = languages ? languages[0] : 'en';
+	$: selectedLanguage = primaryLanguage;
 	$: asce = true;
 
 	$: phrasesByLanguage = phrases.filter((phrase) => phrase.lang === selectedLanguage);
@@ -40,7 +40,7 @@
 
 	$: recent = sortPhrases.filter((phrase) => {
 		const createdAt = new Date(phrase.created_at).getTime();
-		return createdAt > Date.now() - 1000 * 60 * 60 * 24 * 7;
+		return createdAt > Date.now() - 1000 * 60 * 60 * 24 * 3;
 	});
 	$: justPhrases = sortPhrases.filter((phrase) => phrase.text.trim().includes(' '));
 	$: justWords = sortPhrases.filter((phrase) => !phrase.text.trim().includes(' '));
@@ -58,7 +58,7 @@
 	<title>Library</title>
 </svelte:head>
 
-<div class="m-4rounded-lg">
+<div class="rounded-lg">
 	<h1 class="text-2xl font-bold">Words & Phrases</h1>
 	<div class="flex gap-3 items-center p-2 border rounded-lg my-4">
 		{#if languages}
@@ -69,7 +69,7 @@
 			</Select>
 		{/if}
 		<SortButton bind:asce>Sort {asce ? 'A -> Z' : 'Z ->A'}</SortButton>
-		<AddPhrase {supabase} />
+		<AddPhrase {supabase} userLang={userLanguage} primaryLang={primaryLanguage} />
 	</div>
 
 	<div class="flex flex-col md:flex-row gap-3 w-full">

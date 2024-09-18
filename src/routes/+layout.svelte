@@ -173,11 +173,11 @@
 		{#if !session && !isPublic}
 			<AuthModal {supabase} />
 		{/if}
-		<div class={cn(sidebarIsOpen && !isPublic && 'md:ml-64', 'flex flex-col w-full')}>
+		<div class={cn(sidebarIsOpen && !isPublic && 'md:ml-64', 'relative flex flex-col w-full')}>
 			{#if !isPublic}
 				<NavBar {session} {sidebarIsOpen} {toggleSidebar} {submitLogout} />
 			{/if}
-			<div class="p-1 md:p-4 w-full h-full">
+			<div class=" p-1 md:p-4 w-full h-full">
 				<slot />
 			</div>
 		</div>
