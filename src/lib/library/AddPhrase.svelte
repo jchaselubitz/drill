@@ -7,17 +7,16 @@
 	import type { SupabaseClient } from '@supabase/supabase-js';
 
 	export let supabase: SupabaseClient;
-	export let userLang: string;
+
 	export let primaryLang: string;
 
 	let modalRef: HTMLDivElement;
 
 	$: isOpen = false;
-	$: console.log(isOpen);
+	$: lang = primaryLang;
 	let inputValue = '';
 
 	function openModal() {
-		console.log('open');
 		isOpen = true;
 		setTimeout(() => {
 			window.addEventListener('click', handleClickOutside);

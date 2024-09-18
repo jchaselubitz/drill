@@ -5,20 +5,29 @@
 	import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 	import type { SubmitFunction } from '@sveltejs/kit';
 	import type { Session } from '@supabase/supabase-js';
+	import AddPhrase from '$lib/library/AddPhrase.svelte';
 
 	export let session: Session | null;
 	export let sidebarIsOpen: boolean | undefined;
 	export let submitLogout: SubmitFunction;
+	export let supabase: any;
+	export let userLanguage: string;
+	export let primaryLanguage: string;
 	export let toggleSidebar: () => void;
 </script>
 
 <div
-	class={cn(sidebarIsOpen ? 'justify-end' : 'justify-between', 'border-b-2 p-2 flex items-center')}
+	class={cn(
+		sidebarIsOpen ? 'justify-end' : 'justify-between',
+		'border-b-2 p-2 flex items-center gap-3'
+	)}
 >
 	{#if !sidebarIsOpen}
 		<button on:click={() => toggleSidebar()}><Icon data={faBars} /></button>
 	{/if}
 	{#if session}
+		<AddPhrase {supabase} userLang={userLanguage} primaryLang={primaryLanguage} />
+
 		<form action="/auth/sign-out" method="POST" use:enhance={submitLogout}>
 			<button class="text-sm font-medium uppercase" type="submit">Sign out</button>
 		</form>

@@ -175,7 +175,15 @@
 		{/if}
 		<div class={cn(sidebarIsOpen && !isPublic && 'md:ml-64', 'relative flex flex-col w-full')}>
 			{#if !isPublic}
-				<NavBar {session} {sidebarIsOpen} {toggleSidebar} {submitLogout} />
+				<NavBar
+					{session}
+					{sidebarIsOpen}
+					{toggleSidebar}
+					{submitLogout}
+					{primaryLanguage}
+					{userLanguage}
+					{supabase}
+				/>
 			{/if}
 			<div class=" p-1 md:p-4 w-full h-full">
 				<slot />

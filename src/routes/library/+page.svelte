@@ -69,7 +69,7 @@
 			</Select>
 		{/if}
 		<SortButton bind:asce>Sort {asce ? 'A -> Z' : 'Z ->A'}</SortButton>
-		<AddPhrase {supabase} userLang={userLanguage} primaryLang={primaryLanguage} />
+		<!-- <AddPhrase {supabase} userLang={userLanguage} primaryLang={primaryLanguage} /> -->
 	</div>
 
 	<div class="flex flex-col md:flex-row gap-3 w-full">
